@@ -319,6 +319,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .ai-content .md-tip-box.tip-good{background:#ecfdf5;border:1px solid #a7f3d0}
 .ai-content .md-tip-box .tip-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
 .ai-content .md-tip-box .tip-text{flex:1;font-size:.88rem;line-height:1.8}
+
+/* ===== Stage Directions (動作/語氣提示) ===== */
+.ai-content .stage-dir{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#fdf4ff,#fae8ff);border:1px solid #e9d5ff;border-radius:20px;padding:2px 12px 2px 8px;margin:0 3px;font-size:.8rem;color:#7c3aed;font-style:italic;white-space:nowrap;vertical-align:baseline;line-height:1.7;transition:all .2s}
+.ai-content .stage-dir:hover{background:linear-gradient(135deg,#fae8ff,#f3e8ff);border-color:#c4b5fd;box-shadow:0 1px 4px rgba(124,58,237,.1)}
+.ai-content .stage-dir .sd-icon{font-size:.75rem;font-style:normal;flex-shrink:0}
 .print-row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;display:none}
 .print-row.show{display:flex}
 
@@ -1485,6 +1490,24 @@ function renderMarkdown(raw) {
       .replace(/(?<![*])\*(?![*\s])(.*?)(?<![*\s])\*(?![*])/g, '<em>$1</em>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/==(.*?)==/g, '<mark>$1</mark>')
+      // Stage directions: （語氣放緩）or (停頓一下)
+      .replace(/（([^）]{1,40})）/g, function(m, inner) {
+        // Detect category for icon
+        const ic = /語氣|聲音|語調|音量|放緩|加重|輕柔|堅定|激昂|低沉|高昂/.test(inner) ? '🎙️'
+                 : /停頓|沉默|安靜|靜默|pause/.test(inner) ? '⏸️'
+                 : /手勢|比|指|舉|張開|握|伸|揮/.test(inner) ? '👋'
+                 : /表情|微笑|笑|皺眉|嚴肅|溫暖|感動|眼神/.test(inner) ? '😊'
+                 : /走|站|轉|面向|看|望|環顧|鞠躬|抬頭/.test(inner) ? '🧍'
+                 : /速度|加快|放慢|節奏/.test(inner) ? '⏱️'
+                 : '🎭';
+        return `<span class="stage-dir"><span class="sd-icon">${ic}</span>${inner}</span>`;
+      })
+      .replace(/\(([^)]{1,40})\)/g, function(m, inner) {
+        if (/語氣|停頓|手勢|表情|動作|聲音|微笑|放緩|加重|鞠躬|環顧|眼神|速度|節奏|輕柔|堅定|激昂|沉默|走|站|轉|面向/.test(inner)) {
+          return `<span class="stage-dir"><span class="sd-icon">🎭</span>${inner}</span>`;
+        }
+        return m;
+      })
       ;
   }
 
@@ -2097,6 +2120,10 @@ function printMdCSS(accentColor) {
     .content-wrap .md-tip-box.tip-good{background:#ecfdf5;border:1px solid #a7f3d0}
     .content-wrap .md-tip-box .tip-icon{font-size:1.1rem;flex-shrink:0}
     .content-wrap .md-tip-box .tip-text{flex:1;font-size:.88rem;line-height:1.8}
+
+    /* ===== Stage Directions ===== */
+    .content-wrap .stage-dir{display:inline-flex;align-items:center;gap:4px;background:#fdf4ff;border:1px solid #e9d5ff;border-radius:20px;padding:2px 12px 2px 8px;margin:0 3px;font-size:.8rem;color:#7c3aed;font-style:italic;line-height:1.7}
+    .content-wrap .stage-dir .sd-icon{font-size:.75rem;font-style:normal}
 
     /* ===== Transcript ===== */
     .transcript-body{border:1.5px solid #e5e7eb;border-radius:12px;padding:22px 24px;background:#fafbfc}
