@@ -3,7 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎤 國小國語演說比賽訓練平台</title>
+<title>國小國語演說比賽訓練平台</title>
+
+<!-- SEO & Social Sharing -->
+<meta name="description" content="專為國小學生設計的 AI 國語演說訓練平台，提供即時語音分析、智慧陪練與完整評分功能。">
+<meta name="keywords" content="國語演說,演說比賽,國小,訓練平台,AI,語音分析">
+<meta name="author" content="cagoooo">
+
+<!-- Open Graph (Facebook, LINE, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="國小國語演說比賽訓練平台">
+<meta property="og:description" content="AI 智慧陪練 · 即時語音分析 · 完整評分 — 專為國小學生設計的演說訓練神器">
+<meta property="og:image" content="https://cagoooo.github.io/speech/og-image.png">
+<meta property="og:url" content="https://cagoooo.github.io/speech/">
+<meta property="og:site_name" content="國語演說訓練平台">
+<meta property="og:locale" content="zh_TW">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="國小國語演說比賽訓練平台">
+<meta name="twitter:description" content="AI 智慧陪練 · 即時語音分析 · 完整評分 — 專為國小學生設計的演說訓練神器">
+<meta name="twitter:image" content="https://cagoooo.github.io/speech/og-image.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+
+<!-- Theme Color -->
+<meta name="theme-color" content="#1a56a0">
 <style>
 :root {
   --primary: #1a56a0;
@@ -389,6 +417,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .audio-prev-wrap{display:none;margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #e5e7eb}
 .audio-prev-wrap.show{display:block}
 .audio-prev-wrap label{font-size:.76rem;font-weight:700;color:#6d28d9;display:block;margin-bottom:5px}
+
+/* ===== EMOTION BARS ===== */
+.emo-section{margin-top:20px;padding:18px 20px;background:linear-gradient(135deg,#fdf4ff,#ede9fe);border-radius:14px;border:1.5px solid #c4b5fd}
+.emo-title{font-size:.95rem;font-weight:700;color:#7c3aed;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.emo-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.emo-lbl{width:54px;font-size:.8rem;font-weight:600;color:var(--text);flex-shrink:0;text-align:right}
+.emo-track{flex:1;height:14px;background:#e5e7eb;border-radius:7px;overflow:hidden}
+.emo-fill{height:100%;border-radius:7px;width:0%;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+.emo-pct{font-size:.8rem;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.emo-note{font-size:.73rem;color:#7c3aed;margin-top:10px;font-style:italic;padding:6px 10px;background:rgba(167,139,250,.12);border-radius:8px}
+.emo-loading-wrap{text-align:center;padding:14px;color:#7c3aed;font-size:.85rem;display:none}
+.emo-loading-wrap.show{display:block}
+
+/* ===== PARENT PANEL ===== */
+.parent-wrap{background:#fff;border-radius:18px;padding:26px;box-shadow:var(--shadow);margin-bottom:22px}
+.parent-wrap .ptitle{font-size:1.15rem;font-weight:700;color:#0d9488;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.parent-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.ps-card{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-radius:12px;padding:14px;text-align:center;border:1.5px solid #99f6e4}
+.ps-num{font-size:1.55rem;font-weight:800;color:#0d9488;line-height:1.1}
+.ps-lbl{font-size:.73rem;color:#6b7280;margin-top:4px}
+.letter-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:20px 22px;margin:14px 0;min-height:200px;font-size:.88rem;line-height:2;white-space:pre-wrap;color:var(--text);word-break:break-word}
+.letter-box.empty{display:flex;align-items:center;justify-content:center;color:#9ca3af;font-style:italic;min-height:160px;white-space:normal}
+.letter-loading{display:none;text-align:center;padding:22px;color:#0d9488;font-size:.85rem}
+.letter-loading.show{display:block}
+.btn-teal{background:linear-gradient(135deg,#0d9488,#14b8a6);color:#fff;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;font-size:.88rem;font-weight:600;font-family:inherit;transition:all .2s}
+.btn-teal:hover{opacity:.9;transform:translateY(-1px)}
+.parent-tip-box{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-left:4px solid #0d9488;border-radius:0 10px 10px 0;padding:11px 16px;margin-top:16px;font-size:.81rem;color:#134e4a;line-height:1.8}
+@media(max-width:500px){.parent-stats{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -423,6 +480,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <button class="nav-btn" onclick="showPanel('practice',this)">🎯 模擬抽題練習</button>
     <button class="nav-btn" onclick="showPanel('topics',this)">📋 題庫管理</button>
     <button class="nav-btn" onclick="showPanel('resources',this)">🔗 參考資源</button>
+    <button class="nav-btn" onclick="showPanel('parent',this)">📧 親師互動</button>
   </div>
 </nav>
 
@@ -653,6 +711,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
             <button class="ai-opt on" id="aopt-outline" onclick="setAiOpt('outline')">📋 演說大綱</button>
             <button class="ai-opt" id="aopt-script" onclick="setAiOpt('script')">📝 完整逐字稿</button>
             <button class="ai-opt" id="aopt-tips" onclick="setAiOpt('tips')">💡 主題建議</button>
+            <button class="ai-opt" id="aopt-quotes" onclick="setAiOpt('quotes')">✨ 名言金句</button>
           </div>
         </div>
 
@@ -746,6 +805,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 
         <div id="recPrintRow" style="display:none;justify-content:flex-end;margin-top:10px">
           <button class="btn btn-primary btn-sm" onclick="printRecAI()">🖨️ 列印 AI 評析報告</button>
+        </div>
+        <!-- 情感色彩分析 -->
+        <div class="emo-section" id="emoSection" style="display:none">
+          <div class="emo-title">🎨 情感色彩分析</div>
+          <div class="emo-loading-wrap" id="emoLoading">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <p style="margin-top:8px;color:#7c3aed;font-size:.82rem">AI 正在分析情感色彩…</p>
+          </div>
+          <div id="emoBars">
+            <div class="emo-row">
+              <span class="emo-lbl">激勵感</span>
+              <div class="emo-track"><div class="emo-fill" id="ef-inspire" style="background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+              <span class="emo-pct" id="ep-inspire" style="color:#d97706">0%</span>
+            </div>
+            <div class="emo-row">
+              <span class="emo-lbl">溫情感</span>
+              <div class="emo-track"><div class="emo-fill" id="ef-warm" style="background:linear-gradient(90deg,#ec4899,#f9a8d4)"></div></div>
+              <span class="emo-pct" id="ep-warm" style="color:#db2777">0%</span>
+            </div>
+            <div class="emo-row">
+              <span class="emo-lbl">說服力</span>
+              <div class="emo-track"><div class="emo-fill" id="ef-persuade" style="background:linear-gradient(90deg,#3b82f6,#93c5fd)"></div></div>
+              <span class="emo-pct" id="ep-persuade" style="color:#2563eb">0%</span>
+            </div>
+            <div class="emo-row">
+              <span class="emo-lbl">邏輯感</span>
+              <div class="emo-track"><div class="emo-fill" id="ef-logic" style="background:linear-gradient(90deg,#10b981,#6ee7b7)"></div></div>
+              <span class="emo-pct" id="ep-logic" style="color:#059669">0%</span>
+            </div>
+            <div class="emo-note" id="emoNote"></div>
+          </div>
         </div>
       </div><!-- /rec-section -->
 
@@ -845,6 +935,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     </div>
   </div><!-- /panel-resources -->
 
+  <!-- =========== PARENT =========== -->
+  <div class="panel" id="panel-parent">
+    <div class="parent-wrap">
+      <div class="ptitle">📧 家長通知信一鍵生成</div>
+      <p style="color:var(--text-light);font-size:.85rem;margin-bottom:6px">根據本次練習資料，自動生成正式家長通知信，可一鍵複製或透過 Email 傳送。</p>
+      <div class="parent-stats">
+        <div class="ps-card">
+          <div class="ps-num" id="ps-count">0</div>
+          <div class="ps-lbl">練習次數</div>
+        </div>
+        <div class="ps-card">
+          <div class="ps-num" id="ps-perfect">0</div>
+          <div class="ps-lbl">完整完成次數</div>
+        </div>
+        <div class="ps-card">
+          <div class="ps-num" id="ps-topic" style="font-size:.95rem;line-height:1.4">—</div>
+          <div class="ps-lbl">最近練習題目</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:7px">學生姓名：</label>
+        <input id="studentName" type="text" placeholder="請輸入學生姓名（選填）"
+          style="width:100%;max-width:300px;padding:9px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s"
+          onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#d1d5db'">
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:7px">補充說明（選填）：</label>
+        <textarea id="parentNote" placeholder="可補充練習狀況、特別說明或待改進重點…" rows="3"
+          style="width:100%;padding:9px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.85rem;font-family:inherit;outline:none;resize:vertical;transition:border-color .2s"
+          onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <button class="btn-teal" onclick="generateParentLetter()">✉️ 一鍵生成家長通知信</button>
+      </div>
+
+      <div class="letter-loading" id="letterLoading">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <p style="color:#0d9488;font-size:.85rem;margin-top:10px">AI 正在撰寫家長通知信，請稍候…</p>
+      </div>
+      <div class="letter-box empty" id="letterBox">請點擊上方按鈕生成家長通知信</div>
+
+      <div id="letterActions" style="display:none;gap:10px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn-teal" onclick="copyLetter()">📋 複製信件</button>
+        <button class="btn btn-outline btn-sm" style="padding:10px 16px" onclick="mailtoLetter()">📨 透過 Email 傳送</button>
+      </div>
+
+      <div class="parent-tip-box">
+        💡 <strong>使用提示：</strong>生成的信件為 AI 輔助草稿，建議老師確認內容後再傳送給家長。填入 Gemini API 金鑰可獲取更個人化、語氣更溫暖的信件。未填入金鑰時將使用標準範本。
+      </div>
+    </div>
+  </div><!-- /panel-parent -->
+
 </div><!-- /main -->
 
 <div class="footer">
@@ -901,6 +1045,12 @@ document.getElementById('topicCount').textContent = TOPICS.length;
 
 // ==================== PANEL ====================
 function showPanel(name, btn) {
+  if(name==='parent'){
+    document.getElementById('ps-count').textContent=practiceCount||0;
+    document.getElementById('ps-perfect').textContent=perfectCount||0;
+    const topEl=document.getElementById('ps-topic');
+    topEl.textContent=curTopic?(curTopic.t.length>8?curTopic.t.substring(0,8)+'…':curTopic.t):'—';
+  }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
@@ -1509,9 +1659,12 @@ async function genAI() {
       }else if(aiOpt==='script'){
         userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說逐字稿：\n要求：語言符合國小高年級、適合口語表達、時長約4-5分鐘（600-800字）、結構完整（有吸引人的開場、豐富的中段論述含至少2個具體例子或故事、有力的昇華結尾）、適當運用排比、設問、比喻等修辭手法。`;
         title=`📝 演說逐字稿：「${curTopic.t}」`;
-      }else{
+      }else if(aiOpt==='tips'){
         userMsg=`請針對國語演說題目「${curTopic.t}」，提供5個具體的演說創意方向建議，每個包含：切入角度、可用具體例子或故事、適合的開場白方式。以條列式呈現。`;
         title=`💡 主題建議：「${curTopic.t}」`;
+      }else{
+        userMsg=`請針對國語演說題目「${curTopic.t}」，推薦5句最適合此主題的名言金句或成語，請依照以下格式逐一列出：\n\n每句格式：\n① 名言內容（附出處或作者）\n② 使用時機：開場 ／ 中段論述 ／ 結尾昇華\n③ 融入演說示範說法（1-2句，適合國小高年級口語）\n\n要求：文雅生動、易懂易記，適合9-12歲學生使用。`;
+        title=`✨ 名言金句推薦：「${curTopic.t}」`;
       }
       const res=await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:userMsg}]}],generationConfig:{maxOutputTokens:2048,temperature:0.8}})});
       if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${res.status}`);}
@@ -1525,7 +1678,7 @@ async function genAI() {
     }
   } else {
     content=demoContent(curTopic.t,aiOpt);
-    title=(aiOpt==='outline'?`📋 演說大綱（範例）`:(aiOpt==='script'?`📝 演說逐字稿（範例）`:`💡 主題建議（範例）`))+`：「${curTopic.t}」`;
+    title=(aiOpt==='outline'?`📋 演說大綱（範例）`:aiOpt==='script'?`📝 演說逐字稿（範例）`:aiOpt==='quotes'?`✨ 名言金句（範例）`:`💡 主題建議（範例）`)+`：「${curTopic.t}」`;
   }
 
   document.getElementById('loading').classList.remove('show');
@@ -1539,7 +1692,36 @@ async function genAI() {
 function demoContent(t,opt){
   if(opt==='outline')return `【演說大綱範例】題目：「${t}」\n\n一、開場白（吸引注意）\n　　建議以引發共鳴的問句開場，例如：\n　　「各位老師、同學，你們有沒有想過……」\n　　或直接描述一個生活小故事，讓聽眾立刻產生代入感。\n\n二、主題一：定義與說明\n　　解釋「${t}」的核心意涵\n　　✦ 結合自身生活經驗舉出具體例子\n　　✦ 運用比喻讓抽象概念變得具體生動\n\n三、主題二：深入論述\n　　從不同角度或層面進行分析\n　　✦ 舉出親身故事或身邊真實發生的事\n　　✦ 引用名言或古語增加文采與說服力\n　　✦ 探討主題對我們生活的深刻影響\n\n四、結尾（昇華主題）\n　　呼應開場，強調核心訊息\n　　以充滿力量的句子結束，讓評審印象深刻\n　　例如：「讓我們從今天起……」\n\n五、建議使用的修辭技巧\n　　✦ 排比句：「我們需要……，我們需要……，更需要……」\n　　✦ 設問句：提出問題再自己回答，引發聽眾思考\n　　✦ 比喻：將抽象事物比作具體形象\n\n💡 提示：填入 Gemini API 金鑰可獲取 AI 針對此題目量身生成的完整內容。`;
   if(opt==='script')return `【演說逐字稿範例】題目：「${t}」\n\n親愛的評審老師、各位同學，大家好！\n\n我是來自○○學校的○年○班○○○，今天我要演說的題目是——「${t}」。\n\n各位有沒有想過，在我們的日常生活中，「${t}」這件事其實一直默默影響著我們？就在前幾天，我遇到了一件讓我深刻體會到這個主題的事情……\n\n（此處加入自己的親身故事，約150字）\n\n透過這件事，我深深感受到，原來「${t}」不只是一個口號，而是我們每一天生活中都需要去實踐的態度。\n\n曾經有人說：「真正的力量，不是你能獲得多少，而是你願意給予什麼。」這句話讓我明白了……\n\n（此處加入第二個論點或故事，約150字）\n\n親愛的同學們，「${t}」是我們生命中一個重要的功課。讓我們從今天起，用行動來實踐，用心來感受，讓這份精神成為我們最珍貴的禮物！\n\n謝謝各位！\n\n💡 提示：填入 Gemini API 金鑰可獲取完整 600-800 字逐字稿，含豐富故事與修辭技巧。`;
-  return `【演說方向建議範例】題目：「${t}」\n\n💡 方向一：從個人親身經歷切入\n　　角度：回想自己生活中與「${t}」相關的真實事件\n　　建議例子：描述某次令你印象深刻的具體事件\n　　開場：「那一天，我永遠忘不了……」\n\n💡 方向二：從身邊觀察切入\n　　角度：觀察家人、同學或社會環境中的相關現象\n　　建議例子：舉出具體的人物故事\n　　開場：「如果你仔細觀察，你會發現……」\n\n💡 方向三：從名言故事切入\n　　角度：引用適合的名言或歷史故事\n　　建議例子：孔子的話、古今中外名人事蹟\n　　開場：「古人說：『……』這讓我想到……」\n\n💡 方向四：從反問切入\n　　角度：以反問句引發聽眾思考\n　　建議例子：先提出反面情境，再轉回正面論述\n　　開場：「試想，如果沒有『${t}』，我們的生活會是什麼樣子？」\n\n💡 方向五：從感官描寫切入\n　　角度：用生動的感官描述帶入情境\n　　建議例子：描述一個具體場景，讓聽眾身臨其境\n　　開場：「閉上眼睛，想像一個……的畫面……」\n\n💡 提示：填入 Gemini API 金鑰可獲取更精準的個人化建議。`;
+  if(opt==='quotes')return `【名言金句推薦範例】題目：「${t}」
+
+✨ 金句一：「千里之行，始於足下。」
+　　出處：《老子》第六十四章
+　　使用時機：結尾昇華，呼籲行動
+　　示範說法：「古人說：『千里之行，始於足下。』讓我們從現在開始，用每一個小小的行動，走向更美好的未來！」
+
+✨ 金句二：「不積跬步，無以至千里。」
+　　出處：荀子《勸學》
+　　使用時機：中段論述，談積累的重要性
+　　示範說法：「荀子說：『不積跬步，無以至千里。』正是一次次認真的練習，才讓我慢慢明白……」
+
+✨ 金句三：「失敗是成功之母。」
+　　出處：中國諺語
+　　使用時機：中段，談面對挫折的態度
+　　示範說法：「大家常說：『失敗是成功之母。』每當我遇到挫折時，這句話總提醒我不要放棄……」
+
+✨ 金句四：「學如逆水行舟，不進則退。」
+　　出處：中國諺語
+　　使用時機：開場或結尾，強調持續努力
+　　示範說法：「各位老師、同學，有句話說：『學如逆水行舟，不進則退。』在面對「${t}」這個主題時，我深深體會到……」
+
+✨ 金句五：「天下無難事，只怕有心人。」
+　　出處：中國諺語
+　　使用時機：結尾，鼓勵聽眾行動
+　　示範說法：「最後，我想用這句話來勉勵大家：『天下無難事，只怕有心人。』只要我們用心去做……」
+
+💡 提示：填入 Gemini API 金鑰可獲取針對「${t}」題目量身推薦的名言金句。`;
+
+  return `【演說方向建議範例】題目：「${t}"\n\n💡 方向一：從個人親身經歷切入\n　　角度：回想自己生活中與「${t}」相關的真實事件\n　　建議例子：描述某次令你印象深刻的具體事件\n　　開場：「那一天，我永遠忘不了……」\n\n💡 方向二：從身邊觀察切入\n　　角度：觀察家人、同學或社會環境中的相關現象\n　　建議例子：舉出具體的人物故事\n　　開場：「如果你仔細觀察，你會發現……」\n\n💡 方向三：從名言故事切入\n　　角度：引用適合的名言或歷史故事\n　　建議例子：孔子的話、古今中外名人事蹟\n　　開場：「古人說：『……』這讓我想到……」\n\n💡 方向四：從反問切入\n　　角度：以反問句引發聽眾思考\n　　建議例子：先提出反面情境，再轉回正面論述\n　　開場：「試想，如果沒有『${t}』，我們的生活會是什麼樣子？」\n\n💡 方向五：從感官描寫切入\n　　角度：用生動的感官描述帶入情境\n　　建議例子：描述一個具體場景，讓聽眾身臨其境\n　　開場：「閉上眼睛，想像一個……的畫面……」\n\n💡 提示：填入 Gemini API 金鑰可獲取更精準的個人化建議。`;
 }
 
 function copyContent(){
@@ -1774,6 +1956,8 @@ async function scoreTranscript(){
   document.getElementById('recPrintRow').style.display='flex';
   // 繪製雷達圖
   try{ drawRadarChart(parseRadarScores(result)); }catch(e){}
+  // 情感色彩分析
+  analyzeEmotion(text, key);
 }
 
 function basicScore(text){
@@ -2095,6 +2279,176 @@ async function transcribeAudioFile(file){
       :'❌ 辨識失敗：'+e.message;
   }
 }
+
+// ==================== EMOTION ANALYSIS ====================
+async function analyzeEmotion(transcriptText, key) {
+  const sec = document.getElementById('emoSection');
+  const loadEl = document.getElementById('emoLoading');
+  const barsEl = document.getElementById('emoBars');
+  const noteEl = document.getElementById('emoNote');
+  if(!sec) return;
+  sec.style.display = 'block';
+  loadEl.classList.add('show');
+  barsEl.style.display = 'none';
+
+  const setBar = (id, val) => {
+    const fill = document.getElementById('ef-'+id);
+    const pct  = document.getElementById('ep-'+id);
+    if(!fill||!pct) return;
+    setTimeout(()=>{ fill.style.width = Math.min(100,Math.max(0,val))+'%'; },120);
+    pct.textContent = val+'%';
+  };
+  const render = (d) => {
+    loadEl.classList.remove('show');
+    barsEl.style.display = 'block';
+    setBar('inspire',  d.inspire  || 0);
+    setBar('warm',     d.warm     || 0);
+    setBar('persuade', d.persuade || 0);
+    setBar('logic',    d.logic    || 0);
+    noteEl.textContent = d.note || '';
+  };
+
+  const heuristic = () => {
+    const exc = (transcriptText.match(/！/g)||[]).length;
+    const q   = (transcriptText.match(/[？?]/g)||[]).length;
+    const lst = /首先|再者|因此|所以|第一|第二|最後/.test(transcriptText);
+    const wrm = /家人|媽媽|爸爸|朋友|老師|感謝|愛|溫暖/.test(transcriptText);
+    return {
+      inspire:  Math.min(88, 36 + exc*8 + (q>0?6:0)),
+      warm:     Math.min(88, wrm ? 62 : 32),
+      persuade: Math.min(88, q>0 ? 58 : 40),
+      logic:    Math.min(88, lst ? 68 : 44),
+      note: '（依逐字稿語言特徵估算，填入 Gemini API 金鑰可獲取精準 AI 情感分析）'
+    };
+  };
+
+  if(key){
+    try{
+      const prompt = `請分析以下國小演說逐字稿的情感色彩，僅以 JSON 格式回傳，不要加任何說明或 markdown：\n逐字稿：${transcriptText}\n\n回傳格式（每項 0-100 獨立評分）：\n{"inspire":數字,"warm":數字,"persuade":數字,"logic":數字,"note":"一句中文總評"}\ninspire=激勵感，warm=溫情感，persuade=說服力，logic=邏輯感`;
+      const res = await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:200,temperature:0.3}})});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const d = await res.json();
+      let txt = (d.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json?|```/g,'').trim();
+      render(JSON.parse(txt));
+    }catch(e){
+      render(heuristic());
+    }
+  } else {
+    render(heuristic());
+  }
+}
+
+// ==================== PARENT LETTER ====================
+async function generateParentLetter(){
+  const name    = (document.getElementById('studentName').value.trim()) || '同學';
+  const note    = document.getElementById('parentNote').value.trim();
+  const count   = practiceCount || 0;
+  const perfect = perfectCount  || 0;
+  const topic   = curTopic ? curTopic.t : '（尚未練習）';
+  const key     = document.getElementById('apiKey').value.trim();
+  const date    = new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+
+  // update stat display
+  document.getElementById('ps-count').textContent   = count;
+  document.getElementById('ps-perfect').textContent = perfect;
+  const topEl = document.getElementById('ps-topic');
+  topEl.textContent = curTopic ? (curTopic.t.length>8?curTopic.t.substring(0,8)+'…':curTopic.t) : '—';
+
+  const loading = document.getElementById('letterLoading');
+  const box     = document.getElementById('letterBox');
+  const actions = document.getElementById('letterActions');
+  loading.classList.add('show');
+  box.className = 'letter-box empty';
+  box.textContent = '';
+  actions.style.display = 'none';
+
+  let letter = '';
+  if(key){
+    try{
+      const prompt = `你是一位國小班級導師，請幫我撰寫一封正式且溫暖的家長通知信，說明學生國語演說比賽訓練情況。
+
+學生資訊：
+- 姓名：${name}
+- 練習次數：${count} 次
+- 完整完成次數：${perfect} 次
+- 最近練習題目：「${topic}」
+- 補充說明：${note||'無'}
+- 通知日期：${date}
+
+要求：
+1. 正式信件格式（標題、日期、稱謂、正文、結語、署名）
+2. 正文包含：練習摘要、2-3點在家練習建議、鼓勵孩子的話語
+3. 語氣溫暖專業，約 200-300 字
+4. 直接輸出信件文字，不需任何說明`;
+      const res = await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1024,temperature:0.75}})});
+      if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+res.status);}
+      const d = await res.json();
+      letter = d.candidates?.[0]?.content?.parts?.[0]?.text || '（AI 未回傳內容，請重試）';
+    }catch(e){
+      letter = _defaultLetter(name,count,perfect,topic,note,date);
+    }
+  } else {
+    letter = _defaultLetter(name,count,perfect,topic,note,date);
+  }
+
+  loading.classList.remove('show');
+  box.className = 'letter-box';
+  box.textContent = letter;
+  box.dataset.raw  = letter;
+  actions.style.display = 'flex';
+  showNotif('✅ 家長通知信已生成','可一鍵複製或透過 Email 傳送','');
+}
+
+function _defaultLetter(name,count,perfect,topic,note,date){
+  const noteBlock = note ? `
+
+補充說明：${note}` : '';
+  return `家長通知信
+
+${date}
+
+親愛的家長您好：
+
+感謝您長期以來對孩子學習的大力支持與配合，我們深感感謝。謹此說明 ${name} 同學近期參與國語演說比賽訓練課程的學習情形，敬請參考。
+
+${name} 同學目前已累計練習 ${count} 次，其中完整完成演說訓練 ${perfect} 次，表現相當認真。最近練習的題目為「${topic}」。${noteBlock}
+
+為幫助孩子在家持續精進，提供以下幾點建議：
+
+一、每日撥出 10-15 分鐘讓孩子練習開口表達，可以用今天的生活事件作為說話主題，培養流暢表達的習慣。
+
+二、請協助孩子對著鏡子或在家人面前練習演說，留意站姿端正、與聽眾保持眼神交流。
+
+三、鼓勵孩子廣泛閱讀，積累詞彙與知識，有助豐富演說內容，說話更有深度。
+
+${name} 同學在訓練過程中展現了認真負責的學習態度，相信在老師與家長的共同鼓勵與支持下，孩子必能在賽場上充分發揮，展現最佳表現！
+
+如有任何問題或需要進一步交流，歡迎隨時與導師聯繫，謝謝！
+
+敬祝
+學習順利、身體健康！
+
+                                                          導師  敬上`;
+}
+
+function copyLetter(){
+  const box = document.getElementById('letterBox');
+  const txt = box.dataset.raw || box.textContent;
+  navigator.clipboard.writeText(txt)
+    .then(()=>showNotif('✅ 已複製','家長通知信已複製到剪貼簿！',''))
+    .catch(()=>showNotif('❌ 複製失敗','請手動選取文字複製。','nd'));
+}
+
+function mailtoLetter(){
+  const box  = document.getElementById('letterBox');
+  const name = document.getElementById('studentName').value.trim() || '同學';
+  const sub  = encodeURIComponent(`【國語演說訓練通知】${name} 同學練習進度報告`);
+  const body = encodeURIComponent(box.dataset.raw || box.textContent);
+  window.location.href = `mailto:?subject=${sub}&body=${body}`;
+}
+
 </script>
 </body>
 </html>

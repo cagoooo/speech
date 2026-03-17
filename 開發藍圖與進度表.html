@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.1</title>
+<style>
+:root{
+  --primary:#1a56a0;--primary-light:#3b82f6;--primary-dark:#0d3a6e;
+  --accent:#f59e0b;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --purple:#7c3aed;--pink:#ec4899;--teal:#0d9488;--orange:#f97316;
+  --text:#1f2937;--text-light:#6b7280;--bg:#f0f4f8;
+  --white:#ffffff;--shadow:0 4px 24px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 55%,var(--primary-light) 100%);padding:52px 20px 72px;text-align:center;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:36px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0;transform:scaleX(1.1)}
+.header h1{font-size:clamp(1.4rem,4vw,2.2rem);color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.3);margin-bottom:8px;position:relative;z-index:1}
+.header p{color:rgba(255,255,255,.85);font-size:.95rem;position:relative;z-index:1}
+.header-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:.8rem;color:#fff;position:relative;z-index:1}
+.header-badge-new{background:rgba(245,158,11,.35);border-color:rgba(245,158,11,.6);margin-left:8px}
+.header-deco{position:absolute;font-size:10rem;opacity:.04;top:-15px;right:30px;line-height:1;user-select:none}
+.main{max-width:1100px;margin:0 auto;padding:32px 18px 60px}
+.sec-title{font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px solid #dbeafe}
+.sec-title span{font-size:1.4rem}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:36px}
+@media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:#fff;border-radius:16px;padding:20px;text-align:center;box-shadow:var(--shadow);border-top:4px solid var(--primary)}
+.stat-card.s-done{border-top-color:var(--success)}
+.stat-card.s-phase{border-top-color:var(--primary)}
+.stat-card.s-idea{border-top-color:var(--accent)}
+.stat-card.s-ai{border-top-color:var(--purple)}
+.stat-num{font-size:2.4rem;font-weight:900;line-height:1.1;margin-bottom:4px}
+.stat-card.s-done .stat-num{color:var(--success)}
+.stat-card.s-phase .stat-num{color:var(--primary)}
+.stat-card.s-idea .stat-num{color:var(--accent)}
+.stat-card.s-ai .stat-num{color:var(--purple)}
+.stat-lbl{font-size:.8rem;color:var(--text-light);font-weight:600}
+.version-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;align-items:center}
+.v-badge{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700}
+.v-done{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.v-current{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.v-next{background:#dbeafe;color:#1a56a0;border:1px solid #93c5fd}
+.v-future{background:#f3f4f6;color:#4b5563;border:1px solid #e5e7eb}
+.done-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:36px}
+@media(max-width:720px){.done-grid{grid-template-columns:1fr}}
+.done-item{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:12px;border-left:4px solid var(--success);position:relative}
+.done-item.new-item{border-left-color:#f59e0b;box-shadow:0 2px 10px rgba(245,158,11,.2)}
+.new-label{position:absolute;top:8px;right:10px;background:#fef3c7;color:#92400e;font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:8px}
+.done-check{width:28px;height:28px;background:linear-gradient(135deg,var(--success),#059669);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;flex-shrink:0;margin-top:1px}
+.done-item.new-item .done-check{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.done-body h4{font-size:.9rem;font-weight:700;margin-bottom:3px}
+.done-body p{font-size:.78rem;color:var(--text-light);line-height:1.55}
+.done-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.7rem;font-weight:700;margin-top:5px}
+.tag-core{background:#dbeafe;color:var(--primary)}
+.tag-ai{background:#ede9fe;color:var(--purple)}
+.tag-ux{background:#fce7f3;color:#9d174d}
+.tag-rwd{background:#d1fae5;color:#065f46}
+.tag-print{background:#fef3c7;color:#92400e}
+.tag-storage{background:#fef9c3;color:#854d0e}
+.tag-audio{background:#e0f2fe;color:#0369a1}
+.phase-wrap{margin-bottom:40px}
+.phase-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px 20px;border-radius:14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.phase-badge{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;flex-shrink:0}
+.p1 .phase-badge{background:linear-gradient(135deg,#1a56a0,#3b82f6)}
+.p2 .phase-badge{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+.p3 .phase-badge{background:linear-gradient(135deg,#0d9488,#14b8a6)}
+.p4 .phase-badge{background:linear-gradient(135deg,#ec4899,#f97316)}
+.p5 .phase-badge{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.p6 .phase-badge{background:linear-gradient(135deg,#0d3a6e,#1a56a0)}
+.phase-meta h3{font-size:1rem;font-weight:800;margin-bottom:2px}
+.p1 .phase-meta h3{color:#1a56a0}
+.p2 .phase-meta h3{color:#7c3aed}
+.p3 .phase-meta h3{color:#0d9488}
+.p4 .phase-meta h3{color:#ec4899}
+.p5 .phase-meta h3{color:#f59e0b}
+.p6 .phase-meta h3{color:#0d3a6e}
+.phase-meta p{font-size:.8rem;color:var(--text-light)}
+.phase-est{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.p1 .phase-est{background:#dbeafe;color:var(--primary)}
+.p2 .phase-est{background:#ede9fe;color:var(--purple)}
+.p3 .phase-est{background:#ccfbf1;color:#0d9488}
+.p4 .phase-est{background:#fce7f3;color:#9d174d}
+.p5 .phase-est{background:#fef3c7;color:#92400e}
+.p6 .phase-est{background:#e2e8f0;color:#0d3a6e}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:860px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.feature-grid{grid-template-columns:1fr}}
+.feat-card{background:#fff;border-radius:12px;padding:15px 16px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1.5px solid #f3f4f6;transition:all .2s;position:relative}
+.feat-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.1);transform:translateY(-2px)}
+.feat-icon{font-size:1.4rem;margin-bottom:7px;display:block}
+.feat-title{font-size:.88rem;font-weight:700;margin-bottom:5px}
+.feat-desc{font-size:.76rem;color:var(--text-light);line-height:1.6}
+.feat-sub{font-size:.71rem;color:#9ca3af;line-height:1.5;margin-top:6px;padding-top:6px;border-top:1px solid #f3f4f6}
+.feat-prio{position:absolute;top:10px;right:10px;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:800}
+.prio-high{background:#fee2e2;color:#991b1b}
+.prio-mid{background:#fef3c7;color:#92400e}
+.prio-low{background:#f3f4f6;color:#6b7280}
+.qw-table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:36px}
+.qw-table thead tr{background:linear-gradient(135deg,var(--primary),var(--primary-light))}
+.qw-table th{padding:13px 16px;text-align:left;color:#fff;font-size:.82rem;font-weight:700}
+.qw-table td{padding:12px 16px;font-size:.82rem;border-bottom:1px solid #f3f4f6;vertical-align:top}
+.qw-table tr:last-child td{border-bottom:none}
+.qw-table tr:hover td{background:#f8fafc}
+.effort-badge{padding:2px 9px;border-radius:8px;font-size:.7rem;font-weight:700;white-space:nowrap}
+.e-low{background:#d1fae5;color:#065f46}
+.e-mid{background:#fef3c7;color:#92400e}
+.e-high{background:#fee2e2;color:#991b1b}
+.impact-star{color:#f59e0b;font-size:.9rem}
+.deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:36px}
+@media(max-width:720px){.deep-grid{grid-template-columns:1fr}}
+.deep-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow);border-top:4px solid var(--primary)}
+.deep-card.dc-ai{border-top-color:var(--purple)}
+.deep-card.dc-perf{border-top-color:var(--teal)}
+.deep-card.dc-ux{border-top-color:var(--pink)}
+.deep-card.dc-security{border-top-color:var(--danger)}
+.deep-card.dc-prompt{border-top-color:var(--orange)}
+.deep-card.dc-test{border-top-color:var(--success)}
+.deep-title{font-size:.95rem;font-weight:800;margin-bottom:12px}
+.dc-ai .deep-title{color:var(--purple)}
+.dc-perf .deep-title{color:var(--teal)}
+.dc-ux .deep-title{color:var(--pink)}
+.dc-security .deep-title{color:var(--danger)}
+.dc-prompt .deep-title{color:var(--orange)}
+.dc-test .deep-title{color:var(--success)}
+.deep-list{list-style:none;padding:0}
+.deep-list li{font-size:.78rem;color:var(--text-light);padding:5px 0;border-bottom:1px solid #f9fafb;display:flex;gap:8px;align-items:flex-start;line-height:1.55}
+.deep-list li:last-child{border-bottom:none}
+.deep-list li::before{content:'\25b8';flex-shrink:0;margin-top:1px;font-size:.7rem}
+.dc-ai .deep-list li::before{color:var(--purple)}
+.dc-perf .deep-list li::before{color:var(--teal)}
+.dc-ux .deep-list li::before{color:var(--pink)}
+.dc-security .deep-list li::before{color:var(--danger)}
+.dc-prompt .deep-list li::before{color:var(--orange)}
+.dc-test .deep-list li::before{color:var(--success)}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr 1fr}}
+.tech-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:center}
+.tech-card .ti{font-size:1.8rem;margin-bottom:6px;display:block}
+.tech-card h4{font-size:.82rem;font-weight:700;margin-bottom:3px}
+.tech-card p{font-size:.73rem;color:var(--text-light)}
+.timeline{position:relative;padding-left:30px;margin-bottom:36px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#6ee7b7,#dbeafe,#c7d2fe,#e9d5ff,#fbcfe8,#fde68a)}
+.tl-item{position:relative;margin-bottom:22px}
+.tl-dot{width:20px;height:20px;border-radius:50%;position:absolute;left:-25px;top:2px;border:3px solid #fff;box-shadow:0 0 0 2px currentColor}
+.tl-dot.d-done{background:var(--success);color:var(--success)}
+.tl-dot.d-current{background:var(--accent);color:var(--accent)}
+.tl-dot.d-next{background:var(--primary);color:var(--primary)}
+.tl-dot.d-future{background:#e5e7eb;color:#d1d5db}
+.tl-body{background:#fff;border-radius:10px;padding:12px 15px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.tl-body h4{font-size:.85rem;font-weight:700;margin-bottom:3px}
+.tl-body p{font-size:.76rem;color:var(--text-light)}
+.tl-date{display:inline-block;font-size:.7rem;font-weight:700;padding:1px 8px;border-radius:8px;margin-bottom:5px}
+.d-done .tl-body{border-left:3px solid var(--success)}
+.d-current .tl-body{border-left:3px solid var(--accent);background:#fffbeb}
+.d-next .tl-body{border-left:3px solid var(--primary)}
+.d-future .tl-body{border-left:3px solid #e5e7eb}
+.callout{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fcd34d;border-radius:14px;padding:18px 20px;margin-bottom:28px;display:flex;gap:14px;align-items:flex-start}
+.callout-icon{font-size:1.5rem;flex-shrink:0}
+.callout h4{font-size:.9rem;font-weight:800;color:#92400e;margin-bottom:4px}
+.callout p{font-size:.8rem;color:#78350f;line-height:1.6}
+@media print{.header{padding:24px;print-color-adjust:exact}.feat-card:hover{transform:none;box-shadow:none}body{background:#fff}}
+.footer{background:var(--primary-dark);color:rgba(255,255,255,.65);text-align:center;padding:22px;font-size:.78rem;margin-top:40px}
+.footer p+p{margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-deco">📋</div>
+  <h1>🎤 國語演說訓練平台｜開發藍圖與進度表</h1>
+  <p>完整功能回顧 × 未來開發路線圖 × 深度優化建議參考</p>
+  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1">
+    <div class="header-badge">📅 最後更新：2026 年 3 月 17 日</div>
+    <div class="header-badge header-badge-new">🆕 版本 v2.1｜新增 6 項完成功能</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- 版本徽章 -->
+  <div class="version-bar">
+    <span style="font-size:.82rem;font-weight:700;color:var(--text-light)">版本進度：</span>
+    <span class="v-badge v-done">✅ v1.0 核心工具</span>
+    <span class="v-badge v-done">✅ v2.0 AI 全功能</span>
+    <span class="v-badge v-current">🔄 v2.1 Quick Win（當前）</span>
+    <span class="v-badge v-next">🔜 v2.5 練習紀錄系統</span>
+    <span class="v-badge v-future">📅 v3.0 教師班級管理</span>
+    <span class="v-badge v-future">📅 v4.0 多語言競賽</span>
+  </div>
+
+  <!-- 統計數字 -->
+  <div class="stats-row">
+    <div class="stat-card s-done"><div class="stat-num">24</div><div class="stat-lbl">✅ 已完成功能</div></div>
+    <div class="stat-card s-phase"><div class="stat-num">6</div><div class="stat-lbl">🚀 未來開發階段</div></div>
+    <div class="stat-card s-idea"><div class="stat-num">38</div><div class="stat-lbl">💡 待開發功能點子</div></div>
+    <div class="stat-card s-ai"><div class="stat-num">9</div><div class="stat-lbl">🤖 AI 深化方向</div></div>
+  </div>
+
+  <!-- 已完成功能 -->
+  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.1，共 24 項）</div>
+  <div class="done-grid">
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>比賽資訊頁面</h4><p>時間規定、評分配分視覺化、9 大訓練心法、5 週備賽流程步驟</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>隨機抽題系統</h4><p>56 道題目、7 大分類、抽題動畫效果、可按分類篩選抽題</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>雙階段計時器</h4><p>準備計時 10 分鐘倒數 ＋ 演說計時 4–5 分鐘，兩個 Timer 卡片同時顯示</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>計時扣分系統與分數顯示</h4><p>停止後自動計算扣分（每 30 秒扣 1 分），完整分數卡片呈現</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Gemini AI 輔助生成</h4><p>演說大綱、完整逐字稿、主題建議三種模式，串接 Google Gemini API</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>API 金鑰測試 ＋ 模型偵測</h4><p>一鍵測試金鑰有效性；自動偵測可用 Gemini 模型並依能力排序選擇</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>CORS 解決方案（Python Proxy）</h4><p>啟動訓練平台.py 本機伺服器，解決 file:// 協議 CORS 封鎖問題</p><span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>AI 輸出 Markdown 渲染</h4><p>純 JS 解析器，支援 h1–h3、ul/ol、blockquote、強調、程式碼等</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>錄音辨識（Web Speech API）</h4><p>即時辨識 zh-TW，連續識別模式，即時逐字稿，支援 Chrome/Edge</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>AI 逐字稿評分分析</h4><p>Gemini 深度評析六大維度：整體、優點、改進、語音、結構、鼓勵</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>三大列印功能（Markdown 美化）</h4><p>AI 內容、學生逐字稿（自動分段）、AI 評析報告，三份列印各有精美 CSS</p><span class="done-tag tag-print">列印</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>題庫管理系統</h4><p>56 題預設題庫 ＋ 自訂新增，分類篩選，即時更新題目計數</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>參考資源頁面</h4><p>官方網站、教學文章、YouTube 搜尋關鍵字，7 個精選外部資源連結</p><span class="done-tag tag-core">內容資源</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>RWD 響應式設計</h4><p>平板（768px）、手機（480px）完整適配，觸控按鈕 min-height 44px</p><span class="done-tag tag-rwd">RWD</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>遊戲化 UI 元素</h4><p>練習次數統計、完美分數彩帶特效（55顆粒子）、計時器脈動動畫</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>音頻檔案上傳辨識</h4><p>拖曳/點擊上傳 MP3/WAV/M4A/OGG，Gemini API 辨識，音頻預覽播放器</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Alarm 彈窗提醒系統</h4><p>準備時間結束、4 分鐘到達、超過 5 分鐘等四種情境的彈窗警示</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Toast 通知系統</h4><p>右上角輕量通知，4 秒自動消失，三種樣式（成功/警告/錯誤）</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <!-- v2.1 新增 -->
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫刪除功能</h4><p>每個題目旁加入刪除按鈕，提示確認後才執行，防止誤操作</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫本地儲存（localStorage）</h4><p>自訂新增題目永久保存於瀏覽器，關閉頁面後資料完整保留，支援清空重置</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>自訂準備時間</h4><p>可調整為 5 / 10 / 20 / 30 分鐘，從校內練習到正式比賽 30 分鐘規定彈性使用</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>字數即時統計 ＋ 預估時長</h4><p>逐字稿欄位下方即時顯示字數，同步換算預估演說時長（約 150 字/分鐘）</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題目收藏標記（我的最愛）</h4><p>點擊星號標記重要題目，「我的最愛」分類可單獨篩選抽題，狀態 localStorage 持久化</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>計時音效提示（Web Audio API）</h4><p>4 分鐘到達時播放提示音、超過 5 分鐘播放警告音，純 Web Audio API 合成，無需外部音檔</p><span class="done-tag tag-audio">音頻</span></div></div>
+  </div>
+
+  <!-- 新一批 Quick Win -->
+  <div class="callout">
+    <div class="callout-icon">💡</div>
+    <div>
+      <h4>下一批 Quick Win（建議本週推進）</h4>
+      <p>v2.1 的 6 項 Quick Win 已全數完成！以下為新一輪快速優化項目，每項預估 1–3 天獨立完成，可依優先順序逐一推進。</p>
+    </div>
+  </div>
+
+  <div class="sec-title"><span>⚡</span> 新一批 Quick Win 快速優化清單（各 1–3 天）</div>
+  <table class="qw-table">
+    <thead><tr><th>功能</th><th>說明</th><th>難度</th><th>影響力</th></tr></thead>
+    <tbody>
+      <tr><td><strong>🌙 深色模式切換</strong></td><td>一鍵切換 Dark Mode，CSS 變數已就緒，加入 prefers-color-scheme 偵測與 toggle 邏輯，偏好儲存 localStorage</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📋 題庫 CSV 匯出入</strong></td><td>將題庫匯出為 CSV 檔，或由 CSV 批次匯入；方便老師在 Excel 整理後一次匯入大量題目</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>⌨️ 鍵盤快速鍵操作</strong></td><td>Space 開始/暫停計時、Enter 抽題、R 重置、Esc 關閉彈窗；加入快捷鍵提示面板（? 鍵呼出）</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🔄 多題連練模式</strong></td><td>一次抽出 3–5 道題，學生同一 Session 依序演說，計時分別記錄，最後顯示總覽成績</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🔒 視窗焦點鎖定保護</strong></td><td>計時進行中切換視窗時顯示「計時暫停中」警示，防止意外離開導致超時；Page Visibility API 偵測</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📊 字數分段比例分析</strong></td><td>逐字稿輸入後自動分析「開場/主體/結語」各段佔比，以進度條視覺化呈現</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🎵 節拍器輔助練習</strong></td><td>可調速度的節拍音效（60–120 BPM），幫助學生練習穩定語速，Web Audio API 實作</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📤 逐字稿一鍵複製</strong></td><td>AI 生成逐字稿旁加入「複製全文」按鈕，Clipboard API 一鍵複製純文字，方便傳給老師</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- 未來開發路線圖 -->
+  <div class="sec-title"><span>🗺️</span> 未來開發路線圖（Phase 1–6）</div>
+
+  <div class="phase-wrap p1">
+    <div class="phase-header">
+      <div class="phase-badge">P1</div>
+      <div class="phase-meta"><h3>Phase 1｜學生練習管理強化（→ v2.5）</h3><p>建立可持續累積的練習紀錄系統，讓老師與學生都能看見成長軌跡</p></div>
+      <div class="phase-est">⏱ 預估 1–2 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📚</span><div class="feat-title">練習歷史紀錄</div><div class="feat-desc">用 localStorage 記錄每次演說：題目、日期、計時得分、AI 評分摘要。可查看最近 20 次，支援按日期/分數排序。</div><div class="feat-sub">技術：JSON stringify 存陣列，資料量大時升級 IndexedDB</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📈</span><div class="feat-title">個人進步折線圖</div><div class="feat-desc">將歷次演說秒數以 Chart.js 繪製折線圖，加入 4–5 分鐘「黃金區間」色帶標示，直觀看見穩定度趨勢。</div><div class="feat-sub">技術：Chart.js annotationPlugin，背景色帶標示理想區間</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">👤</span><div class="feat-title">學生個人化設定</div><div class="feat-desc">首次使用填入姓名、學校、班級；列印文件自動帶入個人資訊，省去手動填寫。</div><div class="feat-sub">延伸：頭像 emoji 選擇，增加個人化趣味感</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏅</span><div class="feat-title">練習成就徽章系統</div><div class="feat-desc">首次練習、累計 5/10/20 次、連續三次黃金區間等 10 種成就，解鎖時彈窗慶祝。</div><div class="feat-sub">心理學依據：成就系統可提高約 40% 的練習持續率</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📤</span><div class="feat-title">練習摘要 PDF 匯出</div><div class="feat-desc">一鍵產生本次或本週練習摘要 PDF，含紀錄、進步曲線圖截圖、AI 建議重點，便於親師溝通。</div><div class="feat-sub">技術：html2canvas 截圖 + jsPDF 合成，或精心設計列印 CSS</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎯</span><div class="feat-title">每日練習目標設定</div><div class="feat-desc">設定每日目標次數（1–5 次），完成後達標動畫，週累計進度條顯示「本週 X / 目標 Y 次」。</div><div class="feat-sub">延伸：連續達標天數「連勝紀錄」，培養良好習慣</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p2">
+    <div class="phase-header">
+      <div class="phase-badge">P2</div>
+      <div class="phase-meta"><h3>Phase 2｜AI 功能深化與語音精析（→ v3.0 前置）</h3><p>從「有評語」進化到「精準診斷」，讓 AI 回饋更具真正的指導價值</p></div>
+      <div class="phase-est">⏱ 預估 2–3 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📊</span><div class="feat-title">演說能力雷達圖</div><div class="feat-desc">AI 評分後以雷達圖呈現五維：內容深度、語音表達、結構邏輯、情感感染力、時間控制，直觀定位強弱項。</div><div class="feat-sub">設計：五維對應比賽評分表，可疊加歷史對比線</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">⚡</span><div class="feat-title">語速自動計算與診斷</div><div class="feat-desc">結合逐字稿字數與演說秒數，計算字/分鐘；標示「偏快(>180)」「適中(130-160)」「偏慢(&lt;110)」並提供建議。</div><div class="feat-sub">進階：歷次語速趨勢圖，觀察是否越來越穩定</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🔍</span><div class="feat-title">口頭禪偵測與統計</div><div class="feat-desc">自動統計「然後」「就是」「那個」「嗯」等 20 種口頭禪出現次數，以色塊高亮標示在逐字稿中。</div><div class="feat-sub">延伸：歷次口頭禪次數折線圖，讓學生看見進步</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🔁</span><div class="feat-title">AI 自動改稿對比</div><div class="feat-desc">根據評析結果，AI 自動生成「優化版逐字稿」，以左右對比（diff 風格）讓學生看見原稿→優化稿的具體差異。</div><div class="feat-sub">技術：Prompt 指定輸出差異標記格式，JS 解析後渲染高亮</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎨</span><div class="feat-title">演說結構比例圖</div><div class="feat-desc">AI 分析逐字稿後，自動標識「開場—主體—結語」各段，以色塊比例圖呈現結構配置是否平衡。</div><div class="feat-sub">理想比例：開場 10%、主體 70%、結語 20%</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🌟</span><div class="feat-title">名言金句推薦引擎</div><div class="feat-desc">根據題目，AI 推薦 5 句適用名言、古語或現代語錄，並說明如何融入演說、在哪個位置使用最有力量。</div><div class="feat-sub">擴充：可儲存「我的金句庫」，練習時快速查閱</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">😊</span><div class="feat-title">情感色彩分析</div><div class="feat-desc">AI 分析逐字稿的情感分布，標出「激勵感」「溫情感」「說服力」「邏輯感」比例，幫助調整演說情感層次。</div><div class="feat-sub">技術：Gemini Prompt 要求輸出 JSON 情感標籤</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🤖</span><div class="feat-title">AI 模擬評審追問</div><div class="feat-desc">演說完成後，AI 以「評審」角色提出 2–3 個追問問題，訓練學生應對評審互動的臨場能力。</div><div class="feat-sub">對進入決賽的學生特別有價值</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎙️</span><div class="feat-title">即時語音波形視覺化</div><div class="feat-desc">錄音時顯示即時音量波形（Web Audio API AnalyserNode），幫助學生視覺感受音量大小與起伏，訓練聲音投射。</div><div class="feat-sub">技術：Canvas 繪製即時波形</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p3">
+    <div class="phase-header">
+      <div class="phase-badge">P3</div>
+      <div class="phase-meta"><h3>Phase 3｜教師班級管理功能（→ v3.0）</h3><p>從單人工具升級為老師可管理整班學生的訓練平台，支援 40 人班級</p></div>
+      <div class="phase-est">⏱ 預估 3–4 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">👨‍👩‍👧‍👦</span><div class="feat-title">學生名單管理</div><div class="feat-desc">老師建立學生清單（支援 40 人），切換學生視角時各自讀取練習紀錄，資料 JSON 結構存 localStorage。</div><div class="feat-sub">流程：老師模式 → 新增學生 → 切換學生 → 各自記錄互不干擾</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🏫</span><div class="feat-title">班級整體表現儀表板</div><div class="feat-desc">一覽表顯示全班練習次數、平均時間、完美率排行；熱力圖呈現哪些天練習最密集。</div><div class="feat-sub">視覺化：Chart.js 長條圖比較各學生練習次數</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📝</span><div class="feat-title">個人成績單自動生成</div><div class="feat-desc">為每位學生產生 A4 成績單，含練習次數、平均時間折線圖、AI 三大優點與建議、指導老師評語欄。</div><div class="feat-sub">格式：精美列印 CSS，模擬正式成績通知單版面</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📅</span><div class="feat-title">備賽倒數日曆</div><div class="feat-desc">輸入比賽日期後顯示「距離比賽 X 天」；依 5 週備賽流程自動推算「本週任務」，每天進入平台顯示今日建議。</div><div class="feat-sub">延伸：可設定複賽、決賽多個日期節點</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📱</span><div class="feat-title">家長通知信一鍵生成</div><div class="feat-desc">根據學生練習狀況，AI 自動生成中文家長說明信，含近況摘要、在家練習建議、鼓勵語句，一鍵複製或 mailto 傳送。</div><div class="feat-sub">場景：賽前一週通知家長配合，降低老師撰信成本</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏆</span><div class="feat-title">班內模擬賽排程系統</div><div class="feat-desc">老師設定模擬賽日期與人數，系統隨機抽出上場順序；老師可即時輸入五大評分面向，系統自動算總分。</div><div class="feat-sub">模擬正式比賽抽籤流程，提前讓學生適應比賽氛圍</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p4">
+    <div class="phase-header">
+      <div class="phase-badge">P4</div>
+      <div class="phase-meta"><h3>Phase 4｜分享協作與跨裝置同步（→ v3.5）</h3><p>讓訓練成果能夠分享、保存、跨裝置同步，延伸平台使用邊界</p></div>
+      <div class="phase-est">⏱ 預估 2–4 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📲</span><div class="feat-title">QR Code 分享練習成果</div><div class="feat-desc">練習結束後將題目、逐字稿、AI 評析摘要編碼進 URL，生成 QR Code，家長掃描即可查閱，無需帳號。</div><div class="feat-sub">技術：qrcode.js 前端生成；資料量大時改用 sessionStorage + hash</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">☁️</span><div class="feat-title">Google Drive 自動備份</div><div class="feat-desc">透過 Google Drive API 將練習紀錄 JSON 與 AI 評析 PDF 自動上傳到學生指定雲端資料夾。</div><div class="feat-sub">隱私設計：資料只上傳至學生自己帳號的 Drive</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎬</span><div class="feat-title">練習影片上傳對照</div><div class="feat-desc">支援上傳練習影片（MP4），影片播放器與逐字稿同步對照，幫助發現非語言表達問題（姿態、表情、手勢）。</div><div class="feat-sub">技術：HTML5 video element + 逐字稿時間軸標記對齊</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">💬</span><div class="feat-title">老師批注評語工具</div><div class="feat-desc">老師在平板可點選逐字稿段落加入評語，以「便利貼」樣式顯示；生成帶批注的 PDF，模擬老師手寫回饋。</div><div class="feat-sub">技術：Contenteditable 行內批注 + html2canvas 轉 PDF</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📧</span><div class="feat-title">Email 練習報告</div><div class="feat-desc">練習結束後一鍵觸發 mailto，郵件主旨與內文自動帶入本次練習摘要，方便每日即時通知家長。</div><div class="feat-sub">無後端方案：mailto: + encodeURIComponent 處理</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🔗</span><div class="feat-title">語音雲端辨識升級</div><div class="feat-desc">整合 Google Cloud Speech-to-Text API 作為備援，支援 Firefox、Safari 及離線錄音後上傳辨識。</div><div class="feat-sub">成本評估：Cloud STT 免費額度每月 60 分鐘，校內使用基本夠用</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p5">
+    <div class="phase-header">
+      <div class="phase-badge">P5</div>
+      <div class="phase-meta"><h3>Phase 5｜多語言競賽延伸（→ v4.0）</h3><p>從國語演說擴展至閩南語、客語、朗讀、作文，成為全語文競賽訓練中心</p></div>
+      <div class="phase-est">⏱ 預估 4–6 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🗣️</span><div class="feat-title">閩南語演說模式</div><div class="feat-desc">獨立題庫（先收錄 30 題）、閩南語專屬 AI Prompt、評分標準依規定調整，語音辨識切換 nan-TW。</div><div class="feat-sub">備案：nan-TW 支援度不足時，先以 Gemini 音訊辨識為主</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📖</span><div class="feat-title">朗讀訓練模式</div><div class="feat-desc">提供範文庫練習朗讀，AI 分析語調節奏、停頓位置，計時符合朗讀比賽規定（4–6 分鐘）。</div><div class="feat-sub">特色：朗讀重點在語音正確度與情感詮釋，Prompt 需重新設計</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">✍️</span><div class="feat-title">作文輔助訓練模式</div><div class="feat-desc">AI 幫學生從演說大綱延伸為書面文章，訓練口語→書面轉換；提供起筆句、段落連接詞、收尾技巧建議。</div><div class="feat-sub">跨領域價值：演說訓練成果直接應用於作文</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🧑‍💻</span><div class="feat-title">客語演說模式</div><div class="feat-desc">建立客語題庫，整合參賽資源與評分標準。客語 STT 可整合 Google Cloud Speech-to-Text。</div><div class="feat-sub">建議先以音檔上傳模式為主，待 STT 支援成熟再開放</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🏅</span><div class="feat-title">歷屆得獎範例庫</div><div class="feat-desc">收錄整理公開的歷屆得獎演說稿，依題目分類，AI 可分析範例特色，幫助學生模仿優秀結構。</div><div class="feat-sub">注意：確認著作權，建議教育用途整理並標明出處</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌏</span><div class="feat-title">英語演說模式</div><div class="feat-desc">針對英語演說競賽建立獨立模式，題庫、AI Prompt、評分標準均調整，語音辨識切換 en-US。</div><div class="feat-sub">此功能可大幅擴展平台受眾至更多學校</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p6">
+    <div class="phase-header">
+      <div class="phase-badge">P6</div>
+      <div class="phase-meta"><h3>Phase 6｜PWA 化 ＋ 正式雲端平台（→ v5.0 願景）</h3><p>從本機工具演進為可公開上線、供全台灣老師使用的正式平台服務</p></div>
+      <div class="phase-est">⏱ 預估 8–12 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📱</span><div class="feat-title">PWA 安裝與離線支援</div><div class="feat-desc">manifest.json + Service Worker，可安裝到手機/平板桌面，基本功能（抽題、計時）離線可用，待網路恢復再同步 AI 評析。</div><div class="feat-sub">技術：Workbox 管理快取策略，Cache-first 靜態資源，Network-first AI 呼叫</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🔒</span><div class="feat-title">輕量後端 ＋ 帳號系統</div><div class="feat-desc">以 Supabase 建立最小可用後端；提供 Google OAuth 登入，解決現有 localStorage 無法跨裝置的痛點。</div><div class="feat-sub">架構選擇：Supabase（PostgreSQL + Auth + Storage）大幅減少後端開發量</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌐</span><div class="feat-title">公開平台上線</div><div class="feat-desc">部署至 Vercel + Supabase，申請正式網域，向全台灣語文競賽老師推廣，建立使用者社群。</div><div class="feat-sub">推廣策略：投稿教育部語文競賽教師研習、國語日報、各縣市語文學科中心</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📊</span><div class="feat-title">平台使用數據分析</div><div class="feat-desc">加入匿名使用統計（題目熱門度、平均練習時間分布、AI 使用率），以數據驅動後續開發優先順序。</div><div class="feat-sub">工具：Umami（自架、隱私友善）或 Plausible</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🤝</span><div class="feat-title">開源社群協作</div><div class="feat-desc">開源至 GitHub，邀請老師貢獻題庫、翻譯語言包、提交修復；建立 CONTRIBUTING.md 說明貢獻流程。</div><div class="feat-sub">潛在貢獻者：各縣市語文競賽指導老師、師培生、熱心家長</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎓</span><div class="feat-title">教師研習教材整合</div><div class="feat-desc">製作完整操作手冊 PDF 與 30 分鐘教學影片，讓初次接觸的老師在研習中快速上手。</div><div class="feat-sub">產出：操作手冊 PDF + 快速入門單頁說明 + YouTube 教學影片</div></div>
+    </div>
+  </div>
+
+  <!-- 深度技術優化建議 -->
+  <div class="sec-title"><span>🔬</span> 深度技術優化與 AI 進化建議</div>
+  <div class="deep-grid">
+    <div class="deep-card dc-prompt">
+      <div class="deep-title">🧠 AI Prompt 工程深化</div>
+      <ul class="deep-list">
+        <li><span>為不同年齡層（低/中/高年級）設計差異化 Prompt，低年級語氣溫柔簡單，高年級要求更精準深入</span></li>
+        <li><span>加入「Few-shot 示例」提供 2–3 個優質演說大綱範例，引導 Gemini 輸出格式更一致</span></li>
+        <li><span>評析 Prompt 加入「正向優先」指令，確保先給 2 個真誠優點再談改進，符合教育心理學原則</span></li>
+        <li><span>「名言推薦」Prompt 加入年齡適當性過濾，確保金句是國小學生能理解且有共鳴的語句</span></li>
+        <li><span>建立 Prompt 版本管理機制，各功能 Prompt 統一存於設定檔，方便老師自訂調整措辭風格</span></li>
+        <li><span>加入 System Prompt 角色設定：「你是一位資深國語演說教練，擅長以鼓勵方式引導國小學生進步…」</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-ai">
+      <div class="deep-title">🤖 語音分析技術升級</div>
+      <ul class="deep-list">
+        <li><span>整合 Web Audio API AnalyserNode，錄音時即時分析音量 RMS 值，評估聲音投射是否足夠</span></li>
+        <li><span>偵測靜音段（Silence Detection）：分析停頓次數與平均停頓時長，過多長停頓給予提示</span></li>
+        <li><span>音高（Pitch）估算：Autocorrelation 演算法估算基頻，判斷語調是否單調，鼓勵抑揚頓挫</span></li>
+        <li><span>Gemini 音訊直接評析升級：發送錄音片段給 Gemini，讓 AI 同時分析聲學特徵與文字內容</span></li>
+        <li><span>語音辨識信心值顯示：低信心值的字詞以橙色標記，提示學生發音需加強</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-perf">
+      <div class="deep-title">⚡ 效能與載入速度優化</div>
+      <ul class="deep-list">
+        <li><span>Lazy Load 分頁內容：切換頁籤時才載入對應 JS 模組，首屏時間縮短 40% 以上</span></li>
+        <li><span>Chart.js 改為按需引入（Tree Shaking），只引入需要的圖表模組，減少體積約 60%</span></li>
+        <li><span>AI 回應串流輸出（Gemini Streaming API）：逐字顯示生成結果，告別等待空白頁面</span></li>
+        <li><span>音頻處理使用 Web Worker 在背景執行，避免阻塞主執行緒導致 UI 凍結</span></li>
+        <li><span>加入 Loading Skeleton 骨架屏，AI 載入中時顯示佔位動畫，有效降低等待焦慮感</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-ux">
+      <div class="deep-title">🎨 UX 使用體驗深化</div>
+      <ul class="deep-list">
+        <li><span>全鍵盤無障礙操作（WCAG 2.1 AA 標準）：所有功能可用 Tab/Enter/Space 操作</span></li>
+        <li><span>動畫偏好尊重：偵測 prefers-reduced-motion，勝利彩帶等動畫可動態關閉</span></li>
+        <li><span>錯誤狀態設計強化：API 失敗時顯示具體原因（金鑰過期/配額用盡/網路斷線）而非通用錯誤訊息</span></li>
+        <li><span>引導式新手教學（Onboarding Tour）：首次使用以步驟提示框帶領老師完成完整流程</span></li>
+        <li><span>破壞性操作「2 步驟確認」：刪除題目、清空紀錄先點擊→再倒數 3 秒確認，防止誤觸</span></li>
+        <li><span>印刷版面精修：列印時加入頁首（學校名稱、日期）與頁尾（頁碼），每頁斷點優化</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-security">
+      <div class="deep-title">🔒 資料安全與隱私保護</div>
+      <ul class="deep-list">
+        <li><span>API 金鑰加密儲存：localStorage 中的 Gemini Key 以 AES 加密，防止開發者工具直接讀取</span></li>
+        <li><span>學生資料本地優先：所有練習紀錄僅存本機，不傳送至任何第三方伺服器（符合 PDPA 精神）</span></li>
+        <li><span>音訊資料即時清除：錄音分析完成後立即從記憶體釋放，不緩存任何音訊數據</span></li>
+        <li><span>Content Security Policy（CSP）設定：限制只允許 googleapis.com 的外部請求，防止 XSS 注入</span></li>
+        <li><span>匯出 CSV/JSON 時加入學生資料警示，提醒老師妥善保管，不得上傳至公開雲端</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-test">
+      <div class="deep-title">🧪 品質保證與測試策略</div>
+      <ul class="deep-list">
+        <li><span>跨瀏覽器測試清單：Chrome（主）、Edge（支援）、Firefox（部分功能）、Safari（iOS 常用）</span></li>
+        <li><span>跨裝置測試：Windows 筆電（班級電腦）、iPad（老師平板）、iPhone（學生手機）</span></li>
+        <li><span>AI 回應品質監控：記錄 Gemini 回應時間分布，設定 10 秒超時自動重試機制</span></li>
+        <li><span>使用者測試計劃：安排 3–5 位老師進行 Think-aloud 測試，找出介面操作盲點</span></li>
+        <li><span>Lighthouse 分數目標：Performance ≥ 90、Accessibility ≥ 90、Best Practices ≥ 95</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 技術架構升級 -->
+  <div class="sec-title"><span>🛠️</span> 技術架構升級建議</div>
+  <div class="tech-grid">
+    <div class="tech-card"><span class="ti">⚡</span><h4>前端框架升級</h4><p>Vue 3 + Vite，元件化開發班級管理功能，Pinia 響應式狀態管理</p></div>
+    <div class="tech-card"><span class="ti">💾</span><h4>本地資料庫</h4><p>IndexedDB（via Dexie.js）取代 localStorage，支援大量紀錄儲存與複雜查詢</p></div>
+    <div class="tech-card"><span class="ti">🔒</span><h4>輕量後端</h4><p>Supabase（PostgreSQL + Auth + Storage）作為 BaaS，大幅降低後端開發成本</p></div>
+    <div class="tech-card"><span class="ti">📊</span><h4>資料視覺化</h4><p>Chart.js 折線圖（進步曲線）、雷達圖（能力評分）、長條圖（班級比較）</p></div>
+    <div class="tech-card"><span class="ti">🎤</span><h4>語音分析升級</h4><p>Web Audio API AnalyserNode 即時音量/音高分析；Gemini 音訊模態直接評析</p></div>
+    <div class="tech-card"><span class="ti">📱</span><h4>PWA 化</h4><p>Workbox + manifest.json + Service Worker，可安裝到手機/平板桌面離線使用</p></div>
+  </div>
+
+  <!-- 時間軸 -->
+  <div class="sec-title"><span>📅</span> 建議開發里程碑時間軸</div>
+  <div class="timeline">
+    <div class="tl-item d-done">
+      <div class="tl-dot d-done"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
+        <h4>v1.0 → v2.0｜核心訓練工具完整版（18 項功能）</h4>
+        <p>抽題、計時、AI 輔助、錄音辨識、音檔上傳、Markdown 列印、RWD、遊戲化 UI 全部完成</p>
+      </div>
+    </div>
+    <div class="tl-item d-current">
+      <div class="tl-dot d-current"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#fef3c7;color:#92400e">🔄 當前版本</span>
+        <h4>v2.1｜Quick Win 優化包（本週完成，累計 24 項功能）</h4>
+        <p>✅ 題庫刪除、localStorage 儲存、自訂準備時間、字數統計、收藏標記、計時音效——6 項全數完成！</p>
+      </div>
+    </div>
+    <div class="tl-item d-next">
+      <div class="tl-dot d-next"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">🔜 建議下一步（1–2 週）</span>
+        <h4>v2.2｜新一批 Quick Win</h4>
+        <p>深色模式、鍵盤快速鍵、CSV 匯出入、逐字稿分段分析——全部 1–3 天內可完成，先做先收效</p>
+      </div>
+    </div>
+    <div class="tl-item d-next">
+      <div class="tl-dot d-next"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">📅 短期（1 個月內）</span>
+        <h4>v2.5｜練習紀錄 ＋ 個人進步曲線 ＋ AI 深化</h4>
+        <p>localStorage 歷次紀錄、Chart.js 折線圖、語速計算、AI 雷達圖五維評分、口頭禪偵測</p>
+      </div>
+    </div>
+    <div class="tl-item d-future">
+      <div class="tl-dot d-future"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期（2–3 個月）</span>
+        <h4>v3.0｜教師班級管理系統</h4>
+        <p>學生名單管理、班級表現儀表板、個人成績單列印、備賽倒數日曆、班內模擬賽排程</p>
+      </div>
+    </div>
+    <div class="tl-item d-future">
+      <div class="tl-dot d-future"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期（3–4 個月）</span>
+        <h4>v3.5｜PWA 化 ＋ QR Code 分享 ＋ AI 自動改稿</h4>
+        <p>Service Worker 離線支援、練習結果 QR Code 分享、AI 自動改稿對比、演說結構比例圖</p>
+      </div>
+    </div>
+    <div class="tl-item d-future">
+      <div class="tl-dot d-future"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期（4–6 個月）</span>
+        <h4>v4.0｜多語言競賽全方位平台</h4>
+        <p>閩南語演說模式、朗讀訓練、作文輔助、歷屆範例庫、英語演說延伸</p>
+      </div>
+    </div>
+    <div class="tl-item d-future">
+      <div class="tl-dot d-future"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期願景（6–12 個月）</span>
+        <h4>v5.0｜雲端正式平台上線</h4>
+        <p>Google OAuth 帳號系統、Supabase 雲端同步、公開網址、全台灣老師免費使用、開源社群</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.1</p>
+  <p>已完成 24 項功能 ｜ 6 大未來開發階段 ｜ 38+ 待開發功能點子 ｜ 6 大深度技術優化方向</p>
+  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 3 月 17 日</p>
+</div>
+
+</body>
+</html>
