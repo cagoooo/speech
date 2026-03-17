@@ -235,11 +235,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .ai-opt{padding:9px 18px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:500;color:var(--text);transition:all .18s;font-family:inherit}
 .ai-opt:hover{border-color:var(--primary);color:var(--primary)}
 .ai-opt.on{background:var(--primary);border-color:var(--primary);color:#fff}
-.loading{display:none;text-align:center;padding:36px}
+.loading{display:none;padding:28px 0}
 .loading.show{display:block}
 .dot{display:inline-block;width:10px;height:10px;background:var(--primary);border-radius:50%;margin:0 4px;animation:bounce 1.2s infinite}
 .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-11px);opacity:1}}
+
+/* ===== AI Progress Bar ===== */
+.ai-progress{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:22px 24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.ai-progress-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ai-progress-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;animation:pulse-icon 2s ease infinite}
+@keyframes pulse-icon{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.ai-progress-title{font-size:.92rem;font-weight:700;color:var(--text)}
+.ai-progress-sub{font-size:.78rem;color:var(--text-light);margin-top:2px}
+.ai-progress-track{width:100%;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px}
+.ai-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--primary-light),#60a5fa);background-size:200% 100%;animation:progress-shimmer 2s ease infinite;transition:width .4s ease;width:0%}
+@keyframes progress-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.ai-progress-steps{display:flex;gap:0;margin-bottom:8px}
+.ai-progress-step{flex:1;display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--text-light);transition:color .3s}
+.ai-progress-step.active{color:var(--primary);font-weight:600}
+.ai-progress-step.done{color:var(--success);font-weight:600}
+.ai-progress-step .step-dot{width:18px;height:18px;border-radius:50%;border:2px solid #e5e7eb;display:flex;align-items:center;justify-content:center;font-size:.6rem;transition:all .3s;flex-shrink:0;background:#fff}
+.ai-progress-step.active .step-dot{border-color:var(--primary);background:var(--primary);color:#fff;animation:pulse-dot 1.5s ease infinite}
+.ai-progress-step.done .step-dot{border-color:var(--success);background:var(--success);color:#fff}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(26,86,160,.3)}50%{box-shadow:0 0 0 5px rgba(26,86,160,0)}}
+.ai-progress-line{flex:0 0 auto;width:20px;height:2px;background:#e5e7eb;margin:0 2px;align-self:center}
+.ai-progress-line.done{background:var(--success)}
+.ai-progress-eta{text-align:right;font-size:.74rem;color:var(--text-light)}
+
+/* Purple variant for recording AI */
+.ai-progress.purple .ai-progress-icon{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.ai-progress.purple .ai-progress-fill{background:linear-gradient(90deg,#7c3aed,#a78bfa,#c4b5fd);background-size:200% 100%;animation:progress-shimmer 2s ease infinite}
+.ai-progress.purple .ai-progress-step.active{color:#7c3aed}
+.ai-progress.purple .ai-progress-step.active .step-dot{border-color:#7c3aed;background:#7c3aed}
+@keyframes pulse-dot-purple{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.3)}50%{box-shadow:0 0 0 5px rgba(124,58,237,0)}}
+.ai-progress.purple .ai-progress-step.active .step-dot{animation:pulse-dot-purple 1.5s ease infinite}
+
+/* Teal variant for letter */
+.ai-progress.teal .ai-progress-icon{background:linear-gradient(135deg,#0d9488,#2dd4bf)}
+.ai-progress.teal .ai-progress-fill{background:linear-gradient(90deg,#0d9488,#2dd4bf,#5eead4);background-size:200% 100%;animation:progress-shimmer 2s ease infinite}
+.ai-progress.teal .ai-progress-step.active{color:#0d9488}
+.ai-progress.teal .ai-progress-step.active .step-dot{border-color:#0d9488;background:#0d9488}
 .ai-out{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:22px;min-height:180px;display:none;margin-bottom:14px}
 .ai-out.show{display:block}
 .ai-out h4{color:var(--primary);margin-bottom:10px;font-size:.95rem}
@@ -741,8 +777,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
         </div>
 
         <div class="loading" id="loading">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          <p style="color:var(--text-light);font-size:.85rem;margin-top:12px">AI 正在生成演說內容，請稍候…</p>
+          <div class="ai-progress" id="aiProgress">
+            <div class="ai-progress-header">
+              <div class="ai-progress-icon">✨</div>
+              <div>
+                <div class="ai-progress-title" id="aiProgressTitle">AI 正在生成演說內容…</div>
+                <div class="ai-progress-sub" id="aiProgressSub">正在準備提示詞</div>
+              </div>
+            </div>
+            <div class="ai-progress-track"><div class="ai-progress-fill" id="aiProgressFill"></div></div>
+            <div class="ai-progress-steps" id="aiProgressSteps">
+              <div class="ai-progress-step active" data-step="0"><span class="step-dot">1</span>準備中</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="1"><span class="step-dot">2</span>發送請求</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="2"><span class="step-dot">3</span>AI 生成</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="3"><span class="step-dot">4</span>渲染內容</div>
+            </div>
+            <div class="ai-progress-eta" id="aiProgressEta">預估需要 5-10 秒</div>
+          </div>
         </div>
 
         <div class="ai-out" id="aiOut">
@@ -807,8 +861,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
         </div>
 
         <div class="rec-ai-loading" id="recAiLoading">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          <p style="color:var(--text-light);font-size:.85rem;margin-top:10px">AI 正在分析逐字稿，請稍候…</p>
+          <div class="ai-progress purple" id="recAiProgress">
+            <div class="ai-progress-header">
+              <div class="ai-progress-icon">🤖</div>
+              <div>
+                <div class="ai-progress-title" id="recProgressTitle">AI 正在分析逐字稿…</div>
+                <div class="ai-progress-sub" id="recProgressSub">正在解析演說內容</div>
+              </div>
+            </div>
+            <div class="ai-progress-track"><div class="ai-progress-fill" id="recProgressFill"></div></div>
+            <div class="ai-progress-steps" id="recProgressSteps">
+              <div class="ai-progress-step active" data-step="0"><span class="step-dot">1</span>解析內容</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="1"><span class="step-dot">2</span>發送分析</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="2"><span class="step-dot">3</span>AI 評分</div>
+              <div class="ai-progress-line"></div>
+              <div class="ai-progress-step" data-step="3"><span class="step-dot">4</span>生成報告</div>
+            </div>
+            <div class="ai-progress-eta" id="recProgressEta">預估需要 8-15 秒</div>
+          </div>
         </div>
         <div class="rec-ai-out" id="recAiOut">
           <h4>🤖 AI 演說內容分析與建議</h4>
@@ -994,8 +1066,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
       </div>
 
       <div class="letter-loading" id="letterLoading">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <p style="color:#0d9488;font-size:.85rem;margin-top:10px">AI 正在撰寫家長通知信，請稍候…</p>
+        <div class="ai-progress teal" id="letterProgress">
+          <div class="ai-progress-header">
+            <div class="ai-progress-icon">📨</div>
+            <div>
+              <div class="ai-progress-title" id="letterProgressTitle">AI 正在撰寫家長通知信…</div>
+              <div class="ai-progress-sub" id="letterProgressSub">正在整理資訊</div>
+            </div>
+          </div>
+          <div class="ai-progress-track"><div class="ai-progress-fill" id="letterProgressFill"></div></div>
+          <div class="ai-progress-steps" id="letterProgressSteps">
+            <div class="ai-progress-step active" data-step="0"><span class="step-dot">1</span>整理資訊</div>
+            <div class="ai-progress-line"></div>
+            <div class="ai-progress-step" data-step="1"><span class="step-dot">2</span>撰寫信件</div>
+            <div class="ai-progress-line"></div>
+            <div class="ai-progress-step" data-step="2"><span class="step-dot">3</span>排版完成</div>
+          </div>
+          <div class="ai-progress-eta" id="letterProgressEta">預估需要 5-10 秒</div>
+        </div>
       </div>
       <div class="letter-box empty" id="letterBox">請點擊上方按鈕生成家長通知信</div>
 
@@ -1740,6 +1828,95 @@ function setApiFail(status,btn,html){
   btn.style.color='#991b1b';
 }
 
+// ==================== PROGRESS BAR CONTROLLER ====================
+function createProgressController(fillId, stepsId, subId, etaId) {
+  const fill = document.getElementById(fillId);
+  const stepsEl = document.getElementById(stepsId);
+  const subEl = document.getElementById(subId);
+  const etaEl = document.getElementById(etaId);
+  const steps = stepsEl ? stepsEl.querySelectorAll('.ai-progress-step') : [];
+  const lines = stepsEl ? stepsEl.querySelectorAll('.ai-progress-line') : [];
+  let interval = null;
+  let currentPct = 0;
+
+  function setStep(idx, subText) {
+    steps.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < idx) s.classList.add('done');
+      else if (i === idx) s.classList.add('active');
+    });
+    lines.forEach((l, i) => {
+      l.classList.toggle('done', i < idx);
+    });
+    if (subEl && subText) subEl.textContent = subText;
+  }
+
+  function animateTo(targetPct, durationMs) {
+    if (interval) clearInterval(interval);
+    const startPct = currentPct;
+    const delta = targetPct - startPct;
+    const startTime = Date.now();
+    interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      // Ease-out curve
+      const eased = 1 - Math.pow(1 - progress, 3);
+      currentPct = startPct + delta * eased;
+      if (fill) fill.style.width = currentPct + '%';
+      if (progress >= 1) clearInterval(interval);
+    }, 30);
+  }
+
+  function start(subText) {
+    currentPct = 0;
+    if (fill) fill.style.width = '0%';
+    setStep(0, subText || '準備中');
+    animateTo(15, 600);
+  }
+
+  function sending(subText) {
+    setStep(1, subText || '正在發送請求');
+    animateTo(35, 800);
+  }
+
+  function generating(subText) {
+    setStep(2, subText || 'AI 正在生成中');
+    animateTo(70, 4000);
+    if (etaEl) etaEl.textContent = '請稍候，AI 正在思考…';
+  }
+
+  function rendering(subText) {
+    setStep(3, subText || '正在渲染內容');
+    animateTo(95, 500);
+    if (etaEl) etaEl.textContent = '即將完成';
+  }
+
+  function complete(subText) {
+    if (interval) clearInterval(interval);
+    currentPct = 100;
+    if (fill) fill.style.width = '100%';
+    const totalSteps = steps.length;
+    setStep(totalSteps, subText || '完成！');
+    // Mark last step as done too
+    steps.forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
+    lines.forEach(l => l.classList.add('done'));
+    if (etaEl) etaEl.textContent = '已完成';
+  }
+
+  function reset() {
+    if (interval) clearInterval(interval);
+    currentPct = 0;
+    if (fill) fill.style.width = '0%';
+    steps.forEach(s => { s.classList.remove('active', 'done'); });
+    lines.forEach(l => l.classList.remove('done'));
+    if (steps[0]) steps[0].classList.add('active');
+    if (subEl) subEl.textContent = '';
+    if (etaEl) etaEl.textContent = '';
+  }
+
+  return { start, sending, generating, rendering, complete, reset, setStep, animateTo };
+}
+
 // ==================== AI ====================
 function setAiOpt(opt){
   aiOpt=opt;
@@ -1752,6 +1929,11 @@ async function genAI() {
   document.getElementById('loading').classList.add('show');
   document.getElementById('aiOut').classList.remove('show');
   document.getElementById('printRow').classList.remove('show');
+
+  const pc = createProgressController('aiProgressFill','aiProgressSteps','aiProgressSub','aiProgressEta');
+  const optLabels = {outline:'演說大綱',script:'完整逐字稿',tips:'主題建議',quotes:'名言金句'};
+  document.getElementById('aiProgressTitle').textContent = `AI 正在生成${optLabels[aiOpt]||'內容'}…`;
+  pc.start('正在準備提示詞');
 
   let title='',content='';
   if(key){
@@ -1771,7 +1953,9 @@ async function genAI() {
         userMsg=`請針對國語演說題目「${curTopic.t}」，推薦5句最適合此主題的名言金句或成語，請依照以下格式逐一列出：\n\n每句格式：\n① 名言內容（附出處或作者）\n② 使用時機：開場 ／ 中段論述 ／ 結尾昇華\n③ 融入演說示範說法（1-2句，適合國小高年級口語）\n\n要求：文雅生動、易懂易記，適合9-12歲學生使用。`;
         title=`✨ 名言金句推薦：「${curTopic.t}」`;
       }
+      pc.sending('正在發送至 Gemini AI');
       const res=await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:userMsg}]}],generationConfig:{maxOutputTokens:2048,temperature:0.8}})});
+      pc.generating('AI 正在撰寫' + (optLabels[aiOpt]||'內容'));
       if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${res.status}`);}
       const d=await res.json();
       content=d.candidates?.[0]?.content?.parts?.[0]?.text||'（AI 未回傳內容，請重試）';
@@ -1782,14 +1966,23 @@ async function genAI() {
         :'❌ AI 生成失敗：'+e.message+'\n\n請先點擊「🔍 測試金鑰」確認金鑰是否有效。';
     }
   } else {
+    pc.sending('正在載入範例內容');
+    await new Promise(r=>setTimeout(r,300));
+    pc.generating('正在生成範例');
+    await new Promise(r=>setTimeout(r,500));
     content=demoContent(curTopic.t,aiOpt);
     title=(aiOpt==='outline'?`📋 演說大綱（範例）`:aiOpt==='script'?`📝 演說逐字稿（範例）`:aiOpt==='quotes'?`✨ 名言金句（範例）`:`💡 主題建議（範例）`)+`：「${curTopic.t}」`;
   }
 
-  document.getElementById('loading').classList.remove('show');
+  pc.rendering('正在渲染內容');
+  await new Promise(r=>setTimeout(r,300));
   document.getElementById('aiOutTitle').textContent=title;
   document.getElementById('aiContent').innerHTML=renderMarkdown(content);
-  document.getElementById('aiContent').dataset.raw=content; // 保留原始文字供列印/複製
+  document.getElementById('aiContent').dataset.raw=content;
+  pc.complete('生成完成！');
+  await new Promise(r=>setTimeout(r,400));
+  document.getElementById('loading').classList.remove('show');
+  pc.reset();
   document.getElementById('aiOut').classList.add('show');
   document.getElementById('printRow').classList.add('show');
 }
@@ -2098,30 +2291,41 @@ async function scoreTranscript(){
   document.getElementById('recAiOut').classList.remove('show');
   document.getElementById('recPrintRow').style.display='none';
 
+  const pc = createProgressController('recProgressFill','recProgressSteps','recProgressSub','recProgressEta');
+  pc.start('正在解析演說內容');
+
   let result='';
   const topic=curTopic?`題目：「${curTopic.t}」\n`:'';
-  // 加入七、評分估算區塊供雷達圖解析
   const prompt=`你是一位國語演說比賽的專業評審老師，請針對以下國小學生的演說逐字稿進行詳細分析與建議：\n\n${topic}\n【學生演說逐字稿】\n${text}\n\n請依以下格式回應：\n\n## 一、整體表現\n（2-3句整體評價）\n\n## 二、優點（列出2-3項具體亮點）\n\n## 三、待改進之處（列出2-3項具體建議）\n\n## 四、語音與表達建議\n（針對口語表達、語調、語速的建議）\n\n## 五、內容結構分析\n（分析開場、中段、結尾是否完整，有無主題聚焦）\n\n## 六、給學生的鼓勵話語\n（一段溫暖鼓勵的話，適合國小學生程度）\n\n## 七、評分估算（1–10分，依逐字稿內容判斷）\n- 內容組織（45%）：X 分\n- 語音表達（40%）：X 分\n- 台風儀態（10%）：X 分（依逐字稿估算）\n- 時間控制：X 分（依字數推估）`;
 
   if(key){
     try{
+      pc.sending('正在發送至 Gemini AI');
       const res=await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1800,temperature:0.7}})});
+      pc.generating('AI 正在分析評分中');
       if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${res.status}`);}
       const d=await res.json();
       result=d.candidates?.[0]?.content?.parts?.[0]?.text||'（AI 未回傳內容）';
     }catch(e){result='❌ AI 分析失敗：'+e.message+'\n\n'+basicScore(text);}
   } else {
+    pc.sending('正在計算基本評分');
+    await new Promise(r=>setTimeout(r,300));
+    pc.generating('正在生成評分報告');
+    await new Promise(r=>setTimeout(r,500));
     result=basicScore(text);
   }
 
-  document.getElementById('recAiLoading').classList.remove('show');
+  pc.rendering('正在生成評分報告');
+  await new Promise(r=>setTimeout(r,300));
   document.getElementById('recAiContent').innerHTML=renderMarkdown(result);
   document.getElementById('recAiContent').dataset.raw=result;
+  pc.complete('分析完成！');
+  await new Promise(r=>setTimeout(r,400));
+  document.getElementById('recAiLoading').classList.remove('show');
+  pc.reset();
   document.getElementById('recAiOut').classList.add('show');
   document.getElementById('recPrintRow').style.display='flex';
-  // 繪製雷達圖
   try{ drawRadarChart(parseRadarScores(result)); }catch(e){}
-  // 情感色彩分析
   analyzeEmotion(text, key);
 }
 
@@ -2528,6 +2732,9 @@ async function generateParentLetter(){
   box.textContent = '';
   actions.style.display = 'none';
 
+  const pc = createProgressController('letterProgressFill','letterProgressSteps','letterProgressSub','letterProgressEta');
+  pc.start('正在整理學生資訊');
+
   let letter = '';
   if(key){
     try{
@@ -2546,8 +2753,10 @@ async function generateParentLetter(){
 2. 正文包含：練習摘要、2-3點在家練習建議、鼓勵孩子的話語
 3. 語氣溫暖專業，約 200-300 字
 4. 直接輸出信件文字，不需任何說明`;
+      pc.sending('正在發送至 Gemini AI');
       const res = await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1024,temperature:0.75}})});
+      pc.generating('AI 正在撰寫信件');
       if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+res.status);}
       const d = await res.json();
       letter = d.candidates?.[0]?.content?.parts?.[0]?.text || '（AI 未回傳內容，請重試）';
@@ -2555,10 +2764,17 @@ async function generateParentLetter(){
       letter = _defaultLetter(name,count,perfect,topic,note,date);
     }
   } else {
+    pc.sending('正在載入範本');
+    await new Promise(r=>setTimeout(r,300));
     letter = _defaultLetter(name,count,perfect,topic,note,date);
   }
 
+  pc.rendering('正在排版信件');
+  await new Promise(r=>setTimeout(r,300));
+  pc.complete('信件生成完成！');
+  await new Promise(r=>setTimeout(r,400));
   loading.classList.remove('show');
+  pc.reset();
   box.className = 'letter-box';
   box.textContent = letter;
   box.dataset.raw  = letter;
