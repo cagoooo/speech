@@ -508,6 +508,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .parent-tip-box{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-left:4px solid #0d9488;border-radius:0 10px 10px 0;padding:11px 16px;margin-top:16px;font-size:.81rem;color:#134e4a;line-height:1.8}
 @media(max-width:500px){.parent-stats{grid-template-columns:1fr 1fr}}
 
+/* ===== AI WORD COUNT BAR ===== */
+.ai-wc-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f0f9ff;border:1px solid #bfdbfe;border-radius:10px;margin-top:12px;font-size:.8rem;flex-wrap:wrap}
+.ai-wc-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 11px;background:#dbeafe;border-radius:8px;font-weight:700;color:#1e40af}
+.ai-wc-status{font-size:.75rem;padding:3px 10px;border-radius:8px;font-weight:700;margin-left:auto}
+.ai-wc-ok{background:#d1fae5;color:#065f46}
+.ai-wc-short{background:#fef3c7;color:#92400e}
+.ai-wc-long{background:#fee2e2;color:#991b1b}
+
+/* ===== REGENERATE BUTTON ===== */
+.regen-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;font-size:.78rem;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.regen-btn:hover{border-color:var(--primary);color:var(--primary);background:#eff6ff;transform:rotate(-8deg) scale(1.04)}
+.regen-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;background:var(--primary);color:#fff;border-radius:9px;font-size:.65rem;font-weight:700}
+
+/* ===== CHAIN PANEL (方向串聯) ===== */
+.chain-panel{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:14px;padding:15px 17px;margin-top:14px;animation:pop .3s ease}
+.chain-panel.chain-quotes{background:linear-gradient(135deg,#faf5ff,#ede9fe);border-color:#c4b5fd}
+.chain-title{font-size:.88rem;font-weight:700;color:#15803d;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.chain-panel.chain-quotes .chain-title{color:#6d28d9}
+.chain-hint{font-size:.75rem;color:#166534;margin-bottom:11px;line-height:1.55}
+.chain-panel.chain-quotes .chain-hint{color:#5b21b6}
+.chain-btns{display:flex;flex-wrap:wrap;gap:7px}
+.chain-btn{padding:6px 13px;border:1.5px solid #86efac;border-radius:20px;background:#fff;color:#15803d;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;font-family:inherit;line-height:1.4}
+.chain-btn:hover{background:#15803d;color:#fff;border-color:#15803d;transform:translateY(-1px);box-shadow:0 3px 8px rgba(21,128,61,.2)}
+.chain-panel.chain-quotes .chain-btn{border-color:#c4b5fd;color:#6d28d9}
+.chain-panel.chain-quotes .chain-btn:hover{background:#6d28d9;color:#fff;border-color:#6d28d9;box-shadow:0 3px 8px rgba(109,40,217,.2)}
+
 /* ===== KEYBOARD SHORTCUT MODAL ===== */
 .shortcut-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
 .shortcut-overlay.show{display:flex}
@@ -878,11 +904,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
         <div class="ai-out" id="aiOut">
           <h4 id="aiOutTitle">📝 AI 生成內容</h4>
           <div class="ai-content" id="aiContent"></div>
+          <!-- 字數 + 時長統計列 -->
+          <div class="ai-wc-bar" id="aiWcBar" style="display:none">
+            <span style="font-weight:700;color:#1e40af">📊 字數統計</span>
+            <span class="ai-wc-chip">✍️ <span id="aiWcNum">0</span> 字</span>
+            <span class="ai-wc-chip">⏱️ 約 <span id="aiWcTime">0:00</span></span>
+            <span class="ai-wc-status" id="aiWcStatus"></span>
+          </div>
+          <!-- 主題建議 → 大綱串聯 -->
+          <div class="chain-panel" id="tipsChainPanel" style="display:none">
+            <div class="chain-title">📋 選擇方向 → 一鍵生成演說大綱</div>
+            <div class="chain-hint">AI 提供了多個創意切入角度，點選任一個方向，立即展開為完整演說大綱</div>
+            <div class="chain-btns" id="tipsChainBtns"></div>
+          </div>
+          <!-- 名言金句 → 逐字稿串聯 -->
+          <div class="chain-panel chain-quotes" id="quotesChainPanel" style="display:none">
+            <div class="chain-title">✨ 選擇金句 → 融入完整逐字稿</div>
+            <div class="chain-hint">AI 推薦了多句名言，點選任一句，立即生成將此金句自然融入的完整演說逐字稿</div>
+            <div class="chain-btns" id="quotesChainBtns"></div>
+          </div>
         </div>
 
         <div class="print-row" id="printRow">
+          <button class="regen-btn" id="regenBtn" onclick="regenAI()">🔄 換一個版本 <span class="regen-count" id="regenCount">1</span></button>
           <button class="btn btn-outline btn-sm" onclick="copyContent()">📋 複製文字</button>
-          <button class="btn btn-primary btn-sm" onclick="doPrint()">🖨️ 列印逐字稿</button>
+          <button class="btn btn-primary btn-sm" onclick="doPrint()">🖨️ 列印</button>
         </div>
       </div><!-- /ai-area -->
 
@@ -1290,6 +1336,7 @@ const TOPICS = [
 let drawCat = 'all';
 let curTopic = null;
 let aiOpt = 'outline';
+let regenVersion = 1;
 
 // ==================== INIT ====================
 renderList('all');
@@ -2094,13 +2141,27 @@ function setAiOpt(opt){
   aiOpt=opt;
   document.querySelectorAll('.ai-opt').forEach(b=>b.classList.remove('on'));
   document.getElementById('aopt-'+opt).classList.add('on');
+  regenVersion=1;
+  const rc=document.getElementById('regenCount');
+  if(rc) rc.textContent='1';
+  const tp=document.getElementById('tipsChainPanel');
+  const qp=document.getElementById('quotesChainPanel');
+  if(tp) tp.style.display='none';
+  if(qp) qp.style.display='none';
 }
-async function genAI() {
+async function genAI(opts={}) {
   if(!curTopic){showNotif('⚠️ 請先抽題','請先抽取題目，再使用 AI 輔助功能。','nw');return;}
+  const {isRegen=false, customMsg='', customTitle=''}=opts;
   const key=document.getElementById('apiKey').value.trim();
   document.getElementById('loading').classList.add('show');
   document.getElementById('aiOut').classList.remove('show');
   document.getElementById('printRow').classList.remove('show');
+  const wcBar=document.getElementById('aiWcBar');
+  if(wcBar) wcBar.style.display='none';
+  const tp=document.getElementById('tipsChainPanel');
+  const qp=document.getElementById('quotesChainPanel');
+  if(tp) tp.style.display='none';
+  if(qp) qp.style.display='none';
 
   const pc = createProgressController('aiProgressFill','aiProgressSteps','aiProgressSub','aiProgressEta');
   const optLabels = {outline:'演說大綱',script:'完整逐字稿',tips:'主題建議',quotes:'名言金句'};
@@ -2112,18 +2173,21 @@ async function genAI() {
     try{
       const sys='你是一位專業的國語演說比賽指導老師，專門輔導國小學生（約9-12歲）。你的演說建議語言生動活潑、符合國小高年級程度，適合口語表達，演說目標時長4-5分鐘（約600-800字）。';
       let userMsg='';
-      if(aiOpt==='outline'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說大綱，包含：\n1. 吸引人的開場方式（2-3句示範）\n2. 主題一（重點說明＋可用例子方向）\n3. 主題二（重點說明＋可用例子方向）\n4. 結尾昇華方式（呼應開場）\n5. 建議使用的修辭技巧或名言佳句`;
-        title=`📋 演說大綱：「${curTopic.t}」`;
+      if(customMsg){
+        userMsg=customMsg;
+        title=customTitle||`📝 AI 生成內容：「${curTopic.t}」`;
+      }else if(aiOpt==='outline'){
+        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說大綱，包含：\n1. 吸引人的開場方式（2-3句示範）\n2. 主題一（重點說明＋可用例子方向）\n3. 主題二（重點說明＋可用例子方向）\n4. 結尾昇華方式（呼應開場）\n5. 建議使用的修辭技巧或名言佳句${isRegen?`\n\n（請提供與之前完全不同的切入角度與開場，這是第${regenVersion}個版本）`:''}`;
+        title=`📋 演說大綱${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else if(aiOpt==='script'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說逐字稿：\n要求：語言符合國小高年級、適合口語表達、時長約4-5分鐘（600-800字）、結構完整（有吸引人的開場、豐富的中段論述含至少2個具體例子或故事、有力的昇華結尾）、適當運用排比、設問、比喻等修辭手法。`;
-        title=`📝 演說逐字稿：「${curTopic.t}」`;
+        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說逐字稿：\n要求：語言符合國小高年級、適合口語表達、時長約4-5分鐘（600-800字）、結構完整（有吸引人的開場、豐富的中段論述含至少2個具體例子或故事、有力的昇華結尾）、適當運用排比、設問、比喻等修辭手法。${isRegen?`\n\n（請提供與之前完全不同的故事情節與開場方式，這是第${regenVersion}個版本）`:''}`;
+        title=`📝 演說逐字稿${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else if(aiOpt==='tips'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，提供5個具體的演說創意方向建議，每個包含：切入角度、可用具體例子或故事、適合的開場白方式。以條列式呈現。`;
-        title=`💡 主題建議：「${curTopic.t}」`;
+        userMsg=`請針對國語演說題目「${curTopic.t}」，提供5個具體的演說創意方向建議，每個包含：切入角度、可用具體例子或故事、適合的開場白方式。以條列式呈現。${isRegen?`\n\n（請提供與之前完全不同的5個新方向，這是第${regenVersion}個版本）`:''}`;
+        title=`💡 主題建議${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else{
-        userMsg=`請針對國語演說題目「${curTopic.t}」，推薦5句最適合此主題的名言金句或成語，請依照以下格式逐一列出：\n\n每句格式：\n① 名言內容（附出處或作者）\n② 使用時機：開場 ／ 中段論述 ／ 結尾昇華\n③ 融入演說示範說法（1-2句，適合國小高年級口語）\n\n要求：文雅生動、易懂易記，適合9-12歲學生使用。`;
-        title=`✨ 名言金句推薦：「${curTopic.t}」`;
+        userMsg=`請針對國語演說題目「${curTopic.t}」，推薦5句最適合此主題的名言金句或成語，請依照以下格式逐一列出：\n\n每句格式：\n① 名言內容（附出處或作者）\n② 使用時機：開場 ／ 中段論述 ／ 結尾昇華\n③ 融入演說示範說法（1-2句，適合國小高年級口語）\n\n要求：文雅生動、易懂易記，適合9-12歲學生使用。${isRegen?`\n\n（請推薦與之前完全不同的5句名言，這是第${regenVersion}個版本）`:''}`;
+        title=`✨ 名言金句推薦${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }
       pc.sending('正在發送至 Gemini AI');
       const streamUrl = geminiUrl(activeModel,key,'streamGenerateContent')+'&alt=sse';
@@ -2182,6 +2246,8 @@ async function genAI() {
   pc.reset();
   document.getElementById('aiOut').classList.add('show');
   document.getElementById('printRow').classList.add('show');
+  updateAiWordCount(content, aiOpt);
+  setupChainButtons(aiOpt, content);
 }
 
 function demoContent(t,opt){
@@ -2217,6 +2283,103 @@ function demoContent(t,opt){
 💡 提示：填入 Gemini API 金鑰可獲取針對「${t}」題目量身推薦的名言金句。`;
 
   return `【演說方向建議範例】題目：「${t}"\n\n💡 方向一：從個人親身經歷切入\n　　角度：回想自己生活中與「${t}」相關的真實事件\n　　建議例子：描述某次令你印象深刻的具體事件\n　　開場：「那一天，我永遠忘不了……」\n\n💡 方向二：從身邊觀察切入\n　　角度：觀察家人、同學或社會環境中的相關現象\n　　建議例子：舉出具體的人物故事\n　　開場：「如果你仔細觀察，你會發現……」\n\n💡 方向三：從名言故事切入\n　　角度：引用適合的名言或歷史故事\n　　建議例子：孔子的話、古今中外名人事蹟\n　　開場：「古人說：『……』這讓我想到……」\n\n💡 方向四：從反問切入\n　　角度：以反問句引發聽眾思考\n　　建議例子：先提出反面情境，再轉回正面論述\n　　開場：「試想，如果沒有『${t}』，我們的生活會是什麼樣子？」\n\n💡 方向五：從感官描寫切入\n　　角度：用生動的感官描述帶入情境\n　　建議例子：描述一個具體場景，讓聽眾身臨其境\n　　開場：「閉上眼睛，想像一個……的畫面……」\n\n💡 提示：填入 Gemini API 金鑰可獲取更精準的個人化建議。`;
+}
+
+function regenAI(){
+  regenVersion++;
+  const rc=document.getElementById('regenCount');
+  if(rc) rc.textContent=regenVersion;
+  genAI({isRegen:true});
+}
+
+function updateAiWordCount(content, mode){
+  const bar=document.getElementById('aiWcBar');
+  if(!bar) return;
+  if(mode==='outline'||mode==='script'){
+    const chars=content.replace(/[#*`>_~\[\]!]/g,'').replace(/\s/g,'').length;
+    const mins=chars/150;
+    const m=Math.floor(mins), s=Math.round((mins-m)*60);
+    const timeStr=`${m}:${s.toString().padStart(2,'0')}`;
+    document.getElementById('aiWcNum').textContent=chars;
+    document.getElementById('aiWcTime').textContent=timeStr;
+    let status='', cls='';
+    if(chars<500){status='⚠️ 偏短，建議增加內容';cls='short';}
+    else if(chars>900){status='⚠️ 偏長，注意時間控制';cls='long';}
+    else{status='✅ 長度適中';cls='ok';}
+    const statusEl=document.getElementById('aiWcStatus');
+    statusEl.textContent=status; statusEl.className='ai-wc-status '+cls;
+    bar.style.display='flex';
+  } else {
+    bar.style.display='none';
+  }
+}
+
+function setupChainButtons(mode, raw){
+  document.getElementById('tipsChainPanel').style.display='none';
+  document.getElementById('quotesChainPanel').style.display='none';
+  if(mode==='tips'){
+    const items=[];
+    const lines=raw.split('\n');
+    let cur='';
+    for(const line of lines){
+      if(/^[①②③④⑤]|^\d+[\.\、]/.test(line.trim())){
+        if(cur.trim()) items.push(cur.trim());
+        cur=line;
+      } else if(cur){ cur+=' '+line; }
+    }
+    if(cur.trim()) items.push(cur.trim());
+    if(!items.length) return;
+    const btns=document.getElementById('tipsChainBtns');
+    btns.innerHTML='';
+    items.forEach((item,i)=>{
+      const b=document.createElement('button');
+      b.className='chain-btn';
+      const firstLine=item.replace(/^[①②③④⑤\d\.\、💡\s]+/,'').trim().slice(0,28);
+      b.textContent=(i+1)+'、'+firstLine+(item.replace(/^[①②③④⑤\d\.\、💡\s]+/,'').trim().length>28?'…':'');
+      b.onclick=()=>genFromTip(i+1);
+      btns.appendChild(b);
+    });
+    document.getElementById('tipsChainPanel').style.display='block';
+  } else if(mode==='quotes'){
+    const items=[];
+    const lines=raw.split('\n');
+    let cur='';
+    for(const line of lines){
+      if(/^[✨★☆]*\s*(金句[一二三四五\d]|[①②③④⑤])/.test(line.trim())||/^\d+[\.\、]/.test(line.trim())){
+        if(cur.trim()) items.push(cur.trim());
+        cur=line;
+      } else if(cur){ cur+=' '+line; }
+    }
+    if(cur.trim()) items.push(cur.trim());
+    if(!items.length) return;
+    const btns=document.getElementById('quotesChainBtns');
+    btns.innerHTML='';
+    items.forEach((item,i)=>{
+      const b=document.createElement('button');
+      b.className='chain-btn';
+      const clean=item.replace(/^[✨★☆①②③④⑤\d\.\、\s]+/,'').trim();
+      const quote=clean.match(/「([^」]+)」/)?.[1]||clean.slice(0,28);
+      const label=quote.length>28?quote.slice(0,28)+'…':quote;
+      b.textContent=(i+1)+'、'+label;
+      b.onclick=()=>genFromQuote(i+1);
+      btns.appendChild(b);
+    });
+    document.getElementById('quotesChainPanel').style.display='block';
+  }
+}
+
+function genFromTip(num){
+  const raw=document.getElementById('aiContent').dataset.raw||'';
+  const msg=`以下是針對題目「${curTopic.t}」的演說方向建議：\n\n${raw}\n\n請以第${num}個方向為核心，為國小學生生成完整演說大綱，包含：吸引人的開場方式（2-3句示範）、主題一與主題二的重點說明含具體例子方向、結尾昇華方式，以及建議修辭技巧。`;
+  setAiOpt('outline');
+  genAI({customMsg:msg, customTitle:`📋 演說大綱（方向${num}展開）：「${curTopic.t}」`});
+}
+
+function genFromQuote(num){
+  const raw=document.getElementById('aiContent').dataset.raw||'';
+  const msg=`以下是針對題目「${curTopic.t}」的名言金句推薦：\n\n${raw}\n\n請以第${num}句名言金句為核心，自然融入一篇為國小學生生成的完整演說逐字稿。要求：語言符合國小高年級、適合口語表達、時長約4-5分鐘（600-800字）、結構完整（有吸引人的開場、豐富的中段論述含至少2個具體例子或故事、有力的昇華結尾）、適當運用排比、設問、比喻等修辭手法，且此名言需在演說中自然出現至少2次。`;
+  setAiOpt('script');
+  genAI({customMsg:msg, customTitle:`📝 演說逐字稿（融入金句${num}）：「${curTopic.t}」`});
 }
 
 function copyContent(){
