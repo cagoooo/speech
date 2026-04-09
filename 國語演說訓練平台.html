@@ -508,9 +508,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .parent-tip-box{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-left:4px solid #0d9488;border-radius:0 10px 10px 0;padding:11px 16px;margin-top:16px;font-size:.81rem;color:#134e4a;line-height:1.8}
 @media(max-width:500px){.parent-stats{grid-template-columns:1fr 1fr}}
 
+/* ===== KEYBOARD SHORTCUT MODAL ===== */
+.shortcut-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.shortcut-overlay.show{display:flex}
+.shortcut-modal{background:#fff;border-radius:20px;padding:28px 28px 22px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.22)}
+.shortcut-modal h3{font-size:1.05rem;font-weight:800;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.shortcut-grid{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;align-items:center}
+.sc-key{display:inline-flex;align-items:center;justify-content:center;min-width:40px;padding:4px 10px;background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:7px;font-family:monospace;font-size:.82rem;font-weight:700;color:#334155;box-shadow:0 2px 0 #94a3b8}
+.sc-desc{font-size:.83rem;color:var(--text)}
+.shortcut-close{width:100%;margin-top:18px;padding:9px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.shortcut-close:hover{opacity:.85}
+.kb-hint{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-light);padding:3px 10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;cursor:pointer;transition:all .2s;user-select:none}
+.kb-hint:hover{border-color:var(--primary);color:var(--primary)}
+
+/* ===== SCORING SHEET ===== */
+.scoring-wrap{padding:4px 0}
+.scoring-dim{background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;padding:13px 16px;margin-bottom:9px;transition:border-color .2s}
+.scoring-dim:focus-within{border-color:var(--primary)}
+.scoring-dim-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.scoring-range-row{display:flex;align-items:center;gap:10px}
+.scoring-range-row input[type=range]{flex:1;height:5px;-webkit-appearance:none;appearance:none;border-radius:3px;background:#dbeafe;outline:none;cursor:pointer}
+.scoring-range-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--primary);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+.scoring-score-val{font-size:1.1rem;font-weight:800;color:var(--primary);min-width:34px;text-align:right}
+.scoring-score-max{font-size:.75rem;color:var(--text-light)}
+.scoring-total-bar{background:linear-gradient(135deg,#0d3a6e,#1a56a0);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:#fff}
+.scoring-total-label{font-size:.88rem;font-weight:600;opacity:.9}
+.scoring-total-score{font-size:2.2rem;font-weight:900;line-height:1}
+.scoring-total-sub{font-size:.72rem;opacity:.75}
+.scoring-grade{font-size:.78rem;margin-top:3px;font-weight:600;padding:2px 10px;border-radius:10px;background:rgba(255,255,255,.18)}
+.scoring-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.scoring-actions .btn{flex:1;min-width:130px}
+.scoring-student-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.scoring-student-row input{flex:1;min-width:130px;padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:.85rem;font-family:inherit;outline:none}
+.scoring-student-row input:focus{border-color:var(--primary)}
+
+/* ===== CSV TOOLS ===== */
+.csv-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;padding-top:14px;border-top:1px solid #f0f4f8}
+.csv-row .btn{flex:1;min-width:130px}
+
+/* ===== INSTALL BANNER ===== */
+.install-banner{position:fixed;bottom:0;left:0;right:0;z-index:1500;background:linear-gradient(135deg,#0d3a6e,#1a56a0);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 24px rgba(0,0,0,.18);transform:translateY(110%);transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.install-banner.show{transform:translateY(0)}
+.install-banner-text{flex:1;font-size:.86rem;font-weight:600;line-height:1.4}
+.install-banner-sub{font-size:.73rem;opacity:.8;font-weight:400;margin-top:1px}
+.ib-btn{padding:8px 20px;background:#fff;color:var(--primary);border:none;border-radius:20px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.ib-btn:hover{opacity:.9}
+.ib-dismiss{padding:7px 12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:10px;color:#fff;font-size:.8rem;cursor:pointer;white-space:nowrap}
+@media(max-width:480px){.install-banner{padding:12px 14px;gap:8px}.install-banner-text{font-size:.78rem}}
 </style>
 </head>
 <body>
+
+<!-- Install Banner (PWA) -->
+<div class="install-banner" id="installBanner">
+  <div class="install-banner-text">📱 加到主畫面，隨時練習不中斷
+    <div class="install-banner-sub">支援離線抽題・計時，方便賽前快速練習</div>
+  </div>
+  <button class="ib-btn" onclick="triggerInstall()">安裝</button>
+  <button class="ib-dismiss" onclick="dismissInstall()">稍後</button>
+</div>
+
+<!-- Keyboard Shortcut Modal -->
+<div class="shortcut-overlay" id="shortcutOverlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="shortcut-modal">
+    <h3>⌨️ 鍵盤快速鍵一覽</h3>
+    <div class="shortcut-grid">
+      <span class="sc-key">Space</span><span class="sc-desc">開始準備計時 ／ 切換至演說計時 ／ 停止演說</span>
+      <span class="sc-key">Enter</span><span class="sc-desc">隨機抽題（非輸入框時有效）</span>
+      <span class="sc-key">R</span><span class="sc-desc">重置全部計時器</span>
+      <span class="sc-key">Esc</span><span class="sc-desc">關閉彈窗 ／ 關閉此說明</span>
+      <span class="sc-key">?</span><span class="sc-desc">顯示 ／ 隱藏此快速鍵說明</span>
+    </div>
+    <button class="shortcut-close" onclick="document.getElementById('shortcutOverlay').classList.remove('show')">關閉</button>
+  </div>
+</div>
 
 <!-- Notification -->
 <div class="notif" id="notif">
@@ -938,6 +1009,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
       </div><!-- /rec-section -->
 
     </div><!-- /station -->
+
+    <!-- Scoring Sheet Tool -->
+    <div class="card">
+      <div class="card-title">🎯 評分量表工具 <span style="font-size:.72rem;font-weight:400;color:var(--text-light);margin-left:6px">老師評分專用</span></div>
+      <p style="font-size:.82rem;color:var(--text-light);margin-bottom:14px">依正式比賽五大評分面向逐項打分，系統自動加總，一鍵列印精美評分單</p>
+      <div class="scoring-student-row">
+        <input type="text" id="scoreStudentName" placeholder="學生姓名（可留空）">
+        <input type="text" id="scoreTopicName" placeholder="演說題目（可留空）">
+      </div>
+      <div class="scoring-wrap">
+        <div class="scoring-dim">
+          <div class="scoring-dim-name">📝 內容 <span style="font-size:.72rem;color:var(--text-light);font-weight:400">主題明確、論述豐富、架構完整</span></div>
+          <div class="scoring-range-row">
+            <input type="range" min="0" max="45" value="35" id="sdim-content" oninput="updateScoring()">
+            <span class="scoring-score-val" id="sval-content">35</span><span class="scoring-score-max">/45</span>
+          </div>
+        </div>
+        <div class="scoring-dim">
+          <div class="scoring-dim-name">🎤 語音 <span style="font-size:.72rem;color:var(--text-light);font-weight:400">發音清晰、咬字正確、音量語速適中</span></div>
+          <div class="scoring-range-row">
+            <input type="range" min="0" max="30" value="24" id="sdim-voice" oninput="updateScoring()">
+            <span class="scoring-score-val" id="sval-voice">24</span><span class="scoring-score-max">/30</span>
+          </div>
+        </div>
+        <div class="scoring-dim">
+          <div class="scoring-dim-name">💫 表達 <span style="font-size:.72rem;color:var(--text-light);font-weight:400">語調自然、情感表達、感染聽眾</span></div>
+          <div class="scoring-range-row">
+            <input type="range" min="0" max="10" value="8" id="sdim-express" oninput="updateScoring()">
+            <span class="scoring-score-val" id="sval-express">8</span><span class="scoring-score-max">/10</span>
+          </div>
+        </div>
+        <div class="scoring-dim">
+          <div class="scoring-dim-name">🏛️ 臺風 <span style="font-size:.72rem;color:var(--text-light);font-weight:400">台風穩健、從容自信、眼神交流</span></div>
+          <div class="scoring-range-row">
+            <input type="range" min="0" max="10" value="8" id="sdim-stage" oninput="updateScoring()">
+            <span class="scoring-score-val" id="sval-stage">8</span><span class="scoring-score-max">/10</span>
+          </div>
+        </div>
+        <div class="scoring-dim">
+          <div class="scoring-dim-name">🧍 儀態 <span style="font-size:.72rem;color:var(--text-light);font-weight:400">姿態端正、表情自然、手勢得宜</span></div>
+          <div class="scoring-range-row">
+            <input type="range" min="0" max="5" value="4" id="sdim-manner" oninput="updateScoring()">
+            <span class="scoring-score-val" id="sval-manner">4</span><span class="scoring-score-max">/5</span>
+          </div>
+        </div>
+      </div>
+      <div class="scoring-total-bar">
+        <div>
+          <div class="scoring-total-label">📊 合計得分</div>
+          <div class="scoring-grade" id="scoringGrade">優秀</div>
+        </div>
+        <div style="text-align:right">
+          <div class="scoring-total-score"><span id="scoringTotal">79</span></div>
+          <div class="scoring-total-sub">/ 100 分</div>
+        </div>
+      </div>
+      <div class="scoring-actions">
+        <button class="btn btn-outline btn-sm" onclick="resetScoring()">🔄 重置</button>
+        <button class="btn btn-primary btn-sm" onclick="printScoreSheet()">🖨️ 列印評分單 PDF</button>
+      </div>
+    </div>
+
   </div><!-- /panel-practice -->
 
   <!-- =========== TOPICS =========== -->
@@ -976,6 +1109,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
           </select>
         </div>
         <button class="btn btn-primary" onclick="addTopic()">新增</button>
+      </div>
+      <div class="csv-row">
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇️ 匯出題庫 CSV</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('csvFileInput').click()">⬆️ 匯入 CSV 題庫</button>
+        <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none" onchange="importCSV(event)">
       </div>
     </div>
   </div><!-- /panel-topics -->
@@ -1156,6 +1294,7 @@ let aiOpt = 'outline';
 // ==================== INIT ====================
 renderList('all');
 document.getElementById('topicCount').textContent = TOPICS.length;
+updateScoring(); // 初始化評分量表滑桿顏色
 
 // ==================== PANEL ====================
 function showPanel(name, btn) {
@@ -1234,26 +1373,36 @@ function playBeep(freq,dur,vol,type){
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime+(dur||0.2)+0.05);
   }catch(e){}
 }
-function playGreenLight(){   // 4 分鐘到：兩聲上升清脆提示
-  playBeep(660,0.15,0.3,'sine');
-  setTimeout(()=>playBeep(880,0.22,0.3,'sine'),190);
+function playGreenLight(){   // 4 分鐘到：兩聲上升清脆（加大音量）
+  playBeep(660,0.2,0.7,'sine');
+  setTimeout(()=>playBeep(880,0.28,0.75,'sine'),200);
 }
-function playWarningBeep(){  // 4:30 警告：一聲中頻提示
-  playBeep(440,0.32,0.38,'triangle');
+function playWarningBeep(){  // 4:30 警告：連續兩聲強提示
+  playBeep(523,0.3,0.8,'triangle');
+  setTimeout(()=>playBeep(440,0.38,0.82,'triangle'),350);
 }
-function playRedAlarm(){     // 超過 5 分鐘：三聲下降警報
-  playBeep(880,0.18,0.42,'sawtooth');
-  setTimeout(()=>playBeep(660,0.18,0.42,'sawtooth'),250);
-  setTimeout(()=>playBeep(440,0.32,0.42,'sawtooth'),500);
+function playRedAlarm(){     // 超過 5 分鐘：強力三聲下降警報
+  playBeep(880,0.25,0.9,'sawtooth');
+  setTimeout(()=>playBeep(660,0.25,0.9,'sawtooth'),320);
+  setTimeout(()=>playBeep(440,0.4,0.9,'sawtooth'),640);
 }
-function playPrepEnd(){      // 準備時間結束：上升三音
-  [523,659,784].forEach((f,i)=>setTimeout(()=>playBeep(f,0.2,0.28,'sine'),i*130));
+function playOneMinWarning(){ // 剩下 1 分鐘：三連音強提示
+  playBeep(784,0.22,0.82,'sine');
+  setTimeout(()=>playBeep(784,0.22,0.82,'sine'),380);
+  setTimeout(()=>playBeep(1047,0.35,0.85,'sine'),760);
 }
-function playPrepCountdown(){ // 準備最後 10 秒每秒滴答
-  playBeep(880,0.08,0.2,'square');
+function playSpeechOneMin(){ // 演說剩 1 分鐘（到 4 分鐘前）：兩聲高頻提示
+  playBeep(1047,0.2,0.78,'sine');
+  setTimeout(()=>playBeep(1175,0.28,0.8,'sine'),280);
 }
-function playSuccess(){      // 完美時間！歡樂和弦
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playBeep(f,0.22,0.28,'sine'),i*110));
+function playPrepEnd(){      // 準備時間結束：上升三音（加大音量）
+  [523,659,784].forEach((f,i)=>setTimeout(()=>playBeep(f,0.3,0.75,'sine'),i*140));
+}
+function playPrepCountdown(){ // 準備最後 10 秒每秒滴答（加大音量）
+  playBeep(880,0.12,0.65,'square');
+}
+function playSuccess(){      // 完美時間！歡樂和弦（加大音量）
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playBeep(f,0.28,0.7,'sine'),i*110));
 }
 function toggleSound(btn){
   soundEnabled=!soundEnabled;
@@ -1313,7 +1462,7 @@ function startPrep() {
     if(pct<20){tc.className='timer-card tc-danger';document.getElementById('prepFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)'}
     else if(pct<40){tc.className='timer-card tc-warn';document.getElementById('prepFill').style.background='linear-gradient(90deg,#f59e0b,#f97316)'}
     else{tc.className='timer-card tc-on'}
-    if(prepSec===60) showNotif('⏰ 倒數 1 分鐘','準備時間剩最後 1 分鐘，請確認大綱！','nw');
+    if(prepSec===60){ showNotif('⏰ 倒數 1 分鐘','準備時間剩最後 1 分鐘，請確認大綱！','nw'); playOneMinWarning(); }
     if(prepSec<=10 && prepSec>0) playPrepCountdown(); // 最後10秒滴答聲
   },1000);
 }
@@ -1977,11 +2126,36 @@ async function genAI() {
         title=`✨ 名言金句推薦：「${curTopic.t}」`;
       }
       pc.sending('正在發送至 Gemini AI');
-      const res=await fetch(geminiUrl(activeModel,key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:userMsg}]}],generationConfig:{maxOutputTokens:2048,temperature:0.8}})});
-      pc.generating('AI 正在撰寫' + (optLabels[aiOpt]||'內容'));
+      const streamUrl = geminiUrl(activeModel,key,'streamGenerateContent')+'&alt=sse';
+      const res=await fetch(streamUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:userMsg}]}],generationConfig:{maxOutputTokens:2048,temperature:0.8}})});
       if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${res.status}`);}
-      const d=await res.json();
-      content=d.candidates?.[0]?.content?.parts?.[0]?.text||'（AI 未回傳內容，請重試）';
+      pc.generating('AI 正在逐字生成' + (optLabels[aiOpt]||'內容'));
+      // 切換至串流顯示模式
+      document.getElementById('loading').classList.remove('show');
+      document.getElementById('aiOutTitle').textContent=title;
+      document.getElementById('aiOut').classList.add('show');
+      document.getElementById('printRow').classList.remove('show');
+      document.getElementById('aiContent').innerHTML='<span style="color:#9ca3af;font-size:.85rem">AI 正在生成中…</span>';
+      const reader=res.body.getReader();
+      const decoder=new TextDecoder();
+      let buf=''; content='';
+      while(true){
+        const {done,value}=await reader.read();
+        if(done) break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n'); buf=lines.pop()||'';
+        for(const line of lines){
+          const t=line.trim();
+          if(!t||t==='data: [DONE]') continue;
+          const json=t.startsWith('data: ')?t.slice(6):t;
+          try{
+            const chunk=JSON.parse(json);
+            const txt=chunk.candidates?.[0]?.content?.parts?.[0]?.text||'';
+            if(txt){ content+=txt; document.getElementById('aiContent').innerHTML=renderMarkdown(content); }
+          }catch(e){}
+        }
+      }
+      if(!content) content='（AI 未回傳內容，請重試）';
     }catch(e){
       const isCors=e.message&&(e.message.includes('fetch')||e.message.includes('CORS'));
       content=isCors
@@ -2885,6 +3059,186 @@ ${name} 同學在訓練過程中展現了認真負責的學習態度，相信在
 
                                                           導師  敬上`;
 }
+
+// ==================== KEYBOARD SHORTCUTS ====================
+document.addEventListener('keydown',function(e){
+  const tag=document.activeElement.tagName;
+  if(['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key==='?'){
+    e.preventDefault();
+    document.getElementById('shortcutOverlay').classList.toggle('show');
+    return;
+  }
+  if(e.key==='Escape'){
+    document.getElementById('shortcutOverlay').classList.remove('show');
+    document.getElementById('alarmWrap').style.display='';
+    closeAlarm?.();
+    return;
+  }
+  if(e.key===' '||e.code==='Space'){
+    e.preventDefault();
+    if(speechOn){ stopSpeech(); }
+    else if(prepOn){ const btn=document.getElementById('btnSpeech'); if(!btn.disabled) startSpeech(); }
+    else if(curTopic){ startPrep(); }
+    else showNotif('⚠️ 請先抽題','按 Enter 隨機抽題後，再用 Space 開始計時！','nw');
+    return;
+  }
+  if(e.key==='Enter'){
+    e.preventDefault();
+    drawTopic?.();
+    return;
+  }
+  if(e.key==='r'||e.key==='R'){
+    e.preventDefault();
+    resetAll?.();
+    return;
+  }
+});
+
+// ==================== CSV EXPORT / IMPORT ====================
+function exportCSV(){
+  const rows=[['題目','分類'],...TOPICS.map(t=>[`"${t.t.replace(/"/g,'""')}"`,`"${t.c.replace(/"/g,'""')}"`])];
+  const bom='\uFEFF'; // UTF-8 BOM for Excel
+  const csv=bom+rows.map(r=>r.join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='國語演說題庫.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showNotif('✅ 匯出成功',`已匯出 ${TOPICS.length} 道題目為 CSV 檔案`,'');
+}
+function importCSV(e){
+  const file=e.target.files?.[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const text=ev.target.result.replace(/^\uFEFF/,''); // 去 BOM
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    let added=0, skipped=0;
+    for(let i=1;i<lines.length;i++){ // 跳過標題行
+      const cols=lines[i].match(/("(?:[^"]|"")*"|[^,]*)/g)||[];
+      const clean=c=>c.replace(/^"|"$/g,'').replace(/""/g,'"').trim();
+      const t=clean(cols[0]||''), c=clean(cols[1]||'');
+      if(!t){ skipped++; continue; }
+      const validCats=['品格道德','生活體驗','自然環境','夢想未來','社會關懷','科技創新','文化傳承'];
+      const cat=validCats.includes(c)?c:'品格道德';
+      if(TOPICS.some(x=>x.t===t)){ skipped++; continue; } // 跳過重複
+      TOPICS.push({t,c:cat}); added++;
+    }
+    saveFavs(); // 觸發重新渲染
+    document.getElementById('topicCount').textContent=TOPICS.length;
+    renderList('all');
+    showNotif('✅ 匯入完成',`新增 ${added} 題，跳過 ${skipped} 筆（重複或空白）`,'');
+    e.target.value=''; // 允許重複匯入同一檔案
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+// ==================== SCORING SHEET ====================
+function updateScoring(){
+  const dims=[
+    {id:'content',max:45},{id:'voice',max:30},
+    {id:'express',max:10},{id:'stage',max:10},{id:'manner',max:5}
+  ];
+  let total=0;
+  dims.forEach(d=>{
+    const v=parseInt(document.getElementById('sdim-'+d.id).value)||0;
+    document.getElementById('sval-'+d.id).textContent=v;
+    // 動態更新滑桿顏色
+    const pct=v/d.max*100;
+    const el=document.getElementById('sdim-'+d.id);
+    el.style.background=`linear-gradient(to right,var(--primary) ${pct}%,#dbeafe ${pct}%)`;
+    total+=v;
+  });
+  document.getElementById('scoringTotal').textContent=total;
+  const g=total>=90?'🏆 卓越':total>=80?'⭐ 優秀':total>=70?'✅ 良好':total>=60?'📈 尚可':'⚠️ 需加強';
+  document.getElementById('scoringGrade').textContent=g;
+}
+function resetScoring(){
+  const defaults={content:35,voice:24,express:8,stage:8,manner:4};
+  Object.entries(defaults).forEach(([k,v])=>{ document.getElementById('sdim-'+k).value=v; });
+  document.getElementById('scoreStudentName').value='';
+  document.getElementById('scoreTopicName').value='';
+  updateScoring();
+}
+function printScoreSheet(){
+  const dims=[
+    {id:'content',label:'📝 內容',max:45,desc:'主題明確、論述豐富、架構完整'},
+    {id:'voice',  label:'🎤 語音',max:30,desc:'發音清晰、咬字正確、音量語速適中'},
+    {id:'express',label:'💫 表達',max:10,desc:'語調自然、情感表達、感染聽眾'},
+    {id:'stage',  label:'🏛️ 臺風',max:10,desc:'台風穩健、從容自信、眼神交流'},
+    {id:'manner', label:'🧍 儀態',max:5, desc:'姿態端正、表情自然、手勢得宜'}
+  ];
+  let total=0;
+  const rows=dims.map(d=>{
+    const v=parseInt(document.getElementById('sdim-'+d.id).value)||0;
+    total+=v; const pct=Math.round(v/d.max*100);
+    return `<tr><td style="padding:12px 14px;border-bottom:1px solid #f0f4f8;font-weight:600">${d.label}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #f0f4f8;font-size:.82rem;color:#6b7280">${d.desc}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #f0f4f8;text-align:center;font-size:.8rem;color:#6b7280">${d.max} 分</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #f0f4f8;text-align:center"><div style="background:#e0f2fe;border-radius:6px;height:8px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:${pct}%;background:#1a56a0;border-radius:6px"></div></div></td>
+      <td style="padding:12px 14px;border-bottom:1px solid #f0f4f8;text-align:center;font-size:1.2rem;font-weight:800;color:#1a56a0">${v}</td></tr>`;
+  }).join('');
+  const grade=total>=90?'🏆 卓越（90-100）':total>=80?'⭐ 優秀（80-89）':total>=70?'✅ 良好（70-79）':total>=60?'📈 尚可（60-69）':'⚠️ 需加強（60分以下）';
+  const studentName=document.getElementById('scoreStudentName').value.trim()||'_______________';
+  const topicName=document.getElementById('scoreTopicName').value.trim()||(curTopic?curTopic.t:'_______________');
+  const date=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><title>演說評分單｜${studentName}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;max-width:700px;margin:0 auto;padding:36px 32px;color:#1f2937}
+.hd{background:linear-gradient(135deg,#0d3a6e,#1a56a0);color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden}
+.hd::after{content:'🎤';position:absolute;right:20px;top:10px;font-size:5rem;opacity:.1}
+.hd h1{font-size:1.4rem;font-weight:800;margin-bottom:8px}.meta{display:flex;gap:20px;flex-wrap:wrap;font-size:.83rem;opacity:.85}
+.meta span{background:rgba(255,255,255,.18);padding:3px 12px;border-radius:12px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.08);margin-bottom:24px}
+thead tr{background:linear-gradient(135deg,#1a56a0,#3b82f6)}
+thead th{padding:12px 14px;text-align:left;color:#fff;font-size:.82rem;font-weight:700}
+.total-box{background:linear-gradient(135deg,#0d3a6e,#1a56a0);border-radius:14px;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;color:#fff;margin-bottom:24px}
+.total-score{font-size:3rem;font-weight:900;line-height:1}.total-grade{font-size:1rem;font-weight:700;margin-top:4px;background:rgba(255,255,255,.18);padding:4px 14px;border-radius:12px;display:inline-block}
+.comment{border:1.5px solid #e5e7eb;border-radius:12px;padding:16px;min-height:80px;font-size:.85rem;color:#9ca3af}
+.ft{text-align:center;font-size:.75rem;color:#9ca3af;margin-top:24px;padding-top:16px;border-top:1px solid #f0f4f8}
+@media print{body{padding:24px}.hd{-webkit-print-color-adjust:exact;print-color-adjust:exact}.total-box{-webkit-print-color-adjust:exact;print-color-adjust:exact}thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="hd"><h1>🎤 國語演說比賽｜評分記錄單</h1>
+<div class="meta"><span>👤 學生：${studentName}</span><span>📌 題目：${topicName}</span><span>📅 ${date}</span></div></div>
+<table><thead><tr><th>評分面向</th><th>評分標準</th><th>滿分</th><th>得分比例</th><th>得分</th></tr></thead><tbody>${rows}</tbody></table>
+<div class="total-box"><div><div style="font-size:.88rem;opacity:.9;margin-bottom:6px">📊 本次演說總分</div><div class="total-grade">${grade}</div></div>
+<div style="text-align:right"><div class="total-score">${total}</div><div style="font-size:.78rem;opacity:.75">/ 100 分</div></div></div>
+<div style="font-size:.85rem;font-weight:700;color:#1f2937;margin-bottom:8px">📝 老師評語</div>
+<div class="comment">（老師手寫評語欄）</div>
+<div class="ft">🎤 國小國語演說比賽訓練平台｜評分記錄單｜${date}</div>
+<script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+// ==================== PWA INSTALL BANNER ====================
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  setTimeout(()=>{
+    if(!localStorage.getItem('pwaInstallDismissed')){
+      document.getElementById('installBanner').classList.add('show');
+    }
+  },3000);
+});
+function triggerInstall(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted') showNotif('✅ 安裝成功','訓練平台已加入主畫面！','');
+    document.getElementById('installBanner').classList.remove('show');
+    deferredInstallPrompt=null;
+  });
+}
+function dismissInstall(){
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('pwaInstallDismissed','1');
+}
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('installBanner').classList.remove('show');
+  showNotif('✅ 安裝完成','訓練平台已成功加入主畫面！','');
+});
 
 function copyLetter(){
   const box = document.getElementById('letterBox');
