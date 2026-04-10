@@ -433,6 +433,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .time-btn:hover{border-color:var(--primary);color:var(--primary)}
 .time-btn.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .time-btn:disabled{opacity:.45;cursor:not-allowed}
+.speech-mode-btn{padding:5px 13px;border:1.5px solid #e5e7eb;border-radius:20px;background:#fff;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:inherit;color:var(--text-light)}
+.speech-mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.speech-mode-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.speech-mode-btn:disabled{opacity:.45;cursor:not-allowed}
 
 /* ===== WORD COUNT BAR ===== */
 .wc-bar{display:flex;align-items:center;gap:12px;padding:8px 13px;background:#f8fafc;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;font-size:.77rem;flex-wrap:wrap;margin-bottom:14px}
@@ -761,6 +765,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
           <button class="time-btn" onclick="setPrepTime(30,this)">30 分鐘<span style="font-size:.65rem;opacity:.75">（正式比賽）</span></button>
         </div>
 
+        <!-- 演說時間模式選鈕 -->
+        <div class="prep-time-row" id="speechModeRow">
+          <label>🎤 演說時間：</label>
+          <button class="speech-mode-btn" onclick="setSpeechMode('3',this)">3 分鐘<span style="font-size:.65rem;opacity:.75">（初賽）</span></button>
+          <button class="speech-mode-btn on" onclick="setSpeechMode('45',this)">4～5 分鐘<span style="font-size:.65rem;opacity:.75">（決賽）</span></button>
+        </div>
+
         <div class="phase-row">
           <div class="phase-dot" id="pd0"></div>
           <span class="phase-lbl" id="pl0">準備階段</span>
@@ -785,16 +796,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
           <div class="timer-card" id="tc-speech">
             <div class="timer-lbl">🎤 演說時間</div>
             <div class="timer-dig" id="speechDig">00:00</div>
-            <div class="timer-sub">目標：4:00 ～ 5:00</div>
+            <div class="timer-sub" id="speechTimerSub">目標：4:00 ～ 5:00</div>
             <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" id="speechFill" style="width:0%;background:linear-gradient(90deg,#1a56a0,#3b82f6)"></div></div></div>
           </div>
         </div>
 
-        <div class="scoring-guide">
-          <h4>⚠️ 計時扣分規則</h4>
+        <div class="scoring-guide" id="scoringGuide45">
+          <h4>⚠️ 計時扣分規則（4～5 分鐘模式）</h4>
           <div class="rule-row"><div class="rule-dot rd-g">✓</div><span>演說時間介於 <strong>4:00 ~ 5:00</strong> 之間 → 正常計分，綠燈區間</span></div>
           <div class="rule-row"><div class="rule-dot rd-y">!</div><span>演說時間 <strong>未達 4 分鐘</strong> → 每少 30 秒扣 1 分</span></div>
           <div class="rule-row"><div class="rule-dot rd-r">✕</div><span>演說時間 <strong>超過 5 分鐘</strong> → 每超 30 秒扣 1 分，紅燈警示</span></div>
+        </div>
+        <div class="scoring-guide" id="scoringGuide3" style="display:none">
+          <h4>⚠️ 計時扣分規則（3 分鐘模式）</h4>
+          <div class="rule-row"><div class="rule-dot rd-g">✓</div><span>演說時間介於 <strong>2:30 ~ 3:00</strong> 之間 → 正常計分，綠燈區間</span></div>
+          <div class="rule-row"><div class="rule-dot rd-y">!</div><span>演說時間 <strong>未達 2:30</strong> → 每少 30 秒扣 1 分</span></div>
+          <div class="rule-row"><div class="rule-dot rd-r">✕</div><span>演說時間 <strong>超過 3 分鐘</strong> → 每超 30 秒扣 1 分，紅燈警示</span></div>
+          <div class="rule-row"><div class="rule-dot" style="background:#3b82f6;color:#fff;font-size:.7rem">♪</div><span><strong>2:00</strong> 時響提示音：提醒進入最後 1 分鐘，準備結尾</span></div>
         </div>
 
         <div class="timer-controls">
@@ -1535,6 +1553,8 @@ let prepSec=600, speechSec=0;
 let prepTmr=null, speechTmr=null;
 let prepOn=false, speechOn=false;
 let w4=false, w430=false, w5=false;
+let w2=false, w230=false, w3=false;
+let speechMode='45'; // '45' = 4~5分鐘, '3' = 3分鐘
 
 function setPrepTime(min,btn){
   if(prepOn||speechOn) return; // 計時中不允許更改
@@ -1545,6 +1565,16 @@ function setPrepTime(min,btn){
   document.getElementById('tc-prep').className='timer-card';
   document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+}
+
+function setSpeechMode(mode, btn){
+  if(prepOn||speechOn) return;
+  speechMode=mode;
+  document.querySelectorAll('.speech-mode-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('scoringGuide45').style.display=mode==='45'?'':'none';
+  document.getElementById('scoringGuide3').style.display=mode==='3'?'':'none';
+  document.getElementById('speechTimerSub').textContent=mode==='3'?'目標：2:30 ～ 3:00':'目標：4:00 ～ 5:00';
 }
 
 function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60)}
@@ -1559,6 +1589,7 @@ function startPrep() {
   document.getElementById('btnSpeech').disabled=false;
   // 鎖定時間選鈕
   document.querySelectorAll('.time-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.speech-mode-btn').forEach(b=>b.disabled=true);
   setPhase(0);
   setStatus('s-run','準備中…');
   playBeep(660,0.15,0.3); // 開始音
@@ -1585,32 +1616,62 @@ function startPrep() {
 function startSpeech() {
   if (speechOn) return;
   if(prepOn){clearInterval(prepTmr);prepOn=false;}
-  speechOn=true;w4=false;w430=false;w5=false;
+  speechOn=true;
+  w4=false;w430=false;w5=false;
+  w2=false;w230=false;w3=false;
   document.getElementById('btnSpeech').disabled=true;
   document.getElementById('btnStop').style.display='inline-flex';
   document.getElementById('btnStop').disabled=false;
   document.getElementById('scoreResult').classList.remove('show');
+  document.querySelectorAll('.speech-mode-btn').forEach(b=>b.disabled=true);
   setPhase(1);setStatus('s-run','演說進行中');
-  speechTmr=setInterval(()=>{
-    speechSec++;
-    document.getElementById('speechDig').textContent=fmt(speechSec);
-    const pct=Math.min((speechSec/300)*100,100);
-    document.getElementById('speechFill').style.width=pct+'%';
-    const tc=document.getElementById('tc-speech');
-    if(speechSec<240){
-      tc.className='timer-card tc-on';
-      document.getElementById('speechFill').style.background='linear-gradient(90deg,#1a56a0,#3b82f6)';
-    } else if(speechSec<300){
-      tc.className='timer-card tc-good';
-      document.getElementById('speechFill').style.background='linear-gradient(90deg,#10b981,#34d399)';
-    } else {
-      tc.className='timer-card tc-danger';
-      document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';
-    }
-    if(speechSec===240&&!w4){w4=true;playGreenLight();alarm('🟢','4 分鐘！','已達最低演說時間！請注意節奏，目標在 5 分鐘前完成。','#059669');}
-    if(speechSec===270&&!w430){w430=true;playWarningBeep();showNotif('⚠️ 還剩 30 秒','距離 5 分鐘上限還有 30 秒，請準備做結尾！','nw');}
-    if(speechSec===300&&!w5){w5=true;playRedAlarm();alarm('🔴','超過 5 分鐘！','已超過建議演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
-  },1000);
+
+  if(speechMode==='3'){
+    // ── 3 分鐘模式 ──
+    speechTmr=setInterval(()=>{
+      speechSec++;
+      document.getElementById('speechDig').textContent=fmt(speechSec);
+      const pct=Math.min((speechSec/180)*100,100);
+      document.getElementById('speechFill').style.width=pct+'%';
+      const tc=document.getElementById('tc-speech');
+      if(speechSec<150){
+        tc.className='timer-card tc-on';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#1a56a0,#3b82f6)';
+      } else if(speechSec<180){
+        tc.className='timer-card tc-good';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#10b981,#34d399)';
+      } else {
+        tc.className='timer-card tc-danger';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';
+      }
+      if(speechSec===120&&!w2){w2=true;playOneMinWarning();alarm('🔔','2 分鐘！','進入最後 1 分鐘！請注意節奏，準備進入結尾。','#d97706');}
+      if(speechSec===150&&!w230){w230=true;playGreenLight();alarm('🟢','2:30！','已進入綠燈區間，再 30 秒即達目標，把握結尾！','#059669');}
+      if(speechSec===165&&!w3){w3=true;playWarningBeep();showNotif('⚠️ 還剩 15 秒','距離 3 分鐘上限還有 15 秒，請準備做結尾！','nw');}
+      if(speechSec===180){playRedAlarm();alarm('🔴','超過 3 分鐘！','已超過演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
+    },1000);
+  } else {
+    // ── 4~5 分鐘模式（原有邏輯）──
+    speechTmr=setInterval(()=>{
+      speechSec++;
+      document.getElementById('speechDig').textContent=fmt(speechSec);
+      const pct=Math.min((speechSec/300)*100,100);
+      document.getElementById('speechFill').style.width=pct+'%';
+      const tc=document.getElementById('tc-speech');
+      if(speechSec<240){
+        tc.className='timer-card tc-on';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#1a56a0,#3b82f6)';
+      } else if(speechSec<300){
+        tc.className='timer-card tc-good';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#10b981,#34d399)';
+      } else {
+        tc.className='timer-card tc-danger';
+        document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';
+      }
+      if(speechSec===240&&!w4){w4=true;playGreenLight();alarm('🟢','4 分鐘！','已達最低演說時間！請注意節奏，目標在 5 分鐘前完成。','#059669');}
+      if(speechSec===270&&!w430){w430=true;playWarningBeep();showNotif('⚠️ 還剩 30 秒','距離 5 分鐘上限還有 30 秒，請準備做結尾！','nw');}
+      if(speechSec===300&&!w5){w5=true;playRedAlarm();alarm('🔴','超過 5 分鐘！','已超過建議演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
+    },1000);
+  }
 }
 
 function stopSpeech() {
@@ -1627,27 +1688,48 @@ function showScoreResult(sec) {
   const mn=Math.floor(sec/60), s=sec%60;
   let pts=10, details=[], cls='perfect', moji='🏆';
 
-  // Time scoring
-  if(sec<240){
-    const short=240-sec;
-    const deduct=Math.ceil(short/30);
-    pts-=deduct;
-    details.push({lbl:`演說時間 ${fmt(sec)}（未達 4 分鐘）`,sub:`少了 ${fmt(short)}，扣 ${deduct} 分`,cls:'tag-bad'});
-  } else if(sec>300){
-    const over=sec-300;
-    const deduct=Math.ceil(over/30);
-    pts-=deduct;
-    details.push({lbl:`演說時間 ${fmt(sec)}（超過 5 分鐘）`,sub:`超出 ${fmt(over)}，扣 ${deduct} 分`,cls:'tag-bad'});
+  if(speechMode==='3'){
+    // 3 分鐘模式：綠燈 2:30~3:00 (150~180s)
+    if(sec<150){
+      const short=150-sec;
+      const deduct=Math.ceil(short/30);
+      pts-=deduct;
+      details.push({lbl:`演說時間 ${fmt(sec)}（未達 2:30）`,sub:`少了 ${fmt(short)}，扣 ${deduct} 分`,cls:'tag-bad'});
+    } else if(sec>180){
+      const over=sec-180;
+      const deduct=Math.ceil(over/30);
+      pts-=deduct;
+      details.push({lbl:`演說時間 ${fmt(sec)}（超過 3 分鐘）`,sub:`超出 ${fmt(over)}，扣 ${deduct} 分`,cls:'tag-bad'});
+    } else {
+      details.push({lbl:`演說時間 ${fmt(sec)}（2:30 ～ 3:00 區間）`,sub:'時間控制完美，無扣分！',cls:'tag-ok'});
+    }
+    pts=Math.max(0,pts);
+    if(sec>=150&&sec<=180){cls='perfect';moji='🏆';}
+    else if(pts>=8){cls='good';moji='✅';}
+    else{cls='bad';moji='⚠️';}
   } else {
-    details.push({lbl:`演說時間 ${fmt(sec)}（4:00 ～ 5:00 區間）`,sub:'時間控制完美，無扣分！',cls:'tag-ok'});
+    // 4~5 分鐘模式
+    if(sec<240){
+      const short=240-sec;
+      const deduct=Math.ceil(short/30);
+      pts-=deduct;
+      details.push({lbl:`演說時間 ${fmt(sec)}（未達 4 分鐘）`,sub:`少了 ${fmt(short)}，扣 ${deduct} 分`,cls:'tag-bad'});
+    } else if(sec>300){
+      const over=sec-300;
+      const deduct=Math.ceil(over/30);
+      pts-=deduct;
+      details.push({lbl:`演說時間 ${fmt(sec)}（超過 5 分鐘）`,sub:`超出 ${fmt(over)}，扣 ${deduct} 分`,cls:'tag-bad'});
+    } else {
+      details.push({lbl:`演說時間 ${fmt(sec)}（4:00 ～ 5:00 區間）`,sub:'時間控制完美，無扣分！',cls:'tag-ok'});
+    }
+    pts=Math.max(0,pts);
+    if(sec>=240&&sec<=300){cls='perfect';moji='🏆';}
+    else if(pts>=8){cls='good';moji='✅';}
+    else{cls='bad';moji='⚠️';}
   }
-  pts=Math.max(0,pts);
 
-  if(sec>=240&&sec<=300){cls='perfect';moji='🏆';}
-  else if(pts>=8){cls='good';moji='✅';}
-  else{cls='bad';moji='⚠️';}
-
-  const label=sec>=240&&sec<=300?'時間控制完美！無扣分':(pts>=8?`計時結果：扣 ${10-pts} 分`:`計時結果：扣 ${10-pts} 分，需要加強`);
+  const perfectRange=speechMode==='3'?'2:30 ～ 3:00':'4:00 ～ 5:00';
+  const label=(cls==='perfect')?'時間控制完美！無扣分':(pts>=8?`計時結果：扣 ${10-pts} 分`:`計時結果：扣 ${10-pts} 分，需要加強`);
   document.getElementById('scoreMain').textContent=`計時得分：${pts} / 10`;
   document.getElementById('scoreMain').className='score-main '+cls;
   document.getElementById('scoreLabel').textContent=label;
@@ -1679,6 +1761,7 @@ function resetAll() {
   document.getElementById('prepDig').textContent=fmt(prepTotalSec);
   // 解鎖時間選鈕
   document.querySelectorAll('.time-btn').forEach(b=>b.disabled=false);
+  document.querySelectorAll('.speech-mode-btn').forEach(b=>b.disabled=false);
   document.getElementById('speechDig').textContent='00:00';
   document.getElementById('prepFill').style.width='100%';
   document.getElementById('speechFill').style.width='0%';
