@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.2</title>
+<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.6</title>
 <style>
 :root{
   --primary:#1a56a0;--primary-light:#3b82f6;--primary-dark:#0d3a6e;
@@ -172,8 +172,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   <h1>🎤 國語演說訓練平台｜開發藍圖與進度表</h1>
   <p>完整功能回顧 × 未來開發路線圖 × 深度優化建議參考</p>
   <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1">
-    <div class="header-badge">📅 最後更新：2026 年 4 月 9 日</div>
-    <div class="header-badge header-badge-new">🆕 版本 v2.3｜累計 29 項完成功能 ＋ PDF 列印全面優化</div>
+    <div class="header-badge">📅 最後更新：2026 年 4 月 15 日</div>
+    <div class="header-badge header-badge-new">🆕 版本 v2.6｜累計 43 項完成功能 ＋ AI 串聯生成 ＋ 計時模式 ＋ 指定題目</div>
   </div>
 </div>
 
@@ -186,22 +186,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <span class="v-badge v-done">✅ v2.0 AI 全功能</span>
     <span class="v-badge v-done">✅ v2.1 Quick Win</span>
     <span class="v-badge v-done">✅ v2.2 UI/UX 美化 ＋ 部署</span>
-    <span class="v-badge v-current">🔄 v2.3 PDF 列印全面優化（當前）</span>
-    <span class="v-badge v-next">🔜 v2.5 練習紀錄系統</span>
+    <span class="v-badge v-done">✅ v2.3 PDF 列印全面優化</span>
+    <span class="v-badge v-done">✅ v2.4 Quick Win 新功能包</span>
+    <span class="v-badge v-done">✅ v2.5 AI 輸出強化 ＋ 題庫擴充</span>
+    <span class="v-badge v-current">🔄 v2.6 計時模式 ＋ 指定題目（當前）</span>
+    <span class="v-badge v-next">🔜 v2.7 練習紀錄系統</span>
     <span class="v-badge v-future">📅 v3.0 教師班級管理</span>
     <span class="v-badge v-future">📅 v4.0 多語言競賽</span>
   </div>
 
   <!-- 統計數字 -->
   <div class="stats-row">
-    <div class="stat-card s-done"><div class="stat-num">29</div><div class="stat-lbl">✅ 已完成功能</div></div>
+    <div class="stat-card s-done"><div class="stat-num">43</div><div class="stat-lbl">✅ 已完成功能</div></div>
     <div class="stat-card s-phase"><div class="stat-num">6</div><div class="stat-lbl">🚀 未來開發階段</div></div>
-    <div class="stat-card s-idea"><div class="stat-num">46</div><div class="stat-lbl">💡 待開發功能點子</div></div>
+    <div class="stat-card s-idea"><div class="stat-num">52</div><div class="stat-lbl">💡 待開發功能點子</div></div>
     <div class="stat-card s-ai"><div class="stat-num">14</div><div class="stat-lbl">🤖 AI 深化方向</div></div>
   </div>
 
   <!-- 已完成功能 -->
-  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.3，共 29 項）</div>
+  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.6，共 43 項）</div>
   <div class="done-grid">
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>比賽資訊頁面</h4><p>時間規定、評分配分視覺化、9 大訓練心法、5 週備賽流程步驟</p><span class="done-tag tag-core">核心功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>隨機抽題系統</h4><p>56 道題目、7 大分類、抽題動畫效果、可按分類篩選抽題</p><span class="done-tag tag-core">核心功能</span></div></div>
@@ -237,6 +240,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>四種模式 PDF 列印個性化標題</h4><p>演說大綱（青綠）、完整逐字稿（藍色）、主題建議（橙色）、名言金句（紫色）四種 PDF 各有獨立色彩主題、類型徽章、右上角絲帶標記與個性化頁尾提醒，一眼辨識</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-print">列印</span></div></div>
     <!-- v2.3 修正 -->
     <div class="done-item new-item"><div class="new-label">v2.3 修正</div><div class="done-check">✓</div><div class="done-body"><h4>PDF 右上角絲帶標籤限定第一頁</h4><p>修正 <code>position: fixed</code> 導致標籤固定於每頁右上角、遮擋後續頁面文字的問題，改為 <code>position: absolute</code>，標籤僅出現在第一頁封面區域，不影響正文閱讀</p><span class="done-tag tag-print">列印</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <!-- v2.4 新增 -->
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>鍵盤快速鍵系統</h4><p>Space 開始/暫停計時、Enter 隨機抽題、R 重置計時器、Esc 關閉彈窗；? 鍵開啟完整快捷鍵說明面板，右下角常設提示按鈕</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>演說評分量表工具</h4><p>內建五大評分維度滑桿（語音表達、內容組織、台風儀態、情感表達、時間掌控），各 20 分，即時加總顯示，支援一鍵列印正式評分單 PDF</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-print">列印</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>PWA 安裝提示 Banner</h4><p>手機瀏覽時底部顯示「加到主畫面」引導 Banner，含操作說明；支援 beforeinstallprompt 事件；使用者可選擇關閉且不再提示，偏好存 localStorage</p><span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>AI 內容一鍵複製</h4><p>生成內容下方新增「複製文字」按鈕，Clipboard API 複製純文字（去除 Markdown 符號），方便直接傳給家長或貼入 Word</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫 CSV 匯出 ／ 匯入</h4><p>一鍵將全部題目（含自訂題）匯出為 CSV，加入 UTF-8 BOM 讓 Excel 不亂碼；支援選取 CSV 檔批次匯入，自動跳過重複題目</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>倒數最後 1 分鐘提示音強化</h4><p>剩餘 1 分鐘時播放三音階漸強提示音（Do-Do-Mi，0.82–0.85 音量），比原有單音更清晰醒目，確保學生在演說專注狀態下也能聽見</p><span class="done-tag tag-audio">音頻</span></div></div>
+    <!-- v2.5 新增 -->
+    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成後字數 ＋ 時長即時統計</h4><p>大綱、逐字稿生成完成後，底部自動顯示字數統計列：總字數、預估演說時長（150 字/分鐘）、長度評估（偏短 / 適中 / 偏長）三色提示</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>換一個版本按鈕</h4><p>四種 AI 模式生成後均顯示「🔄 換一個版本」按鈕，每次要求 AI 提供全新切入角度；版本計數器即時更新（v1, v2…），Prompt 自動帶入「不重複」指令</p><span class="done-tag tag-ai">AI 功能</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>方向 ／ 金句 → 一鍵串聯生成</h4><p>「主題建議」生成後出現串聯面板，點選任一方向立即展開為完整大綱；「名言金句」生成後點選任一金句，AI 將其自然融入完整逐字稿——兩階段一鍵串接</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫大幅擴充（55 → 107 題）</h4><p>七大類別全面補充，各類達 13–18 題：新增寬恕、自律、海洋汙染、再生能源、新住民、布袋戲、太空探索、母語等 52 道新題；README 同步更新；題庫來源區塊詳述資料出處</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>參考資源「題庫來源」區塊</h4><p>新增卡片說明 107 道題目整理依據：教育部全國語文競賽官網、111/112 年官方子站、小貓老師痞客邦彙整、新北市 113 年題庫 PDF、臺北市教育局競賽專區，6 個可追溯來源</p><span class="done-tag tag-core">內容資源</span></div></div>
+    <!-- v2.6 新增 -->
+    <div class="done-item new-item"><div class="new-label">v2.6 新增</div><div class="done-check">✓</div><div class="done-body"><h4>3 分鐘演說計時模式</h4><p>新增「演說時間」選鈕：3 分鐘（初賽）/ 4–5 分鐘（決賽）；3 分鐘模式：2:00 響三音提示音 ＋ 彈窗提醒「最後 1 分鐘」、2:30 綠燈音效進入目標區間、3:00 紅燈警示；計分規則、評估結果均依模式切換</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-audio">音頻</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.6 修正</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成改回標準模式（修正串流截斷）</h4><p>串流輸出（SSE）導致內容只顯示 90 字的問題，改回 generateContent 標準 API，完整等待回應後一次渲染；進度條 UI 保留不變</p><span class="done-tag tag-ai">AI 功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.6 新增</div><div class="done-check">✓</div><div class="done-body"><h4>直接指定題目搜尋功能</h4><p>隨機抽題按鈕下方新增關鍵字搜尋輸入框，即時篩選 107 道題目並顯示類別標籤；支援 ↑↓ 鍵移動、Enter 確認、Esc 關閉；選定後與隨機抽題相同動畫流程</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-core">核心功能</span></div></div>
   </div>
 
   <!-- 新一批 Quick Win -->
@@ -244,26 +264,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="callout-icon">💡</div>
     <div>
       <h4>下一批 Quick Win（建議本週推進）</h4>
-      <p>v2.1 Quick Win 6 項 ＋ v2.2 UI 美化與部署 5 項 ＋ v2.3 PDF 修正 1 項，共 12 項已全數完成！以下為新一輪快速優化項目，每項預估 1–3 天獨立完成，依影響力排序推薦。</p>
+      <p>v2.4–v2.6 共 14 項功能全數完成，包含鍵盤快速鍵、評分量表、PWA Banner、CSV 匯出入、換版本按鈕、串聯生成、題庫擴充、3 分鐘計時、指定題目搜尋等。以下為新一輪快速優化項目，每項預估 1–3 天獨立完成。</p>
     </div>
   </div>
 
-  <div class="sec-title"><span>⚡</span> 新一批 Quick Win 快速優化清單（各 1–3 天）</div>
+  <div class="sec-title"><span>⚡</span> v2.7 Quick Win 快速優化清單（各 1–3 天）</div>
   <table class="qw-table">
     <thead><tr><th>功能</th><th>說明</th><th>難度</th><th>影響力</th></tr></thead>
     <tbody>
-      <tr><td><strong>🌙 深色模式切換</strong></td><td>一鍵切換 Dark Mode，CSS 變數已就緒，加入 prefers-color-scheme 偵測與 toggle 邏輯，偏好儲存 localStorage</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>📋 題庫 CSV 匯出入</strong></td><td>將題庫匯出為 CSV 檔，或由 CSV 批次匯入；方便老師在 Excel 整理後一次匯入大量題目</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>⌨️ 鍵盤快速鍵操作</strong></td><td>Space 開始/暫停計時、Enter 抽題、R 重置、Esc 關閉彈窗；加入快捷鍵提示面板（? 鍵呼出）</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🔄 多題連練模式</strong></td><td>一次抽出 3–5 道題，學生同一 Session 依序演說，計時分別記錄，最後顯示總覽成績</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🔒 視窗焦點鎖定保護</strong></td><td>計時進行中切換視窗時顯示「計時暫停中」警示，防止意外離開導致超時；Page Visibility API 偵測</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>📊 字數分段比例分析</strong></td><td>逐字稿輸入後自動分析「開場/主體/結語」各段佔比，以進度條視覺化呈現</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🎵 節拍器輔助練習</strong></td><td>可調速度的節拍音效（60–120 BPM），幫助學生練習穩定語速，Web Audio API 實作</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>📤 逐字稿一鍵複製</strong></td><td>AI 生成逐字稿旁加入「複製全文」按鈕，Clipboard API 一鍵複製純文字，方便傳給老師</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>🔊 AI 串流輸出（逐字顯示）</strong></td><td>使用 Gemini Streaming API 讓 AI 回應逐字顯示，消除等待空白感，大幅提升使用體驗</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
-      <tr><td><strong>📑 AI 內容分頁標籤切換</strong></td><td>多次生成的 AI 內容以分頁標籤保留（最近 5 筆），可切換對比不同版本的大綱或逐字稿</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🎯 演說評分量表工具</strong></td><td>內建正式比賽五大評分面向（內容、語音、臺風、儀態、表達），老師可逐項打分加總，自動產出評分單</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
-      <tr><td><strong>📱 安裝提示 Banner</strong></td><td>手機瀏覽時底部顯示「加到主畫面」引導提示，附操作截圖說明，提升回訪率</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>🌙 深色模式切換</strong></td><td>一鍵切換 Dark Mode，CSS 變數已就緒，加入 prefers-color-scheme 偵測與 toggle 邏輯；偏好儲存 localStorage，頁面重開自動套用</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📑 AI 多版本歷史標籤</strong></td><td>換版本後以標籤列保留最近 3 筆（v1/v2/v3），可切換對比不同版本大綱或逐字稿；長按任一版本標籤可刪除</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
+      <tr><td><strong>🔄 多題連練模式</strong></td><td>一次抽出 3–5 道題，學生同一 Session 依序演說，計時分別記錄，最後顯示總覽成績與最佳時間</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🔒 視窗焦點鎖定保護</strong></td><td>計時進行中切換視窗或分頁時暫停計時並顯示警示；Page Visibility API 偵測，防止意外離開導致超時</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📊 演說結構比例視覺化</strong></td><td>AI 生成逐字稿後，自動以色塊比例條標示「開場 / 主體 / 結語」三段佔比，理想比例 10/70/20%；偏差時給予建議</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🎵 節拍器輔助練習</strong></td><td>可調速節拍音效（60–150 字/分鐘），Web Audio API 實作；幫助學生感知語速，配合字數統計找到適合節奏</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>🏷️ 題目難易度標籤</strong></td><td>每道題目加入難易度標記（入門 / 中階 / 挑戰），讓學生有目標地從簡單題目開始練習，逐步挑戰複雜主題</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>📅 最近練習題目紀錄</strong></td><td>localStorage 記錄最近 5 道練習過的題目，顯示在抽題區塊下方，方便快速重練或換一種角度再練一次</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>📢 全文朗讀功能</strong></td><td>AI 生成逐字稿後，一鍵用 Web Speech API 朗讀全文，讓學生邊聽邊校對內容，支援調整語速</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🔍 口頭禪偵測（基礎版）</strong></td><td>錄音辨識結束後，自動統計「然後」「就是」「那個」「嗯」等 15 種口頭禪次數，以高亮標示在逐字稿中</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
+      <tr><td><strong>⚙️ 自訂時間模式</strong></td><td>演說時間新增「自訂」選項（1–10 分鐘自由輸入），滿足各縣市不同比賽規定（有些縣市為 3:30 或 4:00 上限）</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🖨️ 評分表列印強化</strong></td><td>評分量表新增「學生姓名 / 題目 / 日期」欄位自動帶入，列印輸出對應四種模式的個性化評分單 PDF</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
     </tbody>
   </table>
 
@@ -280,25 +300,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="deep-card" style="border-top-color:#ef4444">
       <div class="deep-title" style="color:#ef4444">🔥 第一優先（本週）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>⭐ AI 串流輸出</strong>：逐字顯示生成結果，消除等待焦慮，體驗感提升最大</span></li>
-        <li style="color:var(--text)"><span><strong>⭐ 演說評分量表</strong>：老師最需要的打分工具，直接對應比賽評分表</span></li>
-        <li style="color:var(--text)"><span><strong>⭐ 逐字稿一鍵複製</strong>：1 小時完成，老師每天都會用到</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ AI 多版本歷史標籤</strong>：換版本後保留 v1/v2/v3 對比，是換版本功能的必要延伸</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ 口頭禪偵測</strong>：演說訓練核心痛點，學生自己看不出來但影響分數極大</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ 最近練習題目紀錄</strong>：低成本 localStorage，大幅提升回訪使用體驗</span></li>
       </ul>
     </div>
     <div class="deep-card" style="border-top-color:#f59e0b">
       <div class="deep-title" style="color:#f59e0b">⚡ 第二優先（下週）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>鍵盤快速鍵</strong>：Space 控制計時，大幅提升操作效率</span></li>
-        <li style="color:var(--text)"><span><strong>深色模式</strong>：CSS 變數已就緒，半天完成，護眼使用</span></li>
-        <li style="color:var(--text)"><span><strong>CSV 題庫匯出入</strong>：老師可在 Excel 整理後批次匯入</span></li>
+        <li style="color:var(--text)"><span><strong>練習歷史紀錄系統</strong>：每次演說紀錄題目、時間、得分，是長期使用黏著度的關鍵</span></li>
+        <li style="color:var(--text)"><span><strong>題目難易度標籤</strong>：幫助學生有階梯地練習，老師也能更好安排課程</span></li>
+        <li style="color:var(--text)"><span><strong>自訂演說時間模式</strong>：各縣市規定不同，支援彈性輸入才能滿足所有用戶</span></li>
       </ul>
     </div>
     <div class="deep-card" style="border-top-color:#3b82f6">
       <div class="deep-title" style="color:#3b82f6">📋 第三優先（月內）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>練習歷史紀錄</strong>：讓學生看見成長，是長期黏著的關鍵</span></li>
-        <li style="color:var(--text)"><span><strong>個人進步折線圖</strong>：搭配紀錄系統，視覺化成長軌跡</span></li>
-        <li style="color:var(--text)"><span><strong>口頭禪偵測</strong>：演說訓練的核心痛點之一</span></li>
+        <li style="color:var(--text)"><span><strong>個人進步折線圖</strong>：搭配紀錄系統，Chart.js 視覺化成長軌跡</span></li>
+        <li style="color:var(--text)"><span><strong>演說結構比例視覺化</strong>：開場/主體/結語比例是常見失分點</span></li>
+        <li style="color:var(--text)"><span><strong>全文朗讀功能</strong>：Web Speech API 一行即可完成，CP 值極高</span></li>
       </ul>
     </div>
   </div>
@@ -535,28 +555,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
         <p>✅ Markdown 渲染升級、AI 生成進度條 UI、動作/語氣標籤美化、GitHub Pages 自動部署、四種模式 PDF 個性化列印——5 項全數完成！🎉 平台正式上線！</p>
       </div>
     </div>
+    <div class="tl-item d-done">
+      <div class="tl-dot d-done"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
+        <h4>v2.3｜PDF 列印全面優化（累計 29 項功能）</h4>
+        <p>✅ 修正 PDF 右上角絲帶標籤 position: fixed → absolute，確保標籤只出現在第一頁，正文閱讀不再被遮擋</p>
+      </div>
+    </div>
+    <div class="tl-item d-done">
+      <div class="tl-dot d-done"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
+        <h4>v2.4｜Quick Win 新功能包（累計 35 項功能）</h4>
+        <p>✅ 鍵盤快速鍵、演說評分量表工具（五維滑桿＋列印）、PWA 安裝提示 Banner、AI 內容一鍵複製、題庫 CSV 匯出入、最後 1 分鐘三音階提示音——6 項全數完成！</p>
+      </div>
+    </div>
+    <div class="tl-item d-done">
+      <div class="tl-dot d-done"></div>
+      <div class="tl-body">
+        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
+        <h4>v2.5｜AI 輸出強化 ＋ 題庫大擴充（累計 40 項功能）</h4>
+        <p>✅ 字數＋時長即時統計、換一個版本按鈕（帶版本計數）、方向→大綱／金句→逐字稿一鍵串聯、題庫從 55 題擴充到 107 題、題庫資料來源區塊——5 項全數完成！</p>
+      </div>
+    </div>
     <div class="tl-item d-current">
       <div class="tl-dot d-current"></div>
       <div class="tl-body">
         <span class="tl-date" style="background:#fef3c7;color:#92400e">🔄 當前版本</span>
-        <h4>v2.3｜PDF 列印全面優化（累計 29 項功能）</h4>
-        <p>✅ 修正 PDF 右上角絲帶標籤 position: fixed → absolute，確保標籤只出現在第一頁，第二頁以後文字完整可讀，不再被標籤遮擋</p>
+        <h4>v2.6｜3 分鐘計時模式 ＋ 指定題目（累計 43 項功能）</h4>
+        <p>✅ 3 分鐘演說計時模式（2 分鐘提示音、2:30 綠燈、3:00 紅燈）、AI 生成改回標準模式修正串流截斷問題、直接指定題目關鍵字搜尋功能（鍵盤導航＋即時篩選）</p>
       </div>
     </div>
     <div class="tl-item d-next">
       <div class="tl-dot d-next"></div>
       <div class="tl-body">
         <span class="tl-date" style="background:#dbeafe;color:#1a56a0">🔜 建議下一步（1–2 週）</span>
-        <h4>v2.4｜Quick Win 新功能包</h4>
-        <p>⭐ AI 串流輸出、逐字稿一鍵複製、演說評分量表、深色模式、鍵盤快速鍵、CSV 題庫匯出入——每項 1–3 天獨立完成，建議依影響力依序推進</p>
+        <h4>v2.7｜Quick Win 新功能包</h4>
+        <p>⭐ AI 多版本歷史標籤、口頭禪偵測、最近練習題目紀錄、題目難易度標籤、自訂演說時間、全文朗讀功能——每項 1–3 天獨立完成</p>
       </div>
     </div>
     <div class="tl-item d-next">
       <div class="tl-dot d-next"></div>
       <div class="tl-body">
         <span class="tl-date" style="background:#dbeafe;color:#1a56a0">📅 短期（1 個月內）</span>
-        <h4>v2.5｜練習紀錄 ＋ 個人進步曲線 ＋ AI 深化</h4>
-        <p>localStorage 歷次紀錄、Chart.js 折線圖、語速計算、AI 雷達圖五維評分、口頭禪偵測</p>
+        <h4>v2.8｜練習紀錄 ＋ 個人進步曲線 ＋ AI 深化</h4>
+        <p>localStorage 歷次紀錄、Chart.js 折線圖、語速計算、AI 雷達圖五維評分、口頭禪偵測趨勢</p>
       </div>
     </div>
     <div class="tl-item d-future">
@@ -596,10 +640,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 </div>
 
 <div class="footer">
-  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.3</p>
-  <p>已完成 29 項功能 ｜ 6 大未來開發階段 ｜ 46+ 待開發功能點子 ｜ 14 大深度技術優化方向</p>
+  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.6</p>
+  <p>已完成 43 項功能 ｜ 6 大未來開發階段 ｜ 52+ 待開發功能點子 ｜ 14 大深度技術優化方向</p>
   <p>🌐 線上版：<a href="https://cagoooo.github.io/speech/" style="color:#93c5fd">cagoooo.github.io/speech</a></p>
-  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 9 日</p>
+  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 15 日</p>
 </div>
 
 </body>
