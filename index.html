@@ -523,8 +523,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .ps-card{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-radius:12px;padding:14px;text-align:center;border:1.5px solid #99f6e4}
 .ps-num{font-size:1.55rem;font-weight:800;color:#0d9488;line-height:1.1}
 .ps-lbl{font-size:.73rem;color:#6b7280;margin-top:4px}
-.letter-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:20px 22px;margin:14px 0;min-height:200px;font-size:.88rem;line-height:2;white-space:pre-wrap;color:var(--text);word-break:break-word}
-.letter-box.empty{display:flex;align-items:center;justify-content:center;color:#9ca3af;font-style:italic;min-height:160px;white-space:normal}
+.letter-box{position:relative;background:linear-gradient(180deg,#fffbeb 0%,#fff8e0 100%);border:1.5px solid #fde68a;border-radius:14px;padding:34px 30px 28px;margin:14px 0;min-height:200px;font-size:.92rem;line-height:1.95;color:#3f3f3f;word-break:break-word;box-shadow:0 4px 16px rgba(217,119,6,.08),inset 0 0 0 2px rgba(255,255,255,.4);font-family:"Noto Serif TC","Source Han Serif TC",serif}
+.letter-box::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#fb923c,#f59e0b,#eab308,#f59e0b,#fb923c);border-radius:14px 14px 0 0}
+.letter-box.empty{display:flex;align-items:center;justify-content:center;color:#9ca3af;font-style:italic;min-height:160px;padding:34px 30px;font-family:inherit}
+.letter-box.empty::before{display:none}
+.letter-box h1,.letter-box h2,.letter-box h3{font-weight:800;color:#b45309;margin:0 0 14px;text-align:center;letter-spacing:2px;font-family:"Noto Sans TC",sans-serif}
+.letter-box h1{font-size:1.3rem;padding-bottom:12px;border-bottom:2px double #d97706}
+.letter-box h2{font-size:1.1rem}
+.letter-box h3{font-size:1rem;text-align:left;color:#92400e}
+.letter-box p{margin:0 0 14px;text-indent:2em}
+.letter-box p:first-of-type,.letter-box p.no-indent{text-indent:0}
+.letter-box strong{color:#b45309;font-weight:700;background:linear-gradient(transparent 62%,#fde68a 62%);padding:0 2px}
+.letter-box em{color:#6b21a8;font-style:normal;font-weight:600}
+.letter-box ul,.letter-box ol{margin:10px 0 16px;padding-left:0;list-style:none}
+.letter-box ol li,.letter-box ul li{position:relative;padding:10px 14px 10px 52px;margin-bottom:8px;background:rgba(255,255,255,.55);border-left:3px solid #f59e0b;border-radius:0 10px 10px 0;text-indent:0}
+.letter-box ol{counter-reset:lt}
+.letter-box ol li{counter-increment:lt}
+.letter-box ol li::before{content:counter(lt);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-family:"Noto Sans TC",sans-serif;box-shadow:0 2px 4px rgba(217,119,6,.35)}
+.letter-box ul li::before{content:'✦';position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#f59e0b;font-size:1.1rem}
+.letter-box blockquote{border-left:4px solid #f59e0b;padding:8px 16px;margin:12px 0;color:#78350f;background:rgba(254,243,199,.6);border-radius:0 8px 8px 0;font-style:italic}
+.letter-box .lt-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;justify-content:flex-end}
+.letter-box .lt-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:#fff;border:1.5px solid #f59e0b;color:#92400e;border-radius:999px;font-size:.78rem;font-weight:700;font-family:"Noto Sans TC",sans-serif;box-shadow:0 1px 3px rgba(217,119,6,.15)}
+.letter-box .lt-sign{margin-top:22px;padding-top:18px;border-top:1.5px dashed #fcd34d;text-align:right;color:#92400e;font-weight:700;letter-spacing:3px;font-size:1rem}
+.letter-box .lt-greeting{color:#92400e;font-weight:700;font-size:1rem;margin-bottom:16px;text-indent:0}
+.letter-box code{background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:.88em}
 .letter-loading{display:none;text-align:center;padding:22px;color:#0d9488;font-size:.85rem}
 .letter-loading.show{display:block}
 .btn-teal{background:linear-gradient(135deg,#0d9488,#14b8a6);color:#fff;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;font-size:.88rem;font-weight:600;font-family:inherit;transition:all .2s}
@@ -3584,6 +3606,95 @@ async function analyzeEmotion(transcriptText, key) {
 }
 
 // ==================== PARENT LETTER ====================
+// 將純文字／Markdown 信件轉換為美化 HTML
+function renderLetterHTML(raw){
+  if(!raw) return '';
+  // 1) 基礎轉義
+  let s = raw
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  // 2) 提取 metadata 列：**通知日期:** 2026年... / **主旨:** ...
+  const metas=[];
+  s = s.replace(/^\*\*([^*\n]{2,10}?)\*\*\s*[:：]\s*(.+)$/gm, (m, lbl, val)=>{
+    metas.push({lbl:lbl.trim(), val:val.trim()});
+    return '__META_REMOVED__';
+  });
+
+  // 3) 抓取信件抬頭（**國語演說比賽訓練通知** / **家長通知信**）
+  let header='';
+  s = s.replace(/^\*\*(國語演說[^*\n]+通知[^*\n]*|家長通知信[^*\n]*)\*\*$/m, (m, t)=>{ header=t.trim(); return '__HEADER_REMOVED__'; });
+
+  // 4) 抓取稱謂（**敬愛的家長您好：** / 親愛的家長您好：）
+  let greeting='';
+  s = s.replace(/^\*\*([^*\n]*家長[^*\n]*[：:])\*\*$/m, (m, g)=>{ greeting=g.trim(); return '__GREETING_REMOVED__'; });
+  if(!greeting){
+    s = s.replace(/^(親愛的家長[^：:\n]*[：:]|敬愛的家長[^：:\n]*[：:])$/m, (m, g)=>{ greeting=g.trim(); return '__GREETING_REMOVED__'; });
+  }
+
+  // 5) 抓取署名（最後一行含「敬上」「導師」「老師」）
+  let signature='';
+  const sigRe=/\n([^\n]*(?:敬上|謹上|謹啟|導師|老師)[^\n]*)$/;
+  const sm=s.match(sigRe);
+  if(sm){ signature=sm[1].trim().replace(/\s+/g,' '); s=s.replace(sigRe,''); }
+
+  // 6) 解析主體：依空行分段
+  const blocks = s.split(/\n{2,}/).map(b=>b.trim()).filter(b=>b && b!=='__META_REMOVED__' && b!=='__HEADER_REMOVED__' && b!=='__GREETING_REMOVED__');
+
+  // inline styles helper
+  function inline(t){
+    return t
+      .replace(/\*\*([^*\n]+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g,'<em>$1</em>')
+      .replace(/`([^`\n]+)`/g,'<code>$1</code>')
+      .replace(/「([^」\n]+)」/g,'「<strong>$1</strong>」');
+  }
+
+  let bodyHtml='';
+  for(const b of blocks){
+    // 移除殘留標記
+    if(/^(?:__META_REMOVED__|__HEADER_REMOVED__|__GREETING_REMOVED__)+$/.test(b)) continue;
+    const lines = b.split('\n').map(l=>l.trim()).filter(l=>l && l!=='__META_REMOVED__' && l!=='__HEADER_REMOVED__' && l!=='__GREETING_REMOVED__');
+    if(!lines.length) continue;
+
+    // 判斷是否為編號清單（1. 2. 3. 或 一、二、三、）
+    const numRe=/^(\d+[.．、]|[一二三四五六七八九十][、.])\s*(.+)$/;
+    const bulletRe=/^[-*•✦]\s+(.+)$/;
+    const isOrdered=lines.every(l=>numRe.test(l));
+    const isBullet=lines.every(l=>bulletRe.test(l));
+
+    if(isOrdered){
+      bodyHtml += '<ol>' + lines.map(l=>{
+        const m=l.match(numRe); return `<li>${inline(m[2])}</li>`;
+      }).join('') + '</ol>';
+    } else if(isBullet){
+      bodyHtml += '<ul>' + lines.map(l=>{
+        const m=l.match(bulletRe); return `<li>${inline(m[1])}</li>`;
+      }).join('') + '</ul>';
+    } else {
+      // 段落（多行合併）
+      const joined=lines.join('<br>');
+      bodyHtml += `<p>${inline(joined)}</p>`;
+    }
+  }
+
+  // 7) 組合最終 HTML
+  let html='';
+  if(header) html += `<h1>📧 ${header}</h1>`;
+  if(metas.length){
+    html += '<div class="lt-meta">' + metas.map(m=>{
+      const ic = /日期/.test(m.lbl)?'📅':/主旨|題目/.test(m.lbl)?'📌':/姓名|學生/.test(m.lbl)?'👤':'📝';
+      return `<span class="lt-chip">${ic} ${m.lbl}：${m.val}</span>`;
+    }).join('') + '</div>';
+  }
+  if(greeting) html += `<div class="lt-greeting">${greeting}</div>`;
+  html += bodyHtml;
+  if(signature) html += `<div class="lt-sign">${signature}</div>`;
+
+  return html;
+}
+
 async function generateParentLetter(){
   const name    = (document.getElementById('studentName').value.trim()) || '同學';
   const note    = document.getElementById('parentNote').value.trim();
@@ -3651,10 +3762,12 @@ async function generateParentLetter(){
   loading.classList.remove('show');
   pc.reset();
   box.className = 'letter-box';
-  box.textContent = letter;
+  box.innerHTML = renderLetterHTML(letter);
   box.dataset.raw  = letter;
   actions.style.display = 'flex';
   showNotif('✅ 家長通知信已生成','可一鍵複製或透過 Email 傳送','');
+  // UX：生成完成後平滑捲動至信件頂部
+  setTimeout(()=>smoothScrollTo('letterBox', 90), 150);
 }
 
 function _defaultLetter(name,count,perfect,topic,note,date){
