@@ -657,7 +657,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .ib-btn:hover{opacity:.9}
 .ib-dismiss{padding:7px 12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:10px;color:#fff;font-size:.8rem;cursor:pointer;white-space:nowrap}
 @media(max-width:480px){.install-banner{padding:12px 14px;gap:8px}.install-banner-text{font-size:.78rem}}
+
+/* ==================== Supabase 登入 UI ==================== */
+.auth-wrap{position:absolute;top:14px;right:18px;z-index:10;display:flex;align-items:center;gap:10px}
+.auth-login-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#fff;color:#3c4043;border:none;border-radius:22px;font-size:.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:all .2s;font-family:inherit}
+.auth-login-btn:hover{background:#f8f9fa;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.auth-login-btn svg{width:18px;height:18px;flex-shrink:0}
+.auth-chip{display:inline-flex;align-items:center;gap:10px;padding:6px 10px 6px 6px;background:rgba(255,255,255,.95);border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.auth-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#e5e7eb;display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden;border:2px solid #fff}
+.auth-name{font-size:.82rem;font-weight:700;color:#374151;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-btn-sm{padding:6px 12px;background:#fff;border:1px solid #e5e7eb;border-radius:18px;font-size:.75rem;font-weight:600;cursor:pointer;color:#6b7280;font-family:inherit;transition:all .2s}
+.auth-btn-sm:hover{border-color:#ef4444;color:#ef4444}
+.auth-sync-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:#dcfce7;color:#15803d;border-radius:10px;font-size:.7rem;font-weight:700}
+@media(max-width:640px){.auth-wrap{top:10px;right:10px;gap:6px}.auth-name{max-width:80px;font-size:.76rem}.auth-login-btn{padding:8px 13px;font-size:.78rem}}
+
+/* ==================== 練習歷史頁面 ==================== */
+.hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.hist-stat{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;padding:16px 12px;text-align:center;border:1.5px solid #bfdbfe}
+.hist-stat-val{font-size:1.7rem;font-weight:800;color:#1e40af;line-height:1.1;display:block;margin-bottom:4px}
+.hist-stat-lbl{font-size:.73rem;color:#64748b;font-weight:600}
+.hist-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.hist-filter label{font-size:.82rem;color:#6b7280;font-weight:600}
+.hist-filter select{padding:6px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:inherit;font-size:.82rem;outline:none;cursor:pointer}
+.hist-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e5e7eb;background:#fff}
+.hist-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:640px}
+.hist-table thead th{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:.82rem;letter-spacing:.5px;white-space:nowrap}
+.hist-table tbody tr{border-bottom:1px solid #f3f4f6;transition:background .15s}
+.hist-table tbody tr:hover{background:#f9fafb}
+.hist-table tbody tr:last-child{border-bottom:none}
+.hist-table td{padding:10px 14px;color:#374151;vertical-align:middle}
+.hist-table td.topic-cell{font-weight:600;color:#1e293b;max-width:220px;word-break:break-word}
+.hist-badge-perfect{display:inline-block;padding:3px 8px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-radius:10px;font-size:.72rem;font-weight:700}
+.hist-badge-good{display:inline-block;padding:3px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.72rem;font-weight:700}
+.hist-badge-ok{display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:10px;font-size:.72rem;font-weight:700}
+.hist-badge-bad{display:inline-block;padding:3px 8px;background:#fee2e2;color:#991b1b;border-radius:10px;font-size:.72rem;font-weight:700}
+.hist-del-btn{background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:4px 8px;border-radius:6px;transition:all .15s}
+.hist-del-btn:hover{background:#fee2e2}
+.hist-empty{text-align:center;padding:60px 20px;color:#9ca3af;font-size:.9rem}
+.hist-empty-big{font-size:3rem;margin-bottom:12px;opacity:.4}
+.hist-login-prompt{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px dashed #93c5fd;border-radius:14px;padding:32px 24px;text-align:center;color:#1e40af;margin-bottom:20px}
+.hist-login-prompt .big-emoji{font-size:3.2rem;margin-bottom:10px}
+.hist-login-prompt h4{font-size:1.1rem;color:#1e3a8a;margin-bottom:10px;font-weight:700}
+.hist-login-prompt p{color:#3730a3;font-size:.88rem;margin-bottom:16px}
+@media(max-width:640px){.hist-stats{grid-template-columns:repeat(2,1fr)}}
 </style>
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -704,6 +749,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 <!-- Header -->
 <div class="header">
   <div class="header-deco">🎤</div>
+  <div class="auth-wrap" id="authWrap"></div>
   <h1>🎤 國小國語演說比賽訓練平台</h1>
   <p>專業指導老師資源中心｜模擬抽題・計時訓練・AI 逐字稿輔助</p>
 </div>
@@ -716,6 +762,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <button class="nav-btn" onclick="showPanel('topics',this)">📋 題庫管理</button>
     <button class="nav-btn" onclick="showPanel('resources',this)">🔗 參考資源</button>
     <button class="nav-btn" onclick="showPanel('parent',this)">📧 親師互動</button>
+    <button class="nav-btn" id="navHistory" onclick="showPanel('history',this)" style="display:none">📊 我的歷史</button>
   </div>
 </nav>
 
@@ -1408,7 +1455,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
         <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:7px">學生姓名：</label>
         <input id="studentName" type="text" placeholder="請輸入學生姓名（選填）"
           style="width:100%;max-width:300px;padding:9px 14px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s"
-          onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#d1d5db'">
+          onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#d1d5db'"
+          oninput="syncStudentName(this.value)">
       </div>
       <div style="margin-bottom:16px">
         <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:7px">補充說明（選填）：</label>
@@ -1454,6 +1502,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     </div>
   </div><!-- /panel-parent -->
 
+  <!-- =========== 我的歷史 =========== -->
+  <div class="panel" id="panel-history">
+    <div class="card">
+      <div class="card-title">📊 我的練習歷史紀錄</div>
+      <p style="color:var(--text-light);font-size:.88rem;margin-bottom:16px">登入後，每次完成演說的紀錄都會自動同步到雲端，無論換哪台電腦都能查看。</p>
+      <div id="historyContent">
+        <div class="hist-empty">
+          <div class="hist-empty-big">☁️</div>
+          <p>載入中…</p>
+        </div>
+      </div>
+      <div style="text-align:right;margin-top:14px">
+        <button class="btn btn-outline" onclick="renderHistoryPanel()" style="padding:8px 14px;font-size:.82rem">🔄 重新整理</button>
+      </div>
+    </div>
+  </div><!-- /panel-history -->
+
 </div><!-- /main -->
 
 <div class="footer">
@@ -1462,6 +1527,278 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 </div>
 
 <script>
+// ==================== SUPABASE 雲端同步 ====================
+const SUPABASE_URL = 'https://ybxfsmrawdcisylwjger.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_G9uDeZVEZHWBx3zJmUWc3g_78vSGlJB';
+let sb = null;
+let currentUser = null;
+let cloudReady = false;
+
+function initSupabase(){
+  if(!window.supabase){console.warn('Supabase SDK 未載入');return;}
+  try{
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}
+    });
+    cloudReady = true;
+  }catch(e){console.error('Supabase init error', e);}
+}
+
+async function signInWithGoogle(){
+  if(!cloudReady){showNotif('⚠️ 雲端服務未就緒','請稍後再試或重新整理頁面。','nw');return;}
+  const {error} = await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo: window.location.href.split('#')[0].split('?')[0]}
+  });
+  if(error) showNotif('❌ 登入失敗', error.message, 'nd');
+}
+
+async function signOut(){
+  if(!cloudReady) return;
+  await sb.auth.signOut();
+  currentUser = null;
+  updateAuthUI();
+  showNotif('👋 已登出','期待下次再見！','');
+}
+
+async function initAuth(){
+  if(!cloudReady) return;
+  try{
+    const {data:{session}} = await sb.auth.getSession();
+    if(session){
+      currentUser = session.user;
+      await loadCloudData();
+    }
+    updateAuthUI();
+    sb.auth.onAuthStateChange(async (event, session)=>{
+      if(event==='SIGNED_IN' && session){
+        const wasSignedIn = !!currentUser;
+        currentUser = session.user;
+        await loadCloudData();
+        updateAuthUI();
+        if(!wasSignedIn){
+          const name = currentUser.user_metadata?.full_name || currentUser.email || '使用者';
+          showNotif('✅ 登入成功', `歡迎回來，${name}！練習紀錄將自動同步到雲端。`, '');
+        }
+      } else if(event==='SIGNED_OUT'){
+        currentUser = null;
+        updateAuthUI();
+      }
+    });
+  }catch(e){console.error('initAuth error', e);}
+}
+
+function updateAuthUI(){
+  const wrap = document.getElementById('authWrap');
+  const navHist = document.getElementById('navHistory');
+  if(!wrap) return;
+  if(currentUser){
+    const meta = currentUser.user_metadata || {};
+    const name = meta.full_name || meta.name || currentUser.email?.split('@')[0] || '使用者';
+    const avatar = meta.avatar_url || meta.picture;
+    wrap.innerHTML = `
+      <div class="auth-chip" title="${currentUser.email||''}">
+        ${avatar ? `<img src="${avatar}" class="auth-avatar" alt="">` : `<span class="auth-avatar">${name.charAt(0)}</span>`}
+        <span class="auth-name">${escapeHTML(name)}</span>
+        <button class="auth-btn-sm" onclick="signOut()">登出</button>
+      </div>
+    `;
+    if(navHist) navHist.style.display = 'inline-flex';
+  } else {
+    wrap.innerHTML = `
+      <button class="auth-login-btn" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>使用 Google 登入</span>
+      </button>
+    `;
+    if(navHist) navHist.style.display = 'none';
+  }
+}
+
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function loadCloudData(){
+  if(!cloudReady || !currentUser) return;
+  try{
+    // 載入使用者設定（姓名、自訂題目）
+    const {data:s} = await sb.from('user_settings').select('*').eq('user_id', currentUser.id).maybeSingle();
+    if(s){
+      if(s.student_name){
+        const nameInput = document.getElementById('studentName');
+        if(nameInput && !nameInput.value) nameInput.value = s.student_name;
+        const scoreNameInput = document.getElementById('scoreStudentName');
+        if(scoreNameInput && !scoreNameInput.value) scoreNameInput.value = s.student_name;
+      }
+      if(Array.isArray(s.custom_topics) && s.custom_topics.length){
+        s.custom_topics.forEach(ct=>{
+          if(ct && ct.t && !TOPICS.find(t=>t.t===ct.t)){
+            TOPICS.push({t:ct.t, c:ct.c||'品格道德'});
+          }
+        });
+        const tc = document.getElementById('topicCount'); if(tc) tc.textContent = TOPICS.length;
+        if(typeof renderList === 'function'){
+          const activeBtn = document.querySelector('#listCatBar .cat-btn.on');
+          const cat = activeBtn ? activeBtn.textContent.trim() : 'all';
+          renderList(cat==='全部'?'all':cat);
+        }
+      }
+    }
+    // 載入練習統計
+    const {count:total} = await sb.from('practice_records').select('*',{count:'exact', head:true}).eq('user_id', currentUser.id);
+    const {count:perfectN} = await sb.from('practice_records').select('*',{count:'exact', head:true}).eq('user_id', currentUser.id).eq('is_perfect', true);
+    if(typeof total === 'number'){
+      practiceCount = total;
+      const ep = document.getElementById('statPractice'); if(ep) ep.textContent = total;
+      const psc = document.getElementById('ps-count'); if(psc) psc.textContent = total;
+    }
+    if(typeof perfectN === 'number'){
+      perfectCount = perfectN;
+      const ep = document.getElementById('statPerfect'); if(ep) ep.textContent = perfectN;
+      const psp = document.getElementById('ps-perfect'); if(psp) psp.textContent = perfectN;
+    }
+  }catch(e){console.error('loadCloudData error', e);}
+}
+
+async function saveCloudPracticeRecord(rec){
+  if(!cloudReady || !currentUser) return;
+  try{
+    const {error} = await sb.from('practice_records').insert({
+      user_id: currentUser.id,
+      topic: rec.topic,
+      topic_category: rec.category || null,
+      speech_mode: rec.mode || null,
+      duration_sec: rec.duration_sec,
+      score: rec.score,
+      is_perfect: !!rec.is_perfect,
+      note: rec.note || null
+    });
+    if(error) console.error('saveCloudPracticeRecord', error);
+  }catch(e){console.error(e);}
+}
+
+async function saveCloudSettings(fields){
+  if(!cloudReady || !currentUser) return;
+  try{
+    const payload = {user_id: currentUser.id, updated_at: new Date().toISOString(), ...fields};
+    const {error} = await sb.from('user_settings').upsert(payload);
+    if(error) console.error('saveCloudSettings', error);
+  }catch(e){console.error(e);}
+}
+
+async function syncCustomTopicsToCloud(){
+  if(!cloudReady || !currentUser || typeof DEFAULT_TOPIC_COUNT === 'undefined') return;
+  // 超出預設數量的題目視為自訂題目
+  const customs = TOPICS.slice(DEFAULT_TOPIC_COUNT).map(t=>({t:t.t, c:t.c}));
+  await saveCloudSettings({custom_topics: customs});
+}
+
+async function renderHistoryPanel(){
+  const box = document.getElementById('historyContent');
+  if(!box) return;
+  if(!currentUser){
+    box.innerHTML = `
+      <div class="hist-login-prompt">
+        <div class="big-emoji">☁️</div>
+        <h4>請先登入 Google 帳號</h4>
+        <p>登入後，你的練習紀錄會自動同步到雲端，換電腦也能查看完整歷史！</p>
+        <button class="auth-login-btn" onclick="signInWithGoogle()" style="background:#4285F4;color:#fff;box-shadow:0 2px 8px rgba(66,133,244,.35)">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="18" height="18"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23zM5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62zM12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span style="color:#fff">使用 Google 登入</span>
+        </button>
+      </div>`;
+    return;
+  }
+  box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">⏳</div><p>載入中…</p></div>';
+  try{
+    const {data:records, error} = await sb.from('practice_records').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(100);
+    if(error){box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${error.message}</p></div>`;return;}
+    if(!records || !records.length){
+      box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">📝</div><p>尚無練習紀錄，開始你的第一次演說練習吧！</p></div>';
+      return;
+    }
+    const total = records.length;
+    const perfect = records.filter(r=>r.is_perfect).length;
+    const totalSec = records.reduce((s,r)=>s+(r.duration_sec||0),0);
+    const avgSec = Math.round(totalSec/total);
+    const avgM = Math.floor(avgSec/60), avgS = avgSec%60;
+    const avgScore = (records.reduce((s,r)=>s+(r.score||0),0)/total).toFixed(1);
+
+    let html = `
+      <div class="hist-stats">
+        <div class="hist-stat"><span class="hist-stat-val">${total}</span><span class="hist-stat-lbl">總練習次數</span></div>
+        <div class="hist-stat"><span class="hist-stat-val">${perfect}</span><span class="hist-stat-lbl">🏆 完美次數</span></div>
+        <div class="hist-stat"><span class="hist-stat-val">${avgM}:${String(avgS).padStart(2,'0')}</span><span class="hist-stat-lbl">平均時長</span></div>
+        <div class="hist-stat"><span class="hist-stat-val">${avgScore}</span><span class="hist-stat-lbl">平均計時分數</span></div>
+      </div>
+      <div class="hist-table-wrap">
+        <table class="hist-table">
+          <thead><tr><th>日期時間</th><th>題目</th><th>模式</th><th>時長</th><th>計時分</th><th>操作</th></tr></thead>
+          <tbody>`;
+    records.forEach(r=>{
+      const d = new Date(r.created_at);
+      const dstr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const m = Math.floor((r.duration_sec||0)/60), s = (r.duration_sec||0)%60;
+      const modeMap = {'3':'3 分','45':'4-5 分','custom':'自訂'};
+      const modeText = modeMap[r.speech_mode] || '—';
+      const score = r.score ?? 0;
+      let badgeClass='hist-badge-bad', badgeIcon='📝';
+      if(r.is_perfect){badgeClass='hist-badge-perfect';badgeIcon='🏆';}
+      else if(score>=9){badgeClass='hist-badge-good';badgeIcon='⭐';}
+      else if(score>=7){badgeClass='hist-badge-ok';badgeIcon='✅';}
+      html += `<tr>
+        <td style="white-space:nowrap;font-size:.8rem;color:#6b7280">${dstr}</td>
+        <td class="topic-cell">${escapeHTML(r.topic)}</td>
+        <td style="white-space:nowrap">${modeText}</td>
+        <td style="white-space:nowrap;font-variant-numeric:tabular-nums">${m}:${String(s).padStart(2,'0')}</td>
+        <td><span class="${badgeClass}">${badgeIcon} ${score}</span></td>
+        <td><button class="hist-del-btn" onclick="deleteHistRecord('${r.id}')" title="刪除此紀錄">🗑️</button></td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    box.innerHTML = html;
+  }catch(e){
+    box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${e.message}</p></div>`;
+  }
+}
+
+async function deleteHistRecord(id){
+  if(!cloudReady || !currentUser) return;
+  if(!confirm('確定要刪除這筆練習紀錄嗎？')) return;
+  try{
+    const {error} = await sb.from('practice_records').delete().eq('id', id).eq('user_id', currentUser.id);
+    if(error){showNotif('❌ 刪除失敗', error.message, 'nd');return;}
+    showNotif('✅ 已刪除','練習紀錄已從雲端移除。','');
+    await loadCloudData();
+    renderHistoryPanel();
+  }catch(e){console.error(e);}
+}
+
+// 學生姓名 debounce 同步（避免每個字元都寫雲端）
+let _nameSyncT=null;
+function syncStudentName(val){
+  localStorage.setItem('studentName', val);
+  if(typeof saveCloudSettings==='function' && currentUser){
+    clearTimeout(_nameSyncT);
+    _nameSyncT = setTimeout(()=>saveCloudSettings({student_name: val.trim()}), 700);
+  }
+}
+
+// 網頁載入時初始化 Supabase（同步執行）
+initSupabase();
+
+// 網頁完全載入後啟動 Auth（等 DOM 就緒）
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', ()=>{ updateAuthUI(); initAuth(); });
+} else {
+  updateAuthUI();
+  setTimeout(initAuth, 0);
+}
+
 // ==================== DATA ====================
 const TOPICS = [
   // ── 品格道德 (18題) ──
@@ -1534,6 +1871,7 @@ const TOPICS = [
   {t:'台灣小吃文化的故事',c:'文化傳承'},{t:'歌仔戲，台灣的故事',c:'文化傳承'},
   {t:'傳統工藝，不能消失的美',c:'文化傳承'},
 ];
+const DEFAULT_TOPIC_COUNT = TOPICS.length; // 記錄預設題目數量，之後新增的視為自訂題目
 
 let drawCat = 'all';
 let curTopic = null;
@@ -1572,6 +1910,10 @@ function showPanel(name, btn) {
     document.getElementById('ps-perfect').textContent=perfectCount||0;
     const topEl=document.getElementById('ps-topic');
     topEl.textContent=curTopic?(curTopic.t.length>8?curTopic.t.substring(0,8)+'…':curTopic.t):'—';
+  }
+  if(name==='history'){
+    // ☁️ 切換到歷史紀錄分頁時自動載入
+    setTimeout(()=>{ if(typeof renderHistoryPanel==='function') renderHistoryPanel(); }, 50);
   }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -2034,10 +2376,22 @@ function showScoreResult(sec) {
   setTimeout(()=>smoothScrollTo('scoreResult', 70), 100);
   setStatus(cls==='bad'?'s-warn':'s-done', cls==='perfect'?'演說完成！時間完美':'演說完成');
 
-  // Gamification
-  const isPerfect=(sec>=240&&sec<=300);
+  // Gamification（以 cls 判斷「完美」以支援 3 分/4-5 分/自訂 三種模式）
+  const isPerfect = (cls==='perfect');
   updatePracticeStats(isPerfect);
   if(isPerfect){ setTimeout(launchConfetti,300); setTimeout(playSuccess,500); }
+
+  // ☁️ 雲端同步：若已登入，自動儲存本次練習紀錄
+  if(currentUser && curTopic){
+    saveCloudPracticeRecord({
+      topic: curTopic.t,
+      category: curTopic.c,
+      mode: speechMode,
+      duration_sec: sec,
+      score: pts,
+      is_perfect: isPerfect
+    });
+  }
 }
 
 function resetAll() {
@@ -3034,6 +3388,8 @@ function addTopic(){
   renderList('all');
   document.querySelectorAll('#listCatBar .cat-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
   showNotif('✅ 新增成功',`「${n}」已加入題庫（${c}）`,'');
+  // ☁️ 雲端同步：若已登入，同步自訂題目
+  if(typeof syncCustomTopicsToCloud==='function') syncCustomTopicsToCloud();
 }
 
 // ==================== RECORDING / SPEECH RECOGNITION ====================
