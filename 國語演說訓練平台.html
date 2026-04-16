@@ -1861,7 +1861,7 @@ function startSpeech() {
       if(speechSec===165&&!w3){w3=true;playWarningBeep();showNotif('⚠️ 還剩 15 秒','距離 3 分鐘上限還有 15 秒，請準備做結尾！','nw');}
       if(speechSec===180){playRedAlarm();alarm('🔴','超過 3 分鐘！','已超過演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
     },1000);
-  } else {
+  } else if(speechMode==='45'){
     // ── 4~5 分鐘模式（原有邏輯）──
     speechTmr=setInterval(()=>{
       speechSec++;
