@@ -1535,6 +1535,15 @@ if(savedSN) document.getElementById('scoreStudentName').value=savedSN;
 const _sd=new Date(); document.getElementById('scoreDateInput').value=_sd.toISOString().slice(0,10);
 
 // ==================== PANEL ====================
+// 平滑捲動至指定元素（考慮上方固定導覽列留白）
+function smoothScrollTo(el, offset=90){
+  if(typeof el==='string') el=document.getElementById(el);
+  if(!el) return;
+  const rect=el.getBoundingClientRect();
+  const top=window.pageYOffset+rect.top-offset;
+  window.scrollTo({top:Math.max(top,0), behavior:'smooth'});
+}
+
 function showPanel(name, btn) {
   if(name==='parent'){
     document.getElementById('ps-count').textContent=practiceCount||0;
@@ -1546,6 +1555,8 @@ function showPanel(name, btn) {
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
+  // 切換分頁時自動捲回頂部
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 // ==================== DRAW ====================
@@ -1582,6 +1593,8 @@ function drawTopic() {
       document.getElementById('aiOut').classList.remove('show');
       document.getElementById('printRow').classList.remove('show');
       showNotif('🎲 抽題成功！', `「${curTopic.t}」，請開始準備計時。`, '');
+      // UX：抽題完成後平滑捲動至題目卡片，讓使用者立刻看到結果
+      setTimeout(()=>smoothScrollTo('topicBox', 80), 200);
     }
   }, 75);
 }
@@ -1657,6 +1670,8 @@ function pickTopic(idx) {
   document.getElementById('pickTopicClear').style.display = 'block';
   closeTopicPick();
   showNotif('✅ 已指定題目！', `「${t.t}」，可開始計時練習。`, '');
+  // UX：指定題目後自動捲動至題目卡片
+  setTimeout(()=>smoothScrollTo('topicBox', 80), 150);
 }
 
 function clearTopicPick() {
@@ -1797,6 +1812,8 @@ function startPrep() {
   if (!curTopic) { showNotif('⚠️ 請先抽題','先抽取一道題目後再開始計時！','nw'); return; }
   prepOn=true;
   prepSec=prepTotalSec; // 以目前選定的時間開始
+  // UX：開始準備時自動捲動至計時器區塊
+  setTimeout(()=>smoothScrollTo('tc-prep', 80), 50);
   document.getElementById('btnPrep').disabled=true;
   document.getElementById('btnSpeech').disabled=false;
   // 鎖定時間選鈕
@@ -1831,6 +1848,8 @@ function startSpeech() {
   speechOn=true;
   w4=false;w430=false;w5=false;
   w2=false;w230=false;w3=false;
+  // UX：開始演說時自動捲動至計時器卡片，方便學生專注看時間
+  setTimeout(()=>smoothScrollTo('tc-speech', 80), 50);
   document.getElementById('btnSpeech').disabled=true;
   document.getElementById('btnStop').style.display='inline-flex';
   document.getElementById('btnStop').disabled=false;
@@ -1989,6 +2008,8 @@ function showScoreResult(sec) {
       💡 注意：計時扣分僅為演說評分的一部分。語音（40%）、內容（45%）、台風（10%）仍由評審老師現場評定。
     </div>`;
   document.getElementById('scoreResult').classList.add('show');
+  // UX：演說結束顯示成績時自動捲動至分數卡片
+  setTimeout(()=>smoothScrollTo('scoreResult', 70), 100);
   setStatus(cls==='bad'?'s-warn':'s-done', cls==='perfect'?'演說完成！時間完美':'演說完成');
 
   // Gamification
@@ -2551,6 +2572,8 @@ async function genAI(opts={}) {
   document.getElementById('loading').classList.add('show');
   document.getElementById('aiOut').classList.remove('show');
   document.getElementById('printRow').classList.remove('show');
+  // UX：生成開始時，自動捲動至 AI 載入進度區塊，讓使用者看到即時進度
+  setTimeout(()=>smoothScrollTo('loading', 100), 50);
   const wcBar=document.getElementById('aiWcBar');
   if(wcBar) wcBar.style.display='none';
   const tp=document.getElementById('tipsChainPanel');
@@ -2622,6 +2645,8 @@ async function genAI(opts={}) {
   setupChainButtons(aiOpt, content);
   if(aiOpt==='script') analyzeStructure(content);
   else { const sp=document.getElementById('structPanel'); if(sp) sp.style.display='none'; }
+  // UX：渲染完成後平滑捲動至結果頂部，方便使用者從頭閱讀
+  setTimeout(()=>smoothScrollTo('aiOut', 90), 100);
 }
 
 function demoContent(t,opt){
