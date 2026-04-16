@@ -1733,6 +1733,14 @@ async function saveCloudPracticeRecord(rec){
     if(rtype==='practice'){
       showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
     }
+    // 🔄 若「我的歷史」分頁目前正可見，立即刷新讓新紀錄馬上出現
+    const histPanel = document.getElementById('panel-history');
+    if(histPanel && histPanel.classList.contains('active') && typeof renderHistoryPanel==='function'){
+      console.log('[cloud] 歷史分頁可見，自動刷新');
+      renderHistoryPanel();
+    }
+    // 同步更新統計計數
+    if(typeof loadCloudData==='function') loadCloudData();
   }catch(e){
     console.error('[cloud] saveCloudPracticeRecord 例外', e);
     showNotif('⚠️ 雲端同步發生例外', e.message || '請重新整理頁面再試', 'nd');
@@ -1770,6 +1778,8 @@ async function syncCustomTopicsToCloud(){
   await saveCloudSettings({custom_topics: customs});
 }
 
+// 🛡️ 全域旗標：避免多重呼叫重疊
+let _historyFetchToken = 0;
 async function renderHistoryPanel(){
   const box = document.getElementById('historyContent');
   if(!box) return;
@@ -1786,10 +1796,26 @@ async function renderHistoryPanel(){
       </div>`;
     return;
   }
-  box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">⏳</div><p>載入中…</p></div>';
+  const myToken = ++_historyFetchToken;
+  box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">⏳</div><p>載入中…</p><p style="font-size:.75rem;color:#9ca3af;margin-top:6px">正在向雲端抓取紀錄…</p></div>';
+  console.log('[history] 開始載入歷史紀錄', {userId: currentUser.id, token: myToken});
   try{
-    const {data:records, error} = await sb.from('practice_records').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(100);
-    if(error){box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${error.message}</p></div>`;return;}
+    // ⏱️ 用 Promise.race + 8 秒 timeout 避免無限轉圈
+    const fetchPromise = sb.from('practice_records')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at',{ascending:false})
+      .limit(200);
+    const timeoutPromise = new Promise((_,rej)=>setTimeout(()=>rej(new Error('TIMEOUT:查詢超過 8 秒未回應')), 8000));
+    const res = await Promise.race([fetchPromise, timeoutPromise]);
+    // 若期間使用者又點了一次，放棄此次結果
+    if(myToken !== _historyFetchToken){ console.log('[history] 已被後續請求覆蓋，略過'); return; }
+    const {data:records, error} = res;
+    console.log('[history] 載入結果', {error, count: records?.length});
+    if(error){
+      box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${escapeHTML(error.message||'未知錯誤')}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
+      return;
+    }
     if(!records || !records.length){
       box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">📝</div><p>尚無練習紀錄，開始你的第一次演說練習吧！</p></div>';
       return;
@@ -1855,7 +1881,12 @@ async function renderHistoryPanel(){
     html += '</tbody></table></div>';
     box.innerHTML = html;
   }catch(e){
-    box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${e.message}</p></div>`;
+    console.error('[history] 載入失敗', e);
+    const isTimeout = e.message && e.message.startsWith('TIMEOUT');
+    const hint = isTimeout
+      ? '連線逾時，可能是網路或 Supabase 端異常。請點重試或重新整理頁面。'
+      : (e.message || '未知錯誤');
+    box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">${isTimeout?'⌛':'⚠️'}</div><p>${escapeHTML(hint)}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
   }
 }
 
@@ -2053,14 +2084,16 @@ function showPanel(name, btn) {
     const topEl=document.getElementById('ps-topic');
     topEl.textContent=curTopic?(curTopic.t.length>8?curTopic.t.substring(0,8)+'…':curTopic.t):'—';
   }
-  if(name==='history'){
-    // ☁️ 切換到歷史紀錄分頁時自動載入
-    setTimeout(()=>{ if(typeof renderHistoryPanel==='function') renderHistoryPanel(); }, 50);
-  }
+  // 先完成 panel 切換，再觸發載入（避免 DOM 還沒就緒）
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
+  if(name==='history'){
+    // ☁️ 切換到歷史紀錄分頁時自動載入（強制每次都重新抓取最新資料）
+    console.log('[panel] 切換到 我的歷史，觸發 renderHistoryPanel');
+    if(typeof renderHistoryPanel==='function') renderHistoryPanel();
+  }
   // 切換分頁時自動捲回頂部
   window.scrollTo({top:0, behavior:'smooth'});
 }
