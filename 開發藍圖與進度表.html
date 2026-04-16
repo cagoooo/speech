@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.6</title>
+<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.8</title>
 <style>
 :root{
   --primary:#1a56a0;--primary-light:#3b82f6;--primary-dark:#0d3a6e;
@@ -20,6 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .header p{color:rgba(255,255,255,.85);font-size:.95rem;position:relative;z-index:1}
 .header-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:.8rem;color:#fff;position:relative;z-index:1}
 .header-badge-new{background:rgba(245,158,11,.35);border-color:rgba(245,158,11,.6);margin-left:8px}
+.header-badge-cloud{background:rgba(16,185,129,.35);border-color:rgba(16,185,129,.6);margin-left:8px}
 .header-deco{position:absolute;font-size:10rem;opacity:.04;top:-15px;right:30px;line-height:1;user-select:none}
 .main{max-width:1100px;margin:0 auto;padding:32px 18px 60px}
 .sec-title{font-size:1.25rem;font-weight:800;color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px solid #dbeafe}
@@ -47,12 +48,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 @media(max-width:720px){.done-grid{grid-template-columns:1fr}}
 .done-item{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:12px;border-left:4px solid var(--success);position:relative}
 .done-item.new-item{border-left-color:#f59e0b;box-shadow:0 2px 10px rgba(245,158,11,.2)}
+.done-item.cloud-item{border-left-color:#10b981;background:linear-gradient(135deg,#fff,#ecfdf5);box-shadow:0 2px 14px rgba(16,185,129,.18)}
 .new-label{position:absolute;top:8px;right:10px;background:#fef3c7;color:#92400e;font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:8px}
+.done-item.cloud-item .new-label{background:#d1fae5;color:#065f46}
 .done-check{width:28px;height:28px;background:linear-gradient(135deg,var(--success),#059669);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;flex-shrink:0;margin-top:1px}
 .done-item.new-item .done-check{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.done-item.cloud-item .done-check{background:linear-gradient(135deg,#10b981,#059669)}
 .done-body h4{font-size:.9rem;font-weight:700;margin-bottom:3px}
 .done-body p{font-size:.78rem;color:var(--text-light);line-height:1.55}
-.done-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.7rem;font-weight:700;margin-top:5px}
+.done-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.7rem;font-weight:700;margin-top:5px;margin-right:3px}
 .tag-core{background:#dbeafe;color:var(--primary)}
 .tag-ai{background:#ede9fe;color:var(--purple)}
 .tag-ux{background:#fce7f3;color:#9d174d}
@@ -60,6 +64,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .tag-print{background:#fef3c7;color:#92400e}
 .tag-storage{background:#fef9c3;color:#854d0e}
 .tag-audio{background:#e0f2fe;color:#0369a1}
+.tag-cloud{background:#d1fae5;color:#065f46}
+.tag-auth{background:#e0e7ff;color:#3730a3}
+.tag-bug{background:#fee2e2;color:#991b1b}
 .phase-wrap{margin-bottom:40px}
 .phase-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px 20px;border-radius:14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .phase-badge{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;flex-shrink:0}
@@ -69,6 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .p4 .phase-badge{background:linear-gradient(135deg,#ec4899,#f97316)}
 .p5 .phase-badge{background:linear-gradient(135deg,#f59e0b,#ef4444)}
 .p6 .phase-badge{background:linear-gradient(135deg,#0d3a6e,#1a56a0)}
+.p7 .phase-badge{background:linear-gradient(135deg,#10b981,#059669)}
 .phase-meta h3{font-size:1rem;font-weight:800;margin-bottom:2px}
 .p1 .phase-meta h3{color:#1a56a0}
 .p2 .phase-meta h3{color:#7c3aed}
@@ -76,6 +84,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .p4 .phase-meta h3{color:#ec4899}
 .p5 .phase-meta h3{color:#f59e0b}
 .p6 .phase-meta h3{color:#0d3a6e}
+.p7 .phase-meta h3{color:#059669}
 .phase-meta p{font-size:.8rem;color:var(--text-light)}
 .phase-est{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
 .p1 .phase-est{background:#dbeafe;color:var(--primary)}
@@ -84,6 +93,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .p4 .phase-est{background:#fce7f3;color:#9d174d}
 .p5 .phase-est{background:#fef3c7;color:#92400e}
 .p6 .phase-est{background:#e2e8f0;color:#0d3a6e}
+.p7 .phase-est{background:#d1fae5;color:#065f46}
 .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:860px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.feature-grid{grid-template-columns:1fr}}
@@ -117,6 +127,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .deep-card.dc-security{border-top-color:var(--danger)}
 .deep-card.dc-prompt{border-top-color:var(--orange)}
 .deep-card.dc-test{border-top-color:var(--success)}
+.deep-card.dc-cloud{border-top-color:#10b981}
+.deep-card.dc-analytics{border-top-color:#6366f1}
 .deep-title{font-size:.95rem;font-weight:800;margin-bottom:12px}
 .dc-ai .deep-title{color:var(--purple)}
 .dc-perf .deep-title{color:var(--teal)}
@@ -124,6 +136,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .dc-security .deep-title{color:var(--danger)}
 .dc-prompt .deep-title{color:var(--orange)}
 .dc-test .deep-title{color:var(--success)}
+.dc-cloud .deep-title{color:#10b981}
+.dc-analytics .deep-title{color:#6366f1}
 .deep-list{list-style:none;padding:0}
 .deep-list li{font-size:.78rem;color:var(--text-light);padding:5px 0;border-bottom:1px solid #f9fafb;display:flex;gap:8px;align-items:flex-start;line-height:1.55}
 .deep-list li:last-child{border-bottom:none}
@@ -134,6 +148,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .dc-security .deep-list li::before{color:var(--danger)}
 .dc-prompt .deep-list li::before{color:var(--orange)}
 .dc-test .deep-list li::before{color:var(--success)}
+.dc-cloud .deep-list li::before{color:#10b981}
+.dc-analytics .deep-list li::before{color:#6366f1}
 .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px}
 @media(max-width:640px){.tech-grid{grid-template-columns:1fr 1fr}}
 .tech-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:center}
@@ -141,7 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .tech-card h4{font-size:.82rem;font-weight:700;margin-bottom:3px}
 .tech-card p{font-size:.73rem;color:var(--text-light)}
 .timeline{position:relative;padding-left:30px;margin-bottom:36px}
-.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#6ee7b7,#dbeafe,#c7d2fe,#e9d5ff,#fbcfe8,#fde68a)}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#6ee7b7,#10b981,#dbeafe,#c7d2fe,#e9d5ff,#fbcfe8,#fde68a)}
 .tl-item{position:relative;margin-bottom:22px}
 .tl-dot{width:20px;height:20px;border-radius:50%;position:absolute;left:-25px;top:2px;border:3px solid #fff;box-shadow:0 0 0 2px currentColor}
 .tl-dot.d-done{background:var(--success);color:var(--success)}
@@ -160,9 +176,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .callout-icon{font-size:1.5rem;flex-shrink:0}
 .callout h4{font-size:.9rem;font-weight:800;color:#92400e;margin-bottom:4px}
 .callout p{font-size:.8rem;color:#78350f;line-height:1.6}
+.callout-cloud{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-color:#6ee7b7}
+.callout-cloud h4{color:#065f46}
+.callout-cloud p{color:#064e3b}
 @media print{.header{padding:24px;print-color-adjust:exact}.feat-card:hover{transform:none;box-shadow:none}body{background:#fff}}
 .footer{background:var(--primary-dark);color:rgba(255,255,255,.65);text-align:center;padding:22px;font-size:.78rem;margin-top:40px}
 .footer p+p{margin-top:4px}
+
+/* 🆕 架構示意圖 */
+.arch-diagram{background:linear-gradient(135deg,#f0f9ff,#eff6ff);border:2px solid #bfdbfe;border-radius:16px;padding:24px;margin-bottom:36px;font-family:"Menlo","Consolas",monospace;font-size:.82rem;line-height:1.9;color:#1e40af;white-space:pre-wrap;overflow-x:auto}
+
+/* 🆕 風險卡片 */
+.risk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:36px}
+@media(max-width:640px){.risk-grid{grid-template-columns:1fr}}
+.risk-card{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-left:4px solid #ef4444}
+.risk-card h4{font-size:.88rem;font-weight:800;color:#991b1b;margin-bottom:6px}
+.risk-card p{font-size:.76rem;color:var(--text-light);line-height:1.6}
+.risk-card .risk-fix{display:block;font-size:.73rem;color:#065f46;background:#d1fae5;padding:6px 10px;border-radius:8px;margin-top:8px;font-weight:600}
 </style>
 </head>
 <body>
@@ -172,8 +202,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   <h1>🎤 國語演說訓練平台｜開發藍圖與進度表</h1>
   <p>完整功能回顧 × 未來開發路線圖 × 深度優化建議參考</p>
   <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1">
-    <div class="header-badge">📅 最後更新：2026 年 4 月 15 日</div>
-    <div class="header-badge header-badge-new">🆕 版本 v2.6｜累計 43 項完成功能 ＋ AI 串聯生成 ＋ 計時模式 ＋ 指定題目</div>
+    <div class="header-badge">📅 最後更新：2026 年 4 月 16 日</div>
+    <div class="header-badge header-badge-cloud">☁️ v2.7 Supabase + Google OAuth 雲端同步 已上線！</div>
+    <div class="header-badge header-badge-new">🆕 v2.8 規劃中 · 累計 56 項完成功能</div>
   </div>
 </div>
 
@@ -189,26 +220,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <span class="v-badge v-done">✅ v2.3 PDF 列印全面優化</span>
     <span class="v-badge v-done">✅ v2.4 Quick Win 新功能包</span>
     <span class="v-badge v-done">✅ v2.5 AI 輸出強化 ＋ 題庫擴充</span>
-    <span class="v-badge v-current">🔄 v2.6 計時模式 ＋ 指定題目（當前）</span>
-    <span class="v-badge v-next">🔜 v2.7 練習紀錄系統</span>
-    <span class="v-badge v-future">📅 v3.0 教師班級管理</span>
+    <span class="v-badge v-done">✅ v2.6 計時模式 ＋ 指定題目</span>
+    <span class="v-badge v-done">✅ v2.7 雲端同步 ＋ Google 登入 ＋ 老師評語</span>
+    <span class="v-badge v-current">🔄 v2.8 個人進步圖表 ＋ 語速診斷（規劃中）</span>
+    <span class="v-badge v-next">🔜 v3.0 教師班級管理</span>
     <span class="v-badge v-future">📅 v4.0 多語言競賽</span>
+    <span class="v-badge v-future">📅 v5.0 雲端正式平台</span>
   </div>
 
   <!-- 統計數字 -->
   <div class="stats-row">
-    <div class="stat-card s-done"><div class="stat-num">43</div><div class="stat-lbl">✅ 已完成功能</div></div>
-    <div class="stat-card s-phase"><div class="stat-num">6</div><div class="stat-lbl">🚀 未來開發階段</div></div>
-    <div class="stat-card s-idea"><div class="stat-num">52</div><div class="stat-lbl">💡 待開發功能點子</div></div>
-    <div class="stat-card s-ai"><div class="stat-num">14</div><div class="stat-lbl">🤖 AI 深化方向</div></div>
+    <div class="stat-card s-done"><div class="stat-num">56</div><div class="stat-lbl">✅ 已完成功能</div></div>
+    <div class="stat-card s-phase"><div class="stat-num">7</div><div class="stat-lbl">🚀 未來開發階段</div></div>
+    <div class="stat-card s-idea"><div class="stat-num">68</div><div class="stat-lbl">💡 待開發功能點子</div></div>
+    <div class="stat-card s-ai"><div class="stat-num">18</div><div class="stat-lbl">🤖 AI 深化方向</div></div>
+  </div>
+
+  <!-- 🎉 v2.7 重大里程碑 -->
+  <div class="callout callout-cloud">
+    <div class="callout-icon">🎉</div>
+    <div>
+      <h4>v2.7 重大里程碑：平台正式從「單機工具」進化為「雲端同步學習平台」！</h4>
+      <p>透過 Supabase + Google OAuth 整合，學生現在可以用 Google 帳號登入，所有練習紀錄自動同步到雲端，無論換到學校電腦、家裡 iPad、爸媽手機都能看到完整歷史。老師可以透過列印評分單的老師評語區寫回饋（在 App 內打字或列印後手寫皆可）。</p>
+    </div>
   </div>
 
   <!-- 已完成功能 -->
-  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.6，共 43 項）</div>
+  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.7，共 56 項）</div>
   <div class="done-grid">
+    <!-- v1.0 核心 -->
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>比賽資訊頁面</h4><p>時間規定、評分配分視覺化、9 大訓練心法、5 週備賽流程步驟</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>隨機抽題系統</h4><p>56 道題目、7 大分類、抽題動畫效果、可按分類篩選抽題</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>雙階段計時器</h4><p>準備計時 10 分鐘倒數 ＋ 演說計時 4–5 分鐘，兩個 Timer 卡片同時顯示</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>隨機抽題系統</h4><p>107 道題目、7 大分類、抽題動畫效果、可按分類篩選抽題</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>雙階段計時器</h4><p>準備計時 10 分鐘倒數 ＋ 演說計時（3 分 / 4-5 分 / 自訂），兩個 Timer 卡片同時顯示</p><span class="done-tag tag-core">核心功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>計時扣分系統與分數顯示</h4><p>停止後自動計算扣分（每 30 秒扣 1 分），完整分數卡片呈現</p><span class="done-tag tag-core">核心功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Gemini AI 輔助生成</h4><p>演說大綱、完整逐字稿、主題建議三種模式，串接 Google Gemini API</p><span class="done-tag tag-ai">AI 功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>API 金鑰測試 ＋ 模型偵測</h4><p>一鍵測試金鑰有效性；自動偵測可用 Gemini 模型並依能力排序選擇</p><span class="done-tag tag-ai">AI 功能</span></div></div>
@@ -217,73 +260,120 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>錄音辨識（Web Speech API）</h4><p>即時辨識 zh-TW，連續識別模式，即時逐字稿，支援 Chrome/Edge</p><span class="done-tag tag-core">核心功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>AI 逐字稿評分分析</h4><p>Gemini 深度評析六大維度：整體、優點、改進、語音、結構、鼓勵</p><span class="done-tag tag-ai">AI 功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>三大列印功能（Markdown 美化）</h4><p>AI 內容、學生逐字稿（自動分段）、AI 評析報告，三份列印各有精美 CSS</p><span class="done-tag tag-print">列印</span></div></div>
-    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>題庫管理系統</h4><p>56 題預設題庫 ＋ 自訂新增，分類篩選，即時更新題目計數</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>參考資源頁面</h4><p>官方網站、教學文章、YouTube 搜尋關鍵字，7 個精選外部資源連結</p><span class="done-tag tag-core">內容資源</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>題庫管理系統</h4><p>107 題預設題庫 ＋ 自訂新增，分類篩選，即時更新題目計數</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>參考資源頁面</h4><p>官方網站、教學文章、YouTube 搜尋關鍵字、題庫來源，8+ 個精選外部資源連結</p><span class="done-tag tag-core">內容資源</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>RWD 響應式設計</h4><p>平板（768px）、手機（480px）完整適配，觸控按鈕 min-height 44px</p><span class="done-tag tag-rwd">RWD</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>遊戲化 UI 元素</h4><p>練習次數統計、完美分數彩帶特效（55顆粒子）、計時器脈動動畫</p><span class="done-tag tag-ux">UI/UX</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>音頻檔案上傳辨識</h4><p>拖曳/點擊上傳 MP3/WAV/M4A/OGG，Gemini API 辨識，音頻預覽播放器</p><span class="done-tag tag-ai">AI 功能</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Alarm 彈窗提醒系統</h4><p>準備時間結束、4 分鐘到達、超過 5 分鐘等四種情境的彈窗警示</p><span class="done-tag tag-ux">UI/UX</span></div></div>
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>Toast 通知系統</h4><p>右上角輕量通知，4 秒自動消失，三種樣式（成功/警告/錯誤）</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <!-- v2.1 新增 -->
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫刪除功能</h4><p>每個題目旁加入刪除按鈕，提示確認後才執行，防止誤操作</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫本地儲存（localStorage）</h4><p>自訂新增題目永久保存於瀏覽器，關閉頁面後資料完整保留，支援清空重置</p><span class="done-tag tag-storage">本地儲存</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>自訂準備時間</h4><p>可調整為 5 / 10 / 20 / 30 分鐘，從校內練習到正式比賽 30 分鐘規定彈性使用</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>字數即時統計 ＋ 預估時長</h4><p>逐字稿欄位下方即時顯示字數，同步換算預估演說時長（約 150 字/分鐘）</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題目收藏標記（我的最愛）</h4><p>點擊星號標記重要題目，「我的最愛」分類可單獨篩選抽題，狀態 localStorage 持久化</p><span class="done-tag tag-storage">本地儲存</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.1 新增</div><div class="done-check">✓</div><div class="done-body"><h4>計時音效提示（Web Audio API）</h4><p>4 分鐘到達時播放提示音、超過 5 分鐘播放警告音，純 Web Audio API 合成，無需外部音檔</p><span class="done-tag tag-audio">音頻</span></div></div>
-    <!-- v2.2 新增 -->
-    <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>Markdown 渲染引擎升級 ＋ 列印 PDF 美化</h4><p>AI 輸出完整支援 h1–h4、巢狀列表、blockquote、程式碼塊、表格、分隔線；列印 PDF 同步精美排版，含彩色標題、圖示裝飾、page-break 智慧分頁</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-print">列印</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成進度條 UI 系統</h4><p>所有 AI 生成功能（演說大綱、逐字稿、主題建議、名言金句、AI 評析、家長信）統一改為五階段進度條：初始化 → 傳送 → 生成 → 渲染 → 完成，帶百分比數字、動態步驟指示與預估時間倒數</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>演說動作/語氣提示標籤化 UI</h4><p>逐字稿中的（語氣放緩，帶有溫暖）（停頓）（微笑）等舞台指示，自動以紫色漸層標籤 ＋ 🎭 圖示渲染，清楚區分口述文字與表演指引，列印 PDF 同步呈現精美標籤</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <!-- v2.2 部署 -->
-    <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>GitHub Pages 自動部署 ＋ OG 社群預覽</h4><p>GitHub Actions 自動部署至 cagoooo.github.io/speech；完整 OG / Twitter Card 社群預覽卡片、自製 favicon 與 PWA 圖示（192px、512px）</p><span class="done-tag tag-core">基礎架構</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.2 新增</div><div class="done-check">✓</div><div class="done-body"><h4>四種模式 PDF 列印個性化標題</h4><p>演說大綱（青綠）、完整逐字稿（藍色）、主題建議（橙色）、名言金句（紫色）四種 PDF 各有獨立色彩主題、類型徽章、右上角絲帶標記與個性化頁尾提醒，一眼辨識</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-print">列印</span></div></div>
-    <!-- v2.3 修正 -->
-    <div class="done-item new-item"><div class="new-label">v2.3 修正</div><div class="done-check">✓</div><div class="done-body"><h4>PDF 右上角絲帶標籤限定第一頁</h4><p>修正 <code>position: fixed</code> 導致標籤固定於每頁右上角、遮擋後續頁面文字的問題，改為 <code>position: absolute</code>，標籤僅出現在第一頁封面區域，不影響正文閱讀</p><span class="done-tag tag-print">列印</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
-    <!-- v2.4 新增 -->
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>鍵盤快速鍵系統</h4><p>Space 開始/暫停計時、Enter 隨機抽題、R 重置計時器、Esc 關閉彈窗；? 鍵開啟完整快捷鍵說明面板，右下角常設提示按鈕</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>演說評分量表工具</h4><p>內建五大評分維度滑桿（語音表達、內容組織、台風儀態、情感表達、時間掌控），各 20 分，即時加總顯示，支援一鍵列印正式評分單 PDF</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-print">列印</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>PWA 安裝提示 Banner</h4><p>手機瀏覽時底部顯示「加到主畫面」引導 Banner，含操作說明；支援 beforeinstallprompt 事件；使用者可選擇關閉且不再提示，偏好存 localStorage</p><span class="done-tag tag-core">基礎架構</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>AI 內容一鍵複製</h4><p>生成內容下方新增「複製文字」按鈕，Clipboard API 複製純文字（去除 Markdown 符號），方便直接傳給家長或貼入 Word</p><span class="done-tag tag-ux">UI/UX</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫 CSV 匯出 ／ 匯入</h4><p>一鍵將全部題目（含自訂題）匯出為 CSV，加入 UTF-8 BOM 讓 Excel 不亂碼；支援選取 CSV 檔批次匯入，自動跳過重複題目</p><span class="done-tag tag-storage">本地儲存</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.4 新增</div><div class="done-check">✓</div><div class="done-body"><h4>倒數最後 1 分鐘提示音強化</h4><p>剩餘 1 分鐘時播放三音階漸強提示音（Do-Do-Mi，0.82–0.85 音量），比原有單音更清晰醒目，確保學生在演說專注狀態下也能聽見</p><span class="done-tag tag-audio">音頻</span></div></div>
-    <!-- v2.5 新增 -->
-    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成後字數 ＋ 時長即時統計</h4><p>大綱、逐字稿生成完成後，底部自動顯示字數統計列：總字數、預估演說時長（150 字/分鐘）、長度評估（偏短 / 適中 / 偏長）三色提示</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-ai">AI 功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>換一個版本按鈕</h4><p>四種 AI 模式生成後均顯示「🔄 換一個版本」按鈕，每次要求 AI 提供全新切入角度；版本計數器即時更新（v1, v2…），Prompt 自動帶入「不重複」指令</p><span class="done-tag tag-ai">AI 功能</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>方向 ／ 金句 → 一鍵串聯生成</h4><p>「主題建議」生成後出現串聯面板，點選任一方向立即展開為完整大綱；「名言金句」生成後點選任一金句，AI 將其自然融入完整逐字稿——兩階段一鍵串接</p><span class="done-tag tag-ai">AI 功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>題庫大幅擴充（55 → 107 題）</h4><p>七大類別全面補充，各類達 13–18 題：新增寬恕、自律、海洋汙染、再生能源、新住民、布袋戲、太空探索、母語等 52 道新題；README 同步更新；題庫來源區塊詳述資料出處</p><span class="done-tag tag-core">核心功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.5 新增</div><div class="done-check">✓</div><div class="done-body"><h4>參考資源「題庫來源」區塊</h4><p>新增卡片說明 107 道題目整理依據：教育部全國語文競賽官網、111/112 年官方子站、小貓老師痞客邦彙整、新北市 113 年題庫 PDF、臺北市教育局競賽專區，6 個可追溯來源</p><span class="done-tag tag-core">內容資源</span></div></div>
-    <!-- v2.6 新增 -->
-    <div class="done-item new-item"><div class="new-label">v2.6 新增</div><div class="done-check">✓</div><div class="done-body"><h4>3 分鐘演說計時模式</h4><p>新增「演說時間」選鈕：3 分鐘（初賽）/ 4–5 分鐘（決賽）；3 分鐘模式：2:00 響三音提示音 ＋ 彈窗提醒「最後 1 分鐘」、2:30 綠燈音效進入目標區間、3:00 紅燈警示；計分規則、評估結果均依模式切換</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-audio">音頻</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.6 修正</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成改回標準模式（修正串流截斷）</h4><p>串流輸出（SSE）導致內容只顯示 90 字的問題，改回 generateContent 標準 API，完整等待回應後一次渲染；進度條 UI 保留不變</p><span class="done-tag tag-ai">AI 功能</span></div></div>
-    <div class="done-item new-item"><div class="new-label">v2.6 新增</div><div class="done-check">✓</div><div class="done-body"><h4>直接指定題目搜尋功能</h4><p>隨機抽題按鈕下方新增關鍵字搜尋輸入框，即時篩選 107 道題目並顯示類別標籤；支援 ↑↓ 鍵移動、Enter 確認、Esc 關閉；選定後與隨機抽題相同動畫流程</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-core">核心功能</span></div></div>
+
+    <!-- v2.1 -->
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>題庫刪除功能</h4><p>每個題目旁加入刪除按鈕，提示確認後才執行，防止誤操作</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>題庫本地儲存（localStorage）</h4><p>自訂新增題目永久保存於瀏覽器，支援清空重置</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>自訂準備時間</h4><p>可調整為 5 / 10 / 20 / 30 分鐘，從校內練習到正式比賽彈性使用</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>字數即時統計 ＋ 預估時長</h4><p>逐字稿欄位下方即時顯示字數，同步換算預估演說時長（約 150 字/分鐘）</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>題目收藏標記（我的最愛）</h4><p>點擊星號標記重要題目，「我的最愛」可單獨篩選抽題</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.1</div><div class="done-check">✓</div><div class="done-body"><h4>計時音效提示（Web Audio API）</h4><p>4 分鐘提示音、超過 5 分鐘警告音，純 Web Audio API 合成</p><span class="done-tag tag-audio">音頻</span></div></div>
+
+    <!-- v2.2 -->
+    <div class="done-item new-item"><div class="new-label">v2.2</div><div class="done-check">✓</div><div class="done-body"><h4>Markdown 渲染引擎升級 ＋ 列印 PDF 美化</h4><p>支援 h1–h4、巢狀列表、blockquote、程式碼塊、表格；列印 PDF 同步精美排版</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-print">列印</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.2</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成進度條 UI 系統</h4><p>五階段進度條：初始化 → 傳送 → 生成 → 渲染 → 完成，帶百分比數字與預估時間倒數</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.2</div><div class="done-check">✓</div><div class="done-body"><h4>演說動作/語氣提示標籤化 UI</h4><p>（語氣放緩）（停頓）（微笑）等舞台指示自動以紫色漸層標籤 ＋ 🎭 圖示渲染</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.2</div><div class="done-check">✓</div><div class="done-body"><h4>GitHub Pages 自動部署 ＋ OG 社群預覽</h4><p>GitHub Actions 自動部署；完整 OG / Twitter Card 預覽卡片、自製 favicon 與 PWA 圖示</p><span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.2</div><div class="done-check">✓</div><div class="done-body"><h4>四種模式 PDF 列印個性化標題</h4><p>大綱（青綠）、逐字稿（藍色）、主題（橙色）、金句（紫色）各有獨立色彩主題</p><span class="done-tag tag-print">列印</span></div></div>
+
+    <!-- v2.3 -->
+    <div class="done-item new-item"><div class="new-label">v2.3</div><div class="done-check">✓</div><div class="done-body"><h4>PDF 右上角絲帶標籤限定第一頁</h4><p>修正 <code>position: fixed</code> 導致每頁都顯示的問題，改為僅第一頁</p><span class="done-tag tag-print">列印</span></div></div>
+
+    <!-- v2.4 -->
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>鍵盤快速鍵系統</h4><p>Space 開始/暫停計時、Enter 隨機抽題、R 重置、Esc 關閉彈窗；? 鍵開啟說明面板</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>演說評分量表工具</h4><p>五大維度滑桿即時加總，支援一鍵列印正式評分單 PDF</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-print">列印</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>PWA 安裝提示 Banner</h4><p>手機瀏覽時底部顯示「加到主畫面」引導，含關閉偏好記憶</p><span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>AI 內容一鍵複製</h4><p>Clipboard API 複製純文字（去除 Markdown 符號），方便傳給家長或貼入 Word</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>題庫 CSV 匯出 ／ 匯入</h4><p>一鍵匯出全部題目（UTF-8 BOM），支援批次匯入並自動跳過重複</p><span class="done-tag tag-storage">本地儲存</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.4</div><div class="done-check">✓</div><div class="done-body"><h4>倒數最後 1 分鐘提示音強化</h4><p>三音階漸強提示音（Do-Do-Mi），比原有單音更清晰醒目</p><span class="done-tag tag-audio">音頻</span></div></div>
+
+    <!-- v2.5 -->
+    <div class="done-item new-item"><div class="new-label">v2.5</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成後字數 ＋ 時長即時統計</h4><p>大綱、逐字稿生成完成後顯示字數、預估時長、長度評估三色提示</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-ai">AI</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5</div><div class="done-check">✓</div><div class="done-body"><h4>換一個版本按鈕</h4><p>四種 AI 模式均顯示「🔄 換一個版本」按鈕，版本計數器即時更新</p><span class="done-tag tag-ai">AI</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5</div><div class="done-check">✓</div><div class="done-body"><h4>方向 ／ 金句 → 一鍵串聯生成</h4><p>主題建議點擊立即展開大綱；金句點擊自然融入逐字稿</p><span class="done-tag tag-ai">AI</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5</div><div class="done-check">✓</div><div class="done-body"><h4>題庫大幅擴充（55 → 107 題）</h4><p>七大類別全面補充，各類 13–18 題，新增 52 道</p><span class="done-tag tag-core">核心功能</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.5</div><div class="done-check">✓</div><div class="done-body"><h4>參考資源「題庫來源」區塊</h4><p>6 個可追溯的官方資料來源說明</p><span class="done-tag tag-core">內容資源</span></div></div>
+
+    <!-- v2.6 -->
+    <div class="done-item new-item"><div class="new-label">v2.6</div><div class="done-check">✓</div><div class="done-body"><h4>3 分鐘演說計時模式</h4><p>新增「3 分鐘」選鈕：2 分鐘提示音、2:30 綠燈、3:00 紅燈警示</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-audio">音頻</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.6</div><div class="done-check">✓</div><div class="done-body"><h4>AI 生成改回標準模式（修正串流截斷）</h4><p>改回 generateContent 標準 API，完整等待回應後一次渲染</p><span class="done-tag tag-ai">AI</span> <span class="done-tag tag-bug">修正</span></div></div>
+    <div class="done-item new-item"><div class="new-label">v2.6</div><div class="done-check">✓</div><div class="done-body"><h4>直接指定題目搜尋功能</h4><p>關鍵字搜尋輸入框，支援 ↑↓ 鍵移動、Enter 確認、Esc 關閉</p><span class="done-tag tag-ux">UI/UX</span></div></div>
+
+    <!-- 🆕 v2.7 雲端同步與帳號系統 -->
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>☁️ Supabase 後端完整整合</h4><p>建立 Supabase 專案、<code>practice_records</code>（紀錄）與 <code>user_settings</code>（個人設定）兩張表、完整 RLS（Row-Level Security）政策確保資料隔離、<code>handle_new_user</code> trigger 於首次登入自動建立使用者記錄</p><span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>🔐 Google OAuth 一鍵登入</h4><p>Google Cloud Console OAuth Client ID + Supabase Auth Provider 完整串接；支援 Session 持久化（重整頁面仍保持登入）、autoRefreshToken 自動續期、登出功能</p><span class="done-tag tag-auth">帳號</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>📊「我的歷史」分頁完整實作</h4><p>登入後新增導覽按鈕；5 張統計卡片（完整練習數 / 抽籤次數 / 完美次數 / 平均時長 / 平均計時分數）＋ 完整紀錄表格（含類型 chip、徽章、刪除按鈕、排序）</p><span class="done-tag tag-cloud">雲端</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>🎲 抽籤 vs. 完整練習雙類型紀錄</h4><p><code>record_type</code> 欄位區分：每次抽題（含隨機抽題與指定題目）即產生一筆 <code>draw</code> 記錄；完成演說計時後再產生 <code>practice</code> 紀錄；歷史表格以不同顏色 chip 區隔</p><span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>🛡️ 四層雲端同步保險網</h4><p>(1) 停止演說按鈕正常存檔；(2) <code>resetAll</code> 安全網：未手動停止就重置時自動補存；(3) 硬上限自動停止：3分模式超過 5 分、4-5分模式超過 7 分、自訂模式超過+2 分；(4) <code>beforeunload</code> 以 fetch+keepalive 送出最後一筆</p><span class="done-tag tag-cloud">雲端</span> <span class="done-tag tag-bug">修正</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>📝 老師評語系統強化</h4><p>評分量表下方新增三段式 textarea（優點 / 可加強 / 整體評語）＋ 評分老師姓名欄位；列印評分單老師評語區：有打字→印文字，沒打字→印 3~4 條橫線供手寫；新增簽名列 ＋ 評分日期；<code>page-break-inside:avoid</code> 保護不被截斷</p><span class="done-tag tag-print">列印</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>🔄 歷史分頁 race-safe 載入</h4><p><code>Promise.race</code> + 8 秒 timeout 防止無限轉圈；<code>_historyFetchToken</code> 旗標避免多重呼叫結果互相覆蓋；失敗時顯示明確錯誤訊息與重試按鈕；存檔後若分頁可見自動刷新</p><span class="done-tag tag-bug">修正</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>♻️ 學生姓名／自訂題目跨裝置同步</h4><p><code>user_settings</code> 表儲存學生姓名、自訂題目陣列；登入時自動拉回，換電腦不用重新設定；打字時 debounce 700ms 批次寫入，減少 API 呼叫</p><span class="done-tag tag-cloud">雲端</span></div></div>
   </div>
 
-  <!-- 新一批 Quick Win -->
+  <!-- 🏗️ 雲端架構示意圖 -->
+  <div class="sec-title"><span>🏗️</span> v2.7 雲端架構示意圖</div>
+  <div class="arch-diagram">┌─────────────────────────────────────────────────────────────────┐
+│  🌐 瀏覽器 (cagoooo.github.io/speech)                           │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  index.html (單檔架構)                                   │   │
+│  │  ├─ @supabase/supabase-js (CDN)                         │   │
+│  │  ├─ localStorage: 自訂題目、收藏、API 金鑰（本機優先）    │   │
+│  │  └─ currentUser (Session) ← Supabase Auth SDK           │   │
+│  └─────────────────┬───────────────────────────┬───────────┘   │
+└────────────────────┼───────────────────────────┼───────────────┘
+                     │                           │
+        🔐 OAuth 2.0 │              ☁️ REST/RLS │
+                     ▼                           ▼
+        ┌────────────────────┐      ┌──────────────────────────┐
+        │  Google Cloud      │      │  Supabase (ybxfsmr...)   │
+        │  OAuth Consent     │      │  ┌────────────────────┐  │
+        │  Client ID: *.apps │      │  │ auth.users (內建)   │  │
+        │  ┌──────────────┐  │      │  │ public.user_settings│  │
+        │  │ Google 帳號   │──┼──────┼─▶│ public.practice_   │  │
+        │  │ 驗證          │  │      │  │   records           │  │
+        │  └──────────────┘  │      │  │  • record_type      │  │
+        │                    │      │  │    (draw/practice)  │  │
+        │                    │      │  │  • RLS: user_id=    │  │
+        │                    │      │  │    auth.uid()       │  │
+        │                    │      │  └────────────────────┘  │
+        └────────────────────┘      └──────────────────────────┘
+
+💾 寫入流程：showScoreResult() → saveCloudPracticeRecord() → POST /rest/v1/practice_records
+📖 讀取流程：renderHistoryPanel() → GET /rest/v1/practice_records?user_id=eq.XXX&order=created_at.desc
+🛡️ 保險網：resetAll 補存 + beforeunload keepalive + 硬上限自動停止</div>
+
+  <!-- 🚀 下一輪 Quick Win -->
   <div class="callout">
     <div class="callout-icon">💡</div>
     <div>
-      <h4>下一批 Quick Win（建議本週推進）</h4>
-      <p>v2.4–v2.6 共 14 項功能全數完成，包含鍵盤快速鍵、評分量表、PWA Banner、CSV 匯出入、換版本按鈕、串聯生成、題庫擴充、3 分鐘計時、指定題目搜尋等。以下為新一輪快速優化項目，每項預估 1–3 天獨立完成。</p>
+      <h4>v2.8 Quick Win（建議下一輪衝刺）</h4>
+      <p>v2.7 完成了雲端同步與帳號系統基礎，下一步的重點應放在「讓雲端資料發揮價值」——視覺化、趨勢分析、AI 深化。以下為推薦優先實作項目，每項 1–5 天可獨立完成。</p>
     </div>
   </div>
 
-  <div class="sec-title"><span>⚡</span> v2.7 Quick Win 快速優化清單（各 1–3 天）</div>
+  <div class="sec-title"><span>⚡</span> v2.8 Quick Win 清單（依 CP 值排序）</div>
   <table class="qw-table">
     <thead><tr><th>功能</th><th>說明</th><th>難度</th><th>影響力</th></tr></thead>
     <tbody>
-      <tr><td><strong>🌙 深色模式切換</strong></td><td>一鍵切換 Dark Mode，CSS 變數已就緒，加入 prefers-color-scheme 偵測與 toggle 邏輯；偏好儲存 localStorage，頁面重開自動套用</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>📑 AI 多版本歷史標籤</strong></td><td>換版本後以標籤列保留最近 3 筆（v1/v2/v3），可切換對比不同版本大綱或逐字稿；長按任一版本標籤可刪除</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
-      <tr><td><strong>🔄 多題連練模式</strong></td><td>一次抽出 3–5 道題，學生同一 Session 依序演說，計時分別記錄，最後顯示總覽成績與最佳時間</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🔒 視窗焦點鎖定保護</strong></td><td>計時進行中切換視窗或分頁時暫停計時並顯示警示；Page Visibility API 偵測，防止意外離開導致超時</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>📊 演說結構比例視覺化</strong></td><td>AI 生成逐字稿後，自動以色塊比例條標示「開場 / 主體 / 結語」三段佔比，理想比例 10/70/20%；偏差時給予建議</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🎵 節拍器輔助練習</strong></td><td>可調速節拍音效（60–150 字/分鐘），Web Audio API 實作；幫助學生感知語速，配合字數統計找到適合節奏</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
-      <tr><td><strong>🏷️ 題目難易度標籤</strong></td><td>每道題目加入難易度標記（入門 / 中階 / 挑戰），讓學生有目標地從簡單題目開始練習，逐步挑戰複雜主題</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>📅 最近練習題目紀錄</strong></td><td>localStorage 記錄最近 5 道練習過的題目，顯示在抽題區塊下方，方便快速重練或換一種角度再練一次</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>📢 全文朗讀功能</strong></td><td>AI 生成逐字稿後，一鍵用 Web Speech API 朗讀全文，讓學生邊聽邊校對內容，支援調整語速</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🔍 口頭禪偵測（基礎版）</strong></td><td>錄音辨識結束後，自動統計「然後」「就是」「那個」「嗯」等 15 種口頭禪次數，以高亮標示在逐字稿中</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
-      <tr><td><strong>⚙️ 自訂時間模式</strong></td><td>演說時間新增「自訂」選項（1–10 分鐘自由輸入），滿足各縣市不同比賽規定（有些縣市為 3:30 或 4:00 上限）</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
-      <tr><td><strong>🖨️ 評分表列印強化</strong></td><td>評分量表新增「學生姓名 / 題目 / 日期」欄位自動帶入，列印輸出對應四種模式的個性化評分單 PDF</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>📈 個人進步折線圖</strong></td><td>用 Chart.js 繪製最近 20 次練習的時長折線圖，加入「4-5 分鐘黃金區間」色帶；另附「計時分數」長條圖，讓學生看見進步軌跡</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
+      <tr><td><strong>⚡ 語速自動計算</strong></td><td>結合逐字稿字數與演說秒數，計算字/分鐘；標示偏快(&gt;180)、適中(130-160)、偏慢(&lt;110)並給具體建議；歷次語速趨勢折線</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★★</span></td></tr>
+      <tr><td><strong>🔍 口頭禪偵測</strong></td><td>錄音辨識後自動統計「然後」「就是」「那個」「嗯」「對」等 20 種口頭禪次數，以高亮顯示並寫入雲端；累積趨勢圖</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★★</span></td></tr>
+      <tr><td><strong>🏷️ 題目難易度標籤</strong></td><td>每題加入「入門／中階／挑戰」標籤（可用 AI 自動評估），抽題支援按難易度篩選；幫助學生階梯式練習</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🏅 成就徽章系統</strong></td><td>10 種徽章：首次雲端同步、累計 5/10/20/50 次、連續 3 次完美、七日連勝等；解鎖時彈窗慶祝並寫入 <code>user_settings.achievements</code></td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>📅 練習連勝日曆</strong></td><td>GitHub 綠色方格風格的年度練習日曆，滑過每格顯示當天練習次數；追蹤連續練習天數，激勵每日開啟</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🌙 深色模式切換</strong></td><td>一鍵切換 Dark Mode，CSS 變數已就緒；偵測 <code>prefers-color-scheme</code>，偏好同步到 <code>user_settings</code></td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📊 演說結構比例視覺化</strong></td><td>AI 分析逐字稿後，自動標識「開場—主體—結語」各段，以色塊比例條呈現；理想比例 10/70/20%，偏差時給建議</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>📢 全文朗讀功能</strong></td><td>Web Speech API <code>speechSynthesis</code>，AI 生成逐字稿後一鍵朗讀，可調語速；讓學生邊聽邊對照</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
+      <tr><td><strong>🔒 視窗焦點鎖定保護</strong></td><td>計時中切換視窗／分頁時暫停並顯示警示；Page Visibility API</td><td><span class="effort-badge e-low">低</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>🎵 節拍器輔助練習</strong></td><td>Web Audio API 節拍器（60–150 字/分鐘），幫助學生感知語速；配合字數統計找到最佳節奏</td><td><span class="effort-badge e-mid">中</span></td><td><span class="impact-star">★★★☆☆</span></td></tr>
+      <tr><td><strong>📱 QR Code 家長檢視</strong></td><td>每次練習產生唯一 QR Code，家長掃描即可透過網頁檢視該次逐字稿、AI 評析、老師評語（需建立 public-share Supabase view）</td><td><span class="effort-badge e-high">高</span></td><td><span class="impact-star">★★★★☆</span></td></tr>
     </tbody>
   </table>
 
@@ -291,204 +381,298 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   <div class="callout" style="background:linear-gradient(135deg,#ede9fe,#dbeafe);border-color:#818cf8">
     <div class="callout-icon">🎯</div>
     <div>
-      <h4 style="color:#4338ca">推薦開發優先順序分析</h4>
-      <p style="color:#3730a3">基於「對老師和學生的即時幫助」與「開發成本」兩大維度，以下是建議的實作順序。標示 ⭐ 的為最推薦優先實作的項目。</p>
+      <h4 style="color:#4338ca">v2.8 推薦開發優先順序分析</h4>
+      <p style="color:#3730a3">雲端資料已就緒，現在最有價值的是讓學生「看見自己的進步」。以下按影響力排序的三週衝刺計畫：</p>
     </div>
   </div>
 
   <div class="deep-grid" style="grid-template-columns:1fr 1fr 1fr">
     <div class="deep-card" style="border-top-color:#ef4444">
-      <div class="deep-title" style="color:#ef4444">🔥 第一優先（本週）</div>
+      <div class="deep-title" style="color:#ef4444">🔥 第一週（高影響力 × 低成本）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>⭐ AI 多版本歷史標籤</strong>：換版本後保留 v1/v2/v3 對比，是換版本功能的必要延伸</span></li>
-        <li style="color:var(--text)"><span><strong>⭐ 口頭禪偵測</strong>：演說訓練核心痛點，學生自己看不出來但影響分數極大</span></li>
-        <li style="color:var(--text)"><span><strong>⭐ 最近練習題目紀錄</strong>：低成本 localStorage，大幅提升回訪使用體驗</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ 個人進步折線圖</strong>：Chart.js + 已有雲端資料，最能讓學生「看到自己在變好」的關鍵功能</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ 語速自動計算</strong>：邏輯簡單（字數/秒數*60），但對學生的指導價值極大</span></li>
+        <li style="color:var(--text)"><span><strong>⭐ 題目難易度標籤</strong>：低成本高回饋，可用 AI 批次自動分類</span></li>
       </ul>
     </div>
     <div class="deep-card" style="border-top-color:#f59e0b">
-      <div class="deep-title" style="color:#f59e0b">⚡ 第二優先（下週）</div>
+      <div class="deep-title" style="color:#f59e0b">⚡ 第二週（AI 深化）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>練習歷史紀錄系統</strong>：每次演說紀錄題目、時間、得分，是長期使用黏著度的關鍵</span></li>
-        <li style="color:var(--text)"><span><strong>題目難易度標籤</strong>：幫助學生有階梯地練習，老師也能更好安排課程</span></li>
-        <li style="color:var(--text)"><span><strong>自訂演說時間模式</strong>：各縣市規定不同，支援彈性輸入才能滿足所有用戶</span></li>
+        <li style="color:var(--text)"><span><strong>口頭禪偵測</strong>：演說訓練最容易被忽略的失分點，學生自己不會察覺</span></li>
+        <li style="color:var(--text)"><span><strong>演說結構比例視覺化</strong>：開場／主體／結語配重是常見失分項，圖示化讓學生一眼看懂</span></li>
+        <li style="color:var(--text)"><span><strong>全文朗讀功能</strong>：Web Speech API 幾行程式即可完成，學生實用性高</span></li>
       </ul>
     </div>
     <div class="deep-card" style="border-top-color:#3b82f6">
-      <div class="deep-title" style="color:#3b82f6">📋 第三優先（月內）</div>
+      <div class="deep-title" style="color:#3b82f6">📋 第三週（黏著度）</div>
       <ul class="deep-list">
-        <li style="color:var(--text)"><span><strong>個人進步折線圖</strong>：搭配紀錄系統，Chart.js 視覺化成長軌跡</span></li>
-        <li style="color:var(--text)"><span><strong>演說結構比例視覺化</strong>：開場/主體/結語比例是常見失分點</span></li>
-        <li style="color:var(--text)"><span><strong>全文朗讀功能</strong>：Web Speech API 一行即可完成，CP 值極高</span></li>
+        <li style="color:var(--text)"><span><strong>成就徽章系統</strong>：心理學研究證實可提升 40%+ 的回訪率</span></li>
+        <li style="color:var(--text)"><span><strong>練習連勝日曆</strong>：GitHub 綠方格風格，讓學生一年累積成就一目了然</span></li>
+        <li style="color:var(--text)"><span><strong>深色模式 + 視窗鎖定</strong>：兩項 UX 打磨，合計不到 1 天</span></li>
       </ul>
     </div>
   </div>
 
   <!-- 未來開發路線圖 -->
-  <div class="sec-title"><span>🗺️</span> 未來開發路線圖（Phase 1–6）</div>
+  <div class="sec-title"><span>🗺️</span> 未來開發路線圖（Phase 1–7）</div>
 
   <div class="phase-wrap p1">
     <div class="phase-header">
       <div class="phase-badge">P1</div>
-      <div class="phase-meta"><h3>Phase 1｜學生練習管理強化（→ v2.5）</h3><p>建立可持續累積的練習紀錄系統，讓老師與學生都能看見成長軌跡</p></div>
-      <div class="phase-est">⏱ 預估 1–2 週</div>
+      <div class="phase-meta"><h3>Phase 1｜資料視覺化與個人分析（→ v2.8）</h3><p>讓 v2.7 累積的雲端資料發揮最大價值，用視覺化幫助學生和老師「看見」進步</p></div>
+      <div class="phase-est">⏱ 預估 2–3 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📚</span><div class="feat-title">練習歷史紀錄</div><div class="feat-desc">用 localStorage 記錄每次演說：題目、日期、計時得分、AI 評分摘要。可查看最近 20 次，支援按日期/分數排序。</div><div class="feat-sub">技術：JSON stringify 存陣列，資料量大時升級 IndexedDB</div></div>
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📈</span><div class="feat-title">個人進步折線圖</div><div class="feat-desc">將歷次演說秒數以 Chart.js 繪製折線圖，加入 4–5 分鐘「黃金區間」色帶標示，直觀看見穩定度趨勢。</div><div class="feat-sub">技術：Chart.js annotationPlugin，背景色帶標示理想區間</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">👤</span><div class="feat-title">學生個人化設定</div><div class="feat-desc">首次使用填入姓名、學校、班級；列印文件自動帶入個人資訊，省去手動填寫。</div><div class="feat-sub">延伸：頭像 emoji 選擇，增加個人化趣味感</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏅</span><div class="feat-title">練習成就徽章系統</div><div class="feat-desc">首次練習、累計 5/10/20 次、連續三次黃金區間等 10 種成就，解鎖時彈窗慶祝。</div><div class="feat-sub">心理學依據：成就系統可提高約 40% 的練習持續率</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📤</span><div class="feat-title">練習摘要 PDF 匯出</div><div class="feat-desc">一鍵產生本次或本週練習摘要 PDF，含紀錄、進步曲線圖截圖、AI 建議重點，便於親師溝通。</div><div class="feat-sub">技術：html2canvas 截圖 + jsPDF 合成，或精心設計列印 CSS</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎯</span><div class="feat-title">每日練習目標設定</div><div class="feat-desc">設定每日目標次數（1–5 次），完成後達標動畫，週累計進度條顯示「本週 X / 目標 Y 次」。</div><div class="feat-sub">延伸：連續達標天數「連勝紀錄」，培養良好習慣</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📈</span><div class="feat-title">進步曲線儀表板</div><div class="feat-desc">歷次演說時長折線圖、計時分數長條圖、平均語速變化圖、完美率百分比；可切換週/月/全部時間範圍</div><div class="feat-sub">技術：Chart.js + Supabase 時間區間查詢</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">⚡</span><div class="feat-title">語速診斷系統</div><div class="feat-desc">結合字數+時長算字/分鐘；標示偏快/適中/偏慢並給具體建議；個人歷次語速趨勢圖</div><div class="feat-sub">資料源：逐字稿字數 + duration_sec</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🔍</span><div class="feat-title">口頭禪偵測與統計</div><div class="feat-desc">錄音辨識後自動計算 20 種口頭禪出現次數，逐字稿高亮；歷次趨勢圖觀察是否在進步</div><div class="feat-sub">新增欄位：filler_words JSONB</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎯</span><div class="feat-title">AI 能力雷達圖</div><div class="feat-desc">AI 評分後雷達圖五維（內容/語音/結構/情感/時間），可疊加歷史對比線</div><div class="feat-sub">技術：Chart.js radar + 資料存 ai_scores JSONB</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏅</span><div class="feat-title">成就徽章系統</div><div class="feat-desc">10+ 種徽章，解鎖時彈窗慶祝；資料同步到 user_settings.achievements 欄位</div><div class="feat-sub">心理學：Variable Reward 理論提升黏著度</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📅</span><div class="feat-title">練習連勝日曆</div><div class="feat-desc">GitHub 風格年度練習熱力圖；滑過顯示當天練習數；連續天數計算與連勝獎勵</div><div class="feat-sub">類似 GitHub contribution graph</div></div>
     </div>
   </div>
 
   <div class="phase-wrap p2">
     <div class="phase-header">
       <div class="phase-badge">P2</div>
-      <div class="phase-meta"><h3>Phase 2｜AI 功能深化與語音精析（→ v3.0 前置）</h3><p>從「有評語」進化到「精準診斷」，讓 AI 回饋更具真正的指導價值</p></div>
-      <div class="phase-est">⏱ 預估 2–3 週</div>
+      <div class="phase-meta"><h3>Phase 2｜AI 功能深化與語音精析（→ v2.9）</h3><p>從「有評語」進化到「精準診斷」，讓 AI 回饋更具真正的指導價值</p></div>
+      <div class="phase-est">⏱ 預估 3–4 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📊</span><div class="feat-title">演說能力雷達圖</div><div class="feat-desc">AI 評分後以雷達圖呈現五維：內容深度、語音表達、結構邏輯、情感感染力、時間控制，直觀定位強弱項。</div><div class="feat-sub">設計：五維對應比賽評分表，可疊加歷史對比線</div></div>
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">⚡</span><div class="feat-title">語速自動計算與診斷</div><div class="feat-desc">結合逐字稿字數與演說秒數，計算字/分鐘；標示「偏快(>180)」「適中(130-160)」「偏慢(&lt;110)」並提供建議。</div><div class="feat-sub">進階：歷次語速趨勢圖，觀察是否越來越穩定</div></div>
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🔍</span><div class="feat-title">口頭禪偵測與統計</div><div class="feat-desc">自動統計「然後」「就是」「那個」「嗯」等 20 種口頭禪出現次數，以色塊高亮標示在逐字稿中。</div><div class="feat-sub">延伸：歷次口頭禪次數折線圖，讓學生看見進步</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🔁</span><div class="feat-title">AI 自動改稿對比</div><div class="feat-desc">根據評析結果，AI 自動生成「優化版逐字稿」，以左右對比（diff 風格）讓學生看見原稿→優化稿的具體差異。</div><div class="feat-sub">技術：Prompt 指定輸出差異標記格式，JS 解析後渲染高亮</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎨</span><div class="feat-title">演說結構比例圖</div><div class="feat-desc">AI 分析逐字稿後，自動標識「開場—主體—結語」各段，以色塊比例圖呈現結構配置是否平衡。</div><div class="feat-sub">理想比例：開場 10%、主體 70%、結語 20%</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🌟</span><div class="feat-title">名言金句推薦引擎</div><div class="feat-desc">根據題目，AI 推薦 5 句適用名言、古語或現代語錄，並說明如何融入演說、在哪個位置使用最有力量。</div><div class="feat-sub">擴充：可儲存「我的金句庫」，練習時快速查閱</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">😊</span><div class="feat-title">情感色彩分析</div><div class="feat-desc">AI 分析逐字稿的情感分布，標出「激勵感」「溫情感」「說服力」「邏輯感」比例，幫助調整演說情感層次。</div><div class="feat-sub">技術：Gemini Prompt 要求輸出 JSON 情感標籤</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🤖</span><div class="feat-title">AI 模擬評審追問</div><div class="feat-desc">演說完成後，AI 以「評審」角色提出 2–3 個追問問題，訓練學生應對評審互動的臨場能力。</div><div class="feat-sub">對進入決賽的學生特別有價值</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎙️</span><div class="feat-title">即時語音波形視覺化</div><div class="feat-desc">錄音時顯示即時音量波形（Web Audio API AnalyserNode），幫助學生視覺感受音量大小與起伏，訓練聲音投射。</div><div class="feat-sub">技術：Canvas 繪製即時波形</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🔁</span><div class="feat-title">AI 自動改稿對比（Diff 模式）</div><div class="feat-desc">根據評析結果生成優化版逐字稿，以左右對比（git diff 風格）顯示；新增/刪除/修改以不同色高亮</div><div class="feat-sub">技術：Prompt 指定 JSON 格式輸出變更標記</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🎨</span><div class="feat-title">演說結構比例圖</div><div class="feat-desc">AI 分析逐字稿後標識開場/主體/結語三段，以色塊比例條呈現；理想 10/70/20% 偏差給建議</div><div class="feat-sub">Prompt 需輸出段落位置 offset</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🌟</span><div class="feat-title">名言金句智慧推薦</div><div class="feat-desc">根據題目 AI 推薦 5 句適用名言，說明如何融入與使用位置；可加入「我的金句庫」（my_quotes 表）</div><div class="feat-sub">資料：可用向量搜尋匹配相似主題</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">😊</span><div class="feat-title">情感色彩分析</div><div class="feat-desc">AI 分析逐字稿情感分布（激勵/溫情/說服/邏輯），以堆疊長條圖呈現；幫助調整情感層次</div><div class="feat-sub">Prompt：要求輸出情感標籤 JSON</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🤖</span><div class="feat-title">AI 模擬評審追問</div><div class="feat-desc">演說後 AI 以評審角色提出 2-3 個追問，訓練臨場應對能力；支援「再來一題」循環</div><div class="feat-sub">對進入決賽的學生特別有價值</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎙️</span><div class="feat-title">即時語音波形視覺化</div><div class="feat-desc">錄音時顯示即時音量波形（Web Audio API AnalyserNode + Canvas），訓練聲音投射</div><div class="feat-sub">FFT 也可估算音量分布</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🔇</span><div class="feat-title">靜音段偵測</div><div class="feat-desc">分析停頓次數與平均停頓時長，過多長停頓給予提示；適度停頓是好事，但超過 3 秒可能是忘詞</div><div class="feat-sub">技術：音量低於閾值持續時長判定</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎵</span><div class="feat-title">音高估算與語調分析</div><div class="feat-desc">Autocorrelation 演算法估算基頻，判斷語調是否單調，鼓勵抑揚頓挫；視覺化為音高折線圖</div><div class="feat-sub">進階：機器學習識別感嘆句語調上揚</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🔤</span><div class="feat-title">發音難點自動標記</div><div class="feat-desc">AI 分析逐字稿，預先標出難唸字詞（多音字、連讀音、輕聲）並附拼音提醒；列印稿也同步呈現</div><div class="feat-sub">教育價值：降低正音壓力</div></div>
     </div>
   </div>
 
   <div class="phase-wrap p3">
     <div class="phase-header">
       <div class="phase-badge">P3</div>
-      <div class="phase-meta"><h3>Phase 3｜教師班級管理功能（→ v3.0）</h3><p>從單人工具升級為老師可管理整班學生的訓練平台，支援 40 人班級</p></div>
-      <div class="phase-est">⏱ 預估 3–4 週</div>
+      <div class="phase-meta"><h3>Phase 3｜教師班級管理（→ v3.0）</h3><p>老師有雲端帳號後，自然演進為「一位老師 → 多位學生」的班級管理系統</p></div>
+      <div class="phase-est">⏱ 預估 4–5 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">👨‍👩‍👧‍👦</span><div class="feat-title">學生名單管理</div><div class="feat-desc">老師建立學生清單（支援 40 人），切換學生視角時各自讀取練習紀錄，資料 JSON 結構存 localStorage。</div><div class="feat-sub">流程：老師模式 → 新增學生 → 切換學生 → 各自記錄互不干擾</div></div>
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🏫</span><div class="feat-title">班級整體表現儀表板</div><div class="feat-desc">一覽表顯示全班練習次數、平均時間、完美率排行；熱力圖呈現哪些天練習最密集。</div><div class="feat-sub">視覺化：Chart.js 長條圖比較各學生練習次數</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📝</span><div class="feat-title">個人成績單自動生成</div><div class="feat-desc">為每位學生產生 A4 成績單，含練習次數、平均時間折線圖、AI 三大優點與建議、指導老師評語欄。</div><div class="feat-sub">格式：精美列印 CSS，模擬正式成績通知單版面</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📅</span><div class="feat-title">備賽倒數日曆</div><div class="feat-desc">輸入比賽日期後顯示「距離比賽 X 天」；依 5 週備賽流程自動推算「本週任務」，每天進入平台顯示今日建議。</div><div class="feat-sub">延伸：可設定複賽、決賽多個日期節點</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📱</span><div class="feat-title">家長通知信一鍵生成</div><div class="feat-desc">根據學生練習狀況，AI 自動生成中文家長說明信，含近況摘要、在家練習建議、鼓勵語句，一鍵複製或 mailto 傳送。</div><div class="feat-sub">場景：賽前一週通知家長配合，降低老師撰信成本</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏆</span><div class="feat-title">班內模擬賽排程系統</div><div class="feat-desc">老師設定模擬賽日期與人數，系統隨機抽出上場順序；老師可即時輸入五大評分面向，系統自動算總分。</div><div class="feat-sub">模擬正式比賽抽籤流程，提前讓學生適應比賽氛圍</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">👩‍🏫</span><div class="feat-title">老師 / 學生角色系統</div><div class="feat-desc">新增 <code>user_role</code> 欄位；老師可建立班級，邀請學生用班級代碼加入；老師模式介面與學生不同</div><div class="feat-sub">DB：classes 表 + class_memberships 表</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">👥</span><div class="feat-title">班級整體儀表板</div><div class="feat-desc">全班練習次數、平均時間、完美率排行；熱力圖看全班練習密集度；點擊任一學生進入個人檔案</div><div class="feat-sub">RLS：老師可查看自己班學生資料</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📝</span><div class="feat-title">老師線上批注系統</div><div class="feat-desc">老師在學生的逐字稿上直接選取文字加便利貼評語；學生下次開啟時看到批注；整合到列印單</div><div class="feat-sub">DB：comments 表（record_id, offset_start, offset_end, note）</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📊</span><div class="feat-title">個人成績單自動生成</div><div class="feat-desc">為每位學生產生 A4 成績單：練習次數、折線圖截圖、AI 三大優點與建議、老師評語；一鍵批次產出 40 份</div><div class="feat-sub">技術：html2canvas + jsPDF 批次組合</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🏆</span><div class="feat-title">班內模擬賽排程</div><div class="feat-desc">老師設定比賽日期與人數，系統隨機抽上場順序；老師即時輸入五大評分，自動算總分排名</div><div class="feat-sub">即時性：Supabase Realtime 推送給所有人看比賽結果</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📅</span><div class="feat-title">備賽倒數日曆</div><div class="feat-desc">輸入比賽日期後顯示「距離 X 天」；依 5 週備賽流程自動推算本週任務；每天顯示今日建議</div><div class="feat-sub">可設定複賽、決賽多節點</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📧</span><div class="feat-title">家長通知信一鍵發送</div><div class="feat-desc">AI 生成家長說明信（近況+在家練習建議+鼓勵）；一鍵 mailto: 或直接透過 Supabase Edge Function 寄出</div><div class="feat-sub">場景：賽前一週通知家長配合</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎬</span><div class="feat-title">即時課堂模式</div><div class="feat-desc">老師開啟「現場練習模式」，投影到大螢幕，全班學生手機/平板同步看到當前題目、計時器、排名；Supabase Realtime Channel</div><div class="feat-sub">革命性：讓課堂練習像電競直播</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🏅</span><div class="feat-title">同儕互評機制</div><div class="feat-desc">學生可匿名互評同學的演說錄音，每人隨機分配 2 份；老師監控整體評分一致性</div><div class="feat-sub">教育意義：培養傾聽與給回饋的能力</div></div>
     </div>
   </div>
 
   <div class="phase-wrap p4">
     <div class="phase-header">
       <div class="phase-badge">P4</div>
-      <div class="phase-meta"><h3>Phase 4｜分享協作與跨裝置同步（→ v3.5）</h3><p>讓訓練成果能夠分享、保存、跨裝置同步，延伸平台使用邊界</p></div>
-      <div class="phase-est">⏱ 預估 2–4 週</div>
+      <div class="phase-meta"><h3>Phase 4｜進階 AI 教練模式（→ v3.5）</h3><p>讓 AI 成為「私人演說教練」，提供個人化、多模態的訓練體驗</p></div>
+      <div class="phase-est">⏱ 預估 4–6 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📲</span><div class="feat-title">QR Code 分享練習成果</div><div class="feat-desc">練習結束後將題目、逐字稿、AI 評析摘要編碼進 URL，生成 QR Code，家長掃描即可查閱，無需帳號。</div><div class="feat-sub">技術：qrcode.js 前端生成；資料量大時改用 sessionStorage + hash</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">☁️</span><div class="feat-title">Google Drive 自動備份</div><div class="feat-desc">透過 Google Drive API 將練習紀錄 JSON 與 AI 評析 PDF 自動上傳到學生指定雲端資料夾。</div><div class="feat-sub">隱私設計：資料只上傳至學生自己帳號的 Drive</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎬</span><div class="feat-title">練習影片上傳對照</div><div class="feat-desc">支援上傳練習影片（MP4），影片播放器與逐字稿同步對照，幫助發現非語言表達問題（姿態、表情、手勢）。</div><div class="feat-sub">技術：HTML5 video element + 逐字稿時間軸標記對齊</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">💬</span><div class="feat-title">老師批注評語工具</div><div class="feat-desc">老師在平板可點選逐字稿段落加入評語，以「便利貼」樣式顯示；生成帶批注的 PDF，模擬老師手寫回饋。</div><div class="feat-sub">技術：Contenteditable 行內批注 + html2canvas 轉 PDF</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📧</span><div class="feat-title">Email 練習報告</div><div class="feat-desc">練習結束後一鍵觸發 mailto，郵件主旨與內文自動帶入本次練習摘要，方便每日即時通知家長。</div><div class="feat-sub">無後端方案：mailto: + encodeURIComponent 處理</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🔗</span><div class="feat-title">語音雲端辨識升級</div><div class="feat-desc">整合 Google Cloud Speech-to-Text API 作為備援，支援 Firefox、Safari 及離線錄音後上傳辨識。</div><div class="feat-sub">成本評估：Cloud STT 免費額度每月 60 分鐘，校內使用基本夠用</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🎤</span><div class="feat-title">AI 範讀（語音合成）</div><div class="feat-desc">用 Google Cloud TTS 或 ElevenLabs 將逐字稿以「示範朗讀」呈現，含正確停頓、情感起伏；學生可跟讀</div><div class="feat-sub">成本評估：Google TTS Standard 免費 4M 字/月</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🎬</span><div class="feat-title">練習影片上傳對照</div><div class="feat-desc">上傳演說影片，播放器與逐字稿時間軸同步；幫助發現肢體/表情/手勢問題</div><div class="feat-sub">儲存：Supabase Storage 每月免費 1GB</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">👁️</span><div class="feat-title">AI 姿態分析（MediaPipe）</div><div class="feat-desc">從影片擷取關鍵幀送 MediaPipe Pose 分析：站姿是否穩定、手勢頻率、眼神方向；回饋「台風穩健度」分數</div><div class="feat-sub">技術：MediaPipe JS 前端執行</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🧑‍⚖️</span><div class="feat-title">多元評審團 AI 模擬</div><div class="feat-desc">AI 扮演 3 種評審角色（嚴格評審、鼓勵型評審、比賽型評審）同時給分，讓學生看到不同觀點</div><div class="feat-sub">Prompt 多角色 persona 設計</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎯</span><div class="feat-title">個人化弱項訓練</div><div class="feat-desc">AI 分析累積紀錄找出個人最弱項（如：常常超時、口頭禪多、結構不平衡），推薦對應練習題與技巧</div><div class="feat-sub">資料驅動：每週自動產生訓練建議</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📝</span><div class="feat-title">逐字稿 A/B 對比版本</div><div class="feat-desc">AI 生成兩個不同風格版本（故事型 vs. 論述型），學生選擇後 AI 分析為何這個更適合</div><div class="feat-sub">教育意義：理解不同風格的差異</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎭</span><div class="feat-title">情境角色扮演練習</div><div class="feat-desc">AI 生成演說前的情境：如「你是一位環保小志工，要向陌生人推廣回收」；貼近真實應用</div><div class="feat-sub">跨領域：媒體識讀、社會參與</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌐</span><div class="feat-title">跨語言對照練習</div><div class="feat-desc">中英雙語演說：先中文再英文，AI 分析兩版本優劣；為未來雙語能力打底</div><div class="feat-sub">結合：108 課綱雙語政策</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🤝</span><div class="feat-title">AI 辯論對手</div><div class="feat-desc">AI 以反方立場進行 3 輪辯論，訓練立論與駁論能力；適合高年級學生</div><div class="feat-sub">挑戰性：批判思考訓練</div></div>
     </div>
   </div>
 
   <div class="phase-wrap p5">
     <div class="phase-header">
       <div class="phase-badge">P5</div>
-      <div class="phase-meta"><h3>Phase 5｜多語言競賽延伸（→ v4.0）</h3><p>從國語演說擴展至閩南語、客語、朗讀、作文，成為全語文競賽訓練中心</p></div>
-      <div class="phase-est">⏱ 預估 4–6 週</div>
+      <div class="phase-meta"><h3>Phase 5｜多語言競賽延伸（→ v4.0）</h3><p>擴展至閩南語、客語、朗讀、作文，成為全語文競賽訓練中心</p></div>
+      <div class="phase-est">⏱ 預估 5–8 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🗣️</span><div class="feat-title">閩南語演說模式</div><div class="feat-desc">獨立題庫（先收錄 30 題）、閩南語專屬 AI Prompt、評分標準依規定調整，語音辨識切換 nan-TW。</div><div class="feat-sub">備案：nan-TW 支援度不足時，先以 Gemini 音訊辨識為主</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📖</span><div class="feat-title">朗讀訓練模式</div><div class="feat-desc">提供範文庫練習朗讀，AI 分析語調節奏、停頓位置，計時符合朗讀比賽規定（4–6 分鐘）。</div><div class="feat-sub">特色：朗讀重點在語音正確度與情感詮釋，Prompt 需重新設計</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">✍️</span><div class="feat-title">作文輔助訓練模式</div><div class="feat-desc">AI 幫學生從演說大綱延伸為書面文章，訓練口語→書面轉換；提供起筆句、段落連接詞、收尾技巧建議。</div><div class="feat-sub">跨領域價值：演說訓練成果直接應用於作文</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🧑‍💻</span><div class="feat-title">客語演說模式</div><div class="feat-desc">建立客語題庫，整合參賽資源與評分標準。客語 STT 可整合 Google Cloud Speech-to-Text。</div><div class="feat-sub">建議先以音檔上傳模式為主，待 STT 支援成熟再開放</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🏅</span><div class="feat-title">歷屆得獎範例庫</div><div class="feat-desc">收錄整理公開的歷屆得獎演說稿，依題目分類，AI 可分析範例特色，幫助學生模仿優秀結構。</div><div class="feat-sub">注意：確認著作權，建議教育用途整理並標明出處</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌏</span><div class="feat-title">英語演說模式</div><div class="feat-desc">針對英語演說競賽建立獨立模式，題庫、AI Prompt、評分標準均調整，語音辨識切換 en-US。</div><div class="feat-sub">此功能可大幅擴展平台受眾至更多學校</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🗣️</span><div class="feat-title">閩南語演說模式</div><div class="feat-desc">獨立題庫（30 題起）、閩南語專屬 Prompt、評分標準依規定調整；語音辨識切換 nan-TW</div><div class="feat-sub">備案：STT 支援度不足時先以音檔上傳</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📖</span><div class="feat-title">朗讀訓練模式</div><div class="feat-desc">範文庫練習朗讀，AI 分析語調節奏、停頓位置；計時 4–6 分鐘</div><div class="feat-sub">重點：語音正確度與情感詮釋</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">✍️</span><div class="feat-title">作文輔助訓練模式</div><div class="feat-desc">AI 將演說大綱延伸為書面文章，訓練口語→書面轉換；提供起筆句、連接詞、收尾建議</div><div class="feat-sub">跨領域：演說 → 作文雙向強化</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎭</span><div class="feat-title">國語字音字形訓練</div><div class="feat-desc">與演說比賽相關的「字音字形」子競賽；AI 隨機出題 10 題注音/國字，即時批改</div><div class="feat-sub">整合：與主平台共用帳號系統</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌏</span><div class="feat-title">英語演說模式</div><div class="feat-desc">獨立英語題庫、Prompt、評分；STT 切換 en-US；可擴展受眾至更多學校</div><div class="feat-sub">商業價值：英語補習班可採用</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🧑‍💻</span><div class="feat-title">客語演說模式</div><div class="feat-desc">客語題庫 + Google Cloud STT；四縣/海陸腔可選</div><div class="feat-sub">文化保存價值</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📜</span><div class="feat-title">歷屆得獎範例庫</div><div class="feat-desc">公開歷屆得獎稿件整理分類；AI 分析範例特色幫助模仿；注意著作權須標註</div><div class="feat-sub">教育用途：標明出處使用</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎤</span><div class="feat-title">演說辯論混合模式</div><div class="feat-desc">整合即席演說與辯論比賽，AI 依比賽類型調整評分</div><div class="feat-sub">國中銜接：為國中生準備</div></div>
     </div>
   </div>
 
   <div class="phase-wrap p6">
     <div class="phase-header">
       <div class="phase-badge">P6</div>
-      <div class="phase-meta"><h3>Phase 6｜PWA 化 ＋ 正式雲端平台（→ v5.0 願景）</h3><p>從本機工具演進為可公開上線、供全台灣老師使用的正式平台服務</p></div>
+      <div class="phase-meta"><h3>Phase 6｜PWA 化 ＋ 離線支援（→ v4.5）</h3><p>可安裝至手機桌面、離線可用的原生 App 體驗</p></div>
+      <div class="phase-est">⏱ 預估 3–4 週</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">📱</span><div class="feat-title">Service Worker + Workbox</div><div class="feat-desc">離線可用：抽題、計時、本機紀錄；上線後自動同步到 Supabase</div><div class="feat-sub">Cache-first 靜態資源，Network-first API</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">💾</span><div class="feat-title">IndexedDB 離線佇列</h4><div class="feat-desc">離線時紀錄先存 IndexedDB，上線後批次同步到 Supabase；處理衝突解決</div><div class="feat-sub">技術：Dexie.js 包裝 IndexedDB</div></div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🔔</span><div class="feat-title">Web Push 通知</div><div class="feat-desc">老師發布比賽公告或個人化建議，透過 Push API 直接通知學生手機</div><div class="feat-sub">需要：VAPID 金鑰設定</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📲</span><div class="feat-title">App Shortcuts</div><div class="feat-desc">長按桌面 App 圖示顯示快捷選單：「立即練習」「查看歷史」「AI 生成大綱」</div><div class="feat-sub">manifest.json shortcuts 欄位</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🔄</span><div class="feat-title">Background Sync API</div><div class="feat-desc">背景自動同步，不用手動刷新；適用手機頻繁切換網路環境</div><div class="feat-sub">相容性：Chrome/Edge 支援</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📷</span><div class="feat-title">Camera API 現場錄影</div><div class="feat-desc">直接在網頁內錄製演說影片，立即上傳 Supabase Storage</div><div class="feat-sub">MediaRecorder API</div></div>
+    </div>
+  </div>
+
+  <div class="phase-wrap p7">
+    <div class="phase-header">
+      <div class="phase-badge">P7</div>
+      <div class="phase-meta"><h3>Phase 7｜正式雲端平台上線（→ v5.0）</h3><p>從個人專案升級為可服務全台灣語文競賽老師的公開平台</p></div>
       <div class="phase-est">⏱ 預估 8–12 週</div>
     </div>
     <div class="feature-grid">
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📱</span><div class="feat-title">PWA 安裝與離線支援</div><div class="feat-desc">manifest.json + Service Worker，可安裝到手機/平板桌面，基本功能（抽題、計時）離線可用，待網路恢復再同步 AI 評析。</div><div class="feat-sub">技術：Workbox 管理快取策略，Cache-first 靜態資源，Network-first AI 呼叫</div></div>
-      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🔒</span><div class="feat-title">輕量後端 ＋ 帳號系統</div><div class="feat-desc">以 Supabase 建立最小可用後端；提供 Google OAuth 登入，解決現有 localStorage 無法跨裝置的痛點。</div><div class="feat-sub">架構選擇：Supabase（PostgreSQL + Auth + Storage）大幅減少後端開發量</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌐</span><div class="feat-title">公開平台上線</div><div class="feat-desc">部署至 Vercel + Supabase，申請正式網域，向全台灣語文競賽老師推廣，建立使用者社群。</div><div class="feat-sub">推廣策略：投稿教育部語文競賽教師研習、國語日報、各縣市語文學科中心</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📊</span><div class="feat-title">平台使用數據分析</div><div class="feat-desc">加入匿名使用統計（題目熱門度、平均練習時間分布、AI 使用率），以數據驅動後續開發優先順序。</div><div class="feat-sub">工具：Umami（自架、隱私友善）或 Plausible</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🤝</span><div class="feat-title">開源社群協作</div><div class="feat-desc">開源至 GitHub，邀請老師貢獻題庫、翻譯語言包、提交修復；建立 CONTRIBUTING.md 說明貢獻流程。</div><div class="feat-sub">潛在貢獻者：各縣市語文競賽指導老師、師培生、熱心家長</div></div>
-      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎓</span><div class="feat-title">教師研習教材整合</div><div class="feat-desc">製作完整操作手冊 PDF 與 30 分鐘教學影片，讓初次接觸的老師在研習中快速上手。</div><div class="feat-sub">產出：操作手冊 PDF + 快速入門單頁說明 + YouTube 教學影片</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🌐</span><div class="feat-title">正式網域 ＋ 品牌化</div><div class="feat-desc">購買正式網域（如 speech.education.tw），設計 logo、品牌配色一致性；專業形象</div><div class="feat-sub">建議網域商：Gandi、Cloudflare Registrar</div></div>
+      <div class="feat-card"><div class="feat-prio prio-high">P0 必做</div><span class="feat-icon">🏫</span><div class="feat-title">多學校多班級架構</div><div class="feat-desc">DB 架構升級：schools → classes → students 三層；學校管理員可看全校統計</div><div class="feat-sub">RLS 政策需重新設計</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">💳</span><div class="feat-title">Freemium 商業模式</div><div class="feat-desc">基礎功能免費；進階功能（無限 AI 使用、影片儲存、多班級）月費 NT$99；可永續營運</div><div class="feat-sub">支付：綠界 ECPay / PayPal</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">📊</span><div class="feat-title">平台使用數據分析</div><div class="feat-desc">Umami 匿名統計：題目熱門度、平均練習時間、AI 使用率，以數據驅動開發優先</div><div class="feat-sub">隱私友善：不追蹤個人</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🎓</span><div class="feat-title">教師研習教材</div><div class="feat-desc">操作手冊 PDF + 30 分鐘教學影片 + 快速入門單頁；供老師研習使用</div><div class="feat-sub">推廣通路：各縣市語文學科中心</div></div>
+      <div class="feat-card"><div class="feat-prio prio-mid">建議</div><span class="feat-icon">🤝</span><div class="feat-title">開源 ＋ 社群貢獻</div><div class="feat-desc">核心開源至 GitHub（商業版閉源）；邀請老師貢獻題庫、修復 bug；CONTRIBUTING.md 說明</div><div class="feat-sub">授權：GPLv3（核心）+ 商業授權</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">📺</span><div class="feat-title">YouTube 頻道經營</div><div class="feat-desc">定期上傳平台功能介紹、演說教學技巧、得獎學生訪談；SEO 帶動自然流量</div><div class="feat-sub">內容策略：每月 2 支影片</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🌟</span><div class="feat-title">年度演說大賽</div><div class="feat-desc">平台主辦線上全國演說賽，得獎者獎學金 + 證書；建立品牌地位</div><div class="feat-sub">贊助：可尋求補教業或出版社合作</div></div>
+      <div class="feat-card"><div class="feat-prio prio-low">加分</div><span class="feat-icon">🎯</span><div class="feat-title">API 開放平台</div><div class="feat-desc">提供 REST API 讓其他教育平台串接；如學校系統可整合學生成績</div><div class="feat-sub">商業模式：API 使用按量計費</div></div>
     </div>
   </div>
 
   <!-- 深度技術優化建議 -->
   <div class="sec-title"><span>🔬</span> 深度技術優化與 AI 進化建議</div>
   <div class="deep-grid">
+    <div class="deep-card dc-cloud">
+      <div class="deep-title">☁️ 雲端與資料層優化（v2.7 延伸）</div>
+      <ul class="deep-list">
+        <li><span>新增 Supabase Realtime 訂閱：老師端即時看到學生練習動態，無需手動刷新</span></li>
+        <li><span>資料庫索引優化：<code>practice_records(user_id, created_at DESC)</code> 複合索引已建立，未來可加上 <code>record_type</code> 加速分類查詢</span></li>
+        <li><span>Supabase Edge Functions：將 AI 評析後處理（字數統計、口頭禪計算）移到邊緣函式，減少前端負擔</span></li>
+        <li><span>分級備份策略：每週自動匯出重要學生資料到 Google Drive 或 S3，防止誤刪</span></li>
+        <li><span>Supabase Vector Store：儲存題目的向量嵌入，支援「語意搜尋」相似題目</span></li>
+        <li><span>資料保留政策：3 年以上紀錄自動歸檔到冷儲存，控制資料庫大小與成本</span></li>
+      </ul>
+    </div>
+    <div class="deep-card dc-analytics">
+      <div class="deep-title">📊 資料分析與個人化推薦</div>
+      <ul class="deep-list">
+        <li><span>建立「個人學習模型」：根據歷次紀錄計算穩定度、進步率、弱項分布，推薦下次練習題</span></li>
+        <li><span>班級對比：我和同學的平均時長/分數比較（匿名化），讓學生有參考座標</span></li>
+        <li><span>時段分析：哪個時段練習最有效？週末 vs. 平日的差異？個人最佳表現時段</span></li>
+        <li><span>題目難度校準：記錄每題平均分數，動態調整難易度標籤，越多人練習越準</span></li>
+        <li><span>匯出練習資料為 Excel，讓家長或研究者可深入分析</span></li>
+        <li><span>異常偵測：連續 3 次分數大幅下滑時自動推送「需要老師關注」給老師端</span></li>
+      </ul>
+    </div>
     <div class="deep-card dc-prompt">
       <div class="deep-title">🧠 AI Prompt 工程深化</div>
       <ul class="deep-list">
-        <li><span>為不同年齡層（低/中/高年級）設計差異化 Prompt，低年級語氣溫柔簡單，高年級要求更精準深入</span></li>
-        <li><span>加入「Few-shot 示例」提供 2–3 個優質演說大綱範例，引導 Gemini 輸出格式更一致</span></li>
-        <li><span>評析 Prompt 加入「正向優先」指令，確保先給 2 個真誠優點再談改進，符合教育心理學原則</span></li>
-        <li><span>「名言推薦」Prompt 加入年齡適當性過濾，確保金句是國小學生能理解且有共鳴的語句</span></li>
-        <li><span>建立 Prompt 版本管理機制，各功能 Prompt 統一存於設定檔，方便老師自訂調整措辭風格</span></li>
-        <li><span>加入 System Prompt 角色設定：「你是一位資深國語演說教練，擅長以鼓勵方式引導國小學生進步…」</span></li>
+        <li><span>為不同年級（1-2 / 3-4 / 5-6）設計差異化 Prompt，低年級語氣溫柔簡單，高年級要求更精準深入</span></li>
+        <li><span>加入 Few-shot 示例：提供 2-3 個優質大綱範例，引導 Gemini 輸出格式更一致</span></li>
+        <li><span>「正向優先」指令：評析 Prompt 要求先給 2 個真誠優點再談改進，符合教育心理學</span></li>
+        <li><span>年齡適當性過濾：「名言推薦」Prompt 要求選擇國小生能理解且有共鳴的語句</span></li>
+        <li><span>Prompt 版本管理：統一存於設定檔 <code>prompts.json</code>，方便老師自訂調整措辭風格</span></li>
+        <li><span>System Prompt 角色設定：「你是資深國語演說教練，擅長以鼓勵方式引導國小學生進步…」</span></li>
+        <li><span>Chain-of-Thought 引導：要求 AI 先分析題目→列出要點→組織結構→寫內容，輸出品質更高</span></li>
       </ul>
     </div>
     <div class="deep-card dc-ai">
       <div class="deep-title">🤖 語音分析技術升級</div>
       <ul class="deep-list">
-        <li><span>整合 Web Audio API AnalyserNode，錄音時即時分析音量 RMS 值，評估聲音投射是否足夠</span></li>
-        <li><span>偵測靜音段（Silence Detection）：分析停頓次數與平均停頓時長，過多長停頓給予提示</span></li>
-        <li><span>音高（Pitch）估算：Autocorrelation 演算法估算基頻，判斷語調是否單調，鼓勵抑揚頓挫</span></li>
-        <li><span>Gemini 音訊直接評析升級：發送錄音片段給 Gemini，讓 AI 同時分析聲學特徵與文字內容</span></li>
-        <li><span>語音辨識信心值顯示：低信心值的字詞以橙色標記，提示學生發音需加強</span></li>
+        <li><span>整合 Web Audio API AnalyserNode，即時分析音量 RMS 值，評估聲音投射是否足夠</span></li>
+        <li><span>偵測靜音段：分析停頓次數與平均停頓時長，過多長停頓給予提示（但適度停頓是好事）</span></li>
+        <li><span>音高（Pitch）估算：Autocorrelation 演算法估算基頻，判斷語調是否單調</span></li>
+        <li><span>Gemini 音訊直接評析：發送錄音片段給 Gemini，讓 AI 同時分析聲學特徵與文字內容</span></li>
+        <li><span>語音辨識信心值顯示：低信心值字詞以橙色標記，提示發音需加強</span></li>
+        <li><span>結巴偵測：辨識重複音節（「我我我」「就就」）並量化為「流暢度指數」</span></li>
+        <li><span>整合 Whisper（OpenAI）作為備援：準確度比 Web Speech API 高，但需付費 API</span></li>
       </ul>
     </div>
     <div class="deep-card dc-perf">
       <div class="deep-title">⚡ 效能與載入速度優化</div>
       <ul class="deep-list">
-        <li><span>Lazy Load 分頁內容：切換頁籤時才載入對應 JS 模組，首屏時間縮短 40% 以上</span></li>
-        <li><span>Chart.js 改為按需引入（Tree Shaking），只引入需要的圖表模組，減少體積約 60%</span></li>
-        <li><span>AI 回應串流輸出（Gemini Streaming API）：逐字顯示生成結果，告別等待空白頁面</span></li>
-        <li><span>音頻處理使用 Web Worker 在背景執行，避免阻塞主執行緒導致 UI 凍結</span></li>
-        <li><span>加入 Loading Skeleton 骨架屏，AI 載入中時顯示佔位動畫，有效降低等待焦慮感</span></li>
+        <li><span>Lazy Load 分頁內容：切換頁籤時才載入對應資源，首屏時間縮短 40%+</span></li>
+        <li><span>Chart.js 按需引入（Tree Shaking），只載入需要的圖表模組，減少體積約 60%</span></li>
+        <li><span>AI 回應串流輸出（重新啟用 Streaming API）：逐字顯示生成結果，告別等待空白</span></li>
+        <li><span>音頻處理用 Web Worker 背景執行，避免阻塞主執行緒</span></li>
+        <li><span>Loading Skeleton 骨架屏：AI 載入中顯示佔位動畫，降低等待焦慮</span></li>
+        <li><span>Supabase Query 快取：短時間內重複查詢使用記憶體快取，減少 API 呼叫</span></li>
+        <li><span>圖片懶載入 + WebP 格式：未來上傳學生照片時的標配</span></li>
       </ul>
     </div>
     <div class="deep-card dc-ux">
       <div class="deep-title">🎨 UX 使用體驗深化</div>
       <ul class="deep-list">
-        <li><span>全鍵盤無障礙操作（WCAG 2.1 AA 標準）：所有功能可用 Tab/Enter/Space 操作</span></li>
-        <li><span>動畫偏好尊重：偵測 prefers-reduced-motion，勝利彩帶等動畫可動態關閉</span></li>
-        <li><span>錯誤狀態設計強化：API 失敗時顯示具體原因（金鑰過期/配額用盡/網路斷線）而非通用錯誤訊息</span></li>
-        <li><span>引導式新手教學（Onboarding Tour）：首次使用以步驟提示框帶領老師完成完整流程</span></li>
-        <li><span>破壞性操作「2 步驟確認」：刪除題目、清空紀錄先點擊→再倒數 3 秒確認，防止誤觸</span></li>
-        <li><span>印刷版面精修：列印時加入頁首（學校名稱、日期）與頁尾（頁碼），每頁斷點優化</span></li>
+        <li><span>全鍵盤無障礙操作（WCAG 2.1 AA）：所有功能可用 Tab/Enter/Space 操作</span></li>
+        <li><span>動畫偏好尊重：偵測 <code>prefers-reduced-motion</code>，勝利彩帶可動態關閉</span></li>
+        <li><span>錯誤訊息具體化：API 失敗時顯示原因（金鑰過期/配額用盡/網路斷線）而非通用錯誤</span></li>
+        <li><span>引導式新手教學（Onboarding Tour）：首次使用以步驟提示框帶領老師完成全流程</span></li>
+        <li><span>破壞性操作 2 步驟確認：刪除紀錄先點擊→倒數 3 秒確認，防止誤觸</span></li>
+        <li><span>列印版面精修：加入頁首（學校名稱、日期）與頁尾（頁碼），每頁斷點優化</span></li>
+        <li><span>觸控手勢支援：手機上左右滑動切換分頁、下拉刷新歷史紀錄</span></li>
       </ul>
     </div>
     <div class="deep-card dc-security">
       <div class="deep-title">🔒 資料安全與隱私保護</div>
       <ul class="deep-list">
         <li><span>API 金鑰加密儲存：localStorage 中的 Gemini Key 以 AES 加密，防止開發者工具直接讀取</span></li>
-        <li><span>學生資料本地優先：所有練習紀錄僅存本機，不傳送至任何第三方伺服器（符合 PDPA 精神）</span></li>
-        <li><span>音訊資料即時清除：錄音分析完成後立即從記憶體釋放，不緩存任何音訊數據</span></li>
-        <li><span>Content Security Policy（CSP）設定：限制只允許 googleapis.com 的外部請求，防止 XSS 注入</span></li>
-        <li><span>匯出 CSV/JSON 時加入學生資料警示，提醒老師妥善保管，不得上傳至公開雲端</span></li>
+        <li><span>Supabase RLS 已實作：所有查詢自動過濾，確保只能看到自己的資料（已完成✓）</span></li>
+        <li><span>音訊資料即時清除：錄音分析完成後立即從記憶體釋放</span></li>
+        <li><span>Content Security Policy（CSP）：限制只允許 googleapis.com / supabase.co 外部請求</span></li>
+        <li><span>匯出 CSV/JSON 時加入警示：提醒老師妥善保管，不得上傳至公開雲端</span></li>
+        <li><span>學生資料刪除權：提供「永久刪除我的所有資料」按鈕，符合 GDPR / 個資法精神</span></li>
+        <li><span>定期滲透測試：每季進行一次 OWASP Top 10 檢測</span></li>
       </ul>
     </div>
     <div class="deep-card dc-test">
       <div class="deep-title">🧪 品質保證與測試策略</div>
       <ul class="deep-list">
-        <li><span>跨瀏覽器測試清單：Chrome（主）、Edge（支援）、Firefox（部分功能）、Safari（iOS 常用）</span></li>
+        <li><span>跨瀏覽器測試：Chrome（主）、Edge（支援）、Firefox（部分）、Safari（iOS 常用）</span></li>
         <li><span>跨裝置測試：Windows 筆電（班級電腦）、iPad（老師平板）、iPhone（學生手機）</span></li>
-        <li><span>AI 回應品質監控：記錄 Gemini 回應時間分布，設定 10 秒超時自動重試機制</span></li>
-        <li><span>使用者測試計劃：安排 3–5 位老師進行 Think-aloud 測試，找出介面操作盲點</span></li>
+        <li><span>AI 回應品質監控：記錄 Gemini 回應時間分布，設 10 秒超時自動重試</span></li>
+        <li><span>使用者測試計劃：3-5 位老師 Think-aloud 測試，找出介面操作盲點</span></li>
         <li><span>Lighthouse 分數目標：Performance ≥ 90、Accessibility ≥ 90、Best Practices ≥ 95</span></li>
+        <li><span>E2E 自動化測試：Playwright 腳本跑一遍主流程，確保重構不壞功能</span></li>
+        <li><span>A/B 測試框架：不同的 UI 文案、按鈕位置實驗哪個轉換率高</span></li>
       </ul>
+    </div>
+  </div>
+
+  <!-- 🚨 技術風險與已知限制 -->
+  <div class="sec-title"><span>🚨</span> 技術風險與已知限制</div>
+  <div class="risk-grid">
+    <div class="risk-card">
+      <h4>⚠️ Supabase 免費方案限制</h4>
+      <p>500MB 資料庫、2GB 頻寬/月、50K MAU。若使用人數超過，需升級 Pro ($25/月)。建議在 400 人同時使用前規劃升級，或改用多個專案分流。</p>
+      <span class="risk-fix">💡 解方：加入資料保留政策，老資料歸檔到外部儲存</span>
+    </div>
+    <div class="risk-card">
+      <h4>⚠️ Gemini API 配額限制</h4>
+      <p>免費方案每分鐘 15 次請求、每天 1,500 次；全班 40 人同時用 AI 評析可能會超過。生產環境應申請 Paid tier 或加入排隊機制。</p>
+      <span class="risk-fix">💡 解方：前端加入 rate limit 提示，失敗時自動排隊重試</span>
+    </div>
+    <div class="risk-card">
+      <h4>⚠️ Web Speech API 瀏覽器相容性</h4>
+      <p>只有 Chrome/Edge 完全支援；Safari iOS 有限，Firefox 不支援。學生用不同裝置可能體驗不一致。</p>
+      <span class="risk-fix">💡 解方：整合 Google Cloud Speech-to-Text 作為備援（付費）</span>
+    </div>
+    <div class="risk-card">
+      <h4>⚠️ Google OAuth redirect URL 鎖定</h4>
+      <p>目前硬編碼 <code>https://cagoooo.github.io/speech/</code>，若未來搬遷網域需同時更新 Google Cloud Console、Supabase Auth、前端三處設定。</p>
+      <span class="risk-fix">💡 解方：以環境變數管理 redirect URL，部署時動態注入</span>
+    </div>
+    <div class="risk-card">
+      <h4>⚠️ 單一 HTML 檔體積將過大</h4>
+      <p>目前 index.html 已超過 260KB（約 4,300 行），再擴充功能容易超過瀏覽器優化閾值，首次載入會變慢。</p>
+      <span class="risk-fix">💡 解方：v3.0 改用 Vite + Vue 元件化，按需載入</span>
+    </div>
+    <div class="risk-card">
+      <h4>⚠️ 練習紀錄無 offline 支援</h4>
+      <p>目前學生沒網路時無法記錄練習；練習內容完全遺失。校園網路不穩時影響體驗。</p>
+      <span class="risk-fix">💡 解方：v2.9 加入 IndexedDB 離線佇列 + Service Worker</span>
     </div>
   </div>
 
@@ -498,21 +682,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="deep-card" style="border-top-color:#0d9488">
       <div class="deep-title" style="color:#0d9488">📋 課堂練習流程（建議 40 分鐘）</div>
       <ul class="deep-list">
-        <li><span><strong>暖身 5 分鐘</strong>：老師用「主題建議」功能讓全班一起討論今日題目方向，激發思考</span></li>
-        <li><span><strong>準備 10 分鐘</strong>：學生個別用平台抽題 → 啟動準備計時 → 在紙上列大綱（模擬比賽）</span></li>
-        <li><span><strong>上台 5 分鐘</strong>：一位學生上台演說，老師用「演說計時」即時計時 ＋ 同步錄音辨識</span></li>
-        <li><span><strong>回饋 10 分鐘</strong>：全班用 AI 評析結果一起討論，老師補充指導重點</span></li>
-        <li><span><strong>練習 10 分鐘</strong>：其他同學兩兩一組，用 AI 大綱輔助各自練習，互相給回饋</span></li>
+        <li><span><strong>暖身 5 分鐘</strong>：老師用「主題建議」功能讓全班討論今日題目方向</span></li>
+        <li><span><strong>準備 10 分鐘</strong>：學生個別登入雲端 → 抽題 → 啟動準備計時 → 紙上列大綱</span></li>
+        <li><span><strong>上台 5 分鐘</strong>：一位學生上台演說，老師同步錄音辨識 + AI 即時評分</span></li>
+        <li><span><strong>回饋 10 分鐘</strong>：全班看雷達圖 + 口頭禪統計討論，老師用評語工具寫回饋</span></li>
+        <li><span><strong>練習 10 分鐘</strong>：其他同學各自登入，系統自動推薦下一題，兩兩互評</span></li>
       </ul>
     </div>
     <div class="deep-card" style="border-top-color:#ec4899">
       <div class="deep-title" style="color:#ec4899">🏠 家長配合練習建議</div>
       <ul class="deep-list">
-        <li><span><strong>每日 15 分鐘</strong>：用平台隨機抽題 → 準備 5 分鐘 → 演說一次 → 錄音自評</span></li>
-        <li><span><strong>親子共練模式</strong>：家長掃描列印 QR Code 查看 AI 評語，針對性引導改進</span></li>
-        <li><span><strong>週末加強</strong>：用「名言金句」功能豐富演說素材，週六練舊題加深、週日練新題拓展</span></li>
-        <li><span><strong>模擬考核</strong>：賽前兩週每天用「完整逐字稿」功能打磨定稿，計時精確控制在 4 分 30 秒</span></li>
-        <li><span><strong>家長信溝通</strong>：老師每週用「家長通知信」功能一鍵生成練習摘要，家長掌握進度</span></li>
+        <li><span><strong>每日 15 分鐘</strong>：學生用自己 Google 帳號登入 → 抽題 → 準備 5 分鐘 → 演說 → 自動存雲端</span></li>
+        <li><span><strong>親子共練模式</strong>：家長用 QR Code 掃描查看當日 AI 評語與老師評語，針對性引導</span></li>
+        <li><span><strong>週末加強</strong>：週六練舊題加深、週日練新題拓展；用進步折線圖看本週變化</span></li>
+        <li><span><strong>模擬考核</strong>：賽前兩週每天用「完整逐字稿」功能打磨定稿，計時精確控制</span></li>
+        <li><span><strong>家長信溝通</strong>：老師每週自動寄送練習摘要給家長，掌握進度</span></li>
+      </ul>
+    </div>
+    <div class="deep-card" style="border-top-color:#7c3aed">
+      <div class="deep-title" style="color:#7c3aed">🏆 比賽準備期流程（賽前 5 週）</div>
+      <ul class="deep-list">
+        <li><span><strong>第 5 週</strong>：建立個人檔案、設定比賽日期；用 AI 主題建議廣泛嘗試 3 個角度</span></li>
+        <li><span><strong>第 4 週</strong>：選定最適合的方向，AI 生成完整逐字稿，打磨定稿</span></li>
+        <li><span><strong>第 3 週</strong>：每天計時演說，看語速診斷調整節奏；目標穩定在 4 分 30 秒</span></li>
+        <li><span><strong>第 2 週</strong>：錄音分析口頭禪，刻意練習消除「然後」「就是」；請家長擔任模擬評審</span></li>
+        <li><span><strong>第 1 週</strong>：班內模擬賽 2-3 場，查看歷次紀錄找出最佳表現時段；休息準備</span></li>
+      </ul>
+    </div>
+    <div class="deep-card" style="border-top-color:#f59e0b">
+      <div class="deep-title" style="color:#f59e0b">📊 老師備賽數據驅動決策</div>
+      <ul class="deep-list">
+        <li><span><strong>週一</strong>：查看班級儀表板，找出本週練習次數最少的 3 位學生，個別關心</span></li>
+        <li><span><strong>週三</strong>：AI 雷達圖看全班弱項分布，針對性設計課堂題目</span></li>
+        <li><span><strong>週五</strong>：口頭禪排行榜，公開表揚進步幅度最大的學生</span></li>
+        <li><span><strong>月底</strong>：用匯出 Excel 功能產生月報，附家長信送出，親師共同討論</span></li>
+        <li><span><strong>賽前</strong>：歷次平均時長圖表，確認每位學生時間掌控已穩定</span></li>
       </ul>
     </div>
   </div>
@@ -521,11 +725,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   <div class="sec-title"><span>🛠️</span> 技術架構升級建議</div>
   <div class="tech-grid">
     <div class="tech-card"><span class="ti">⚡</span><h4>前端框架升級</h4><p>Vue 3 + Vite，元件化開發班級管理功能，Pinia 響應式狀態管理</p></div>
-    <div class="tech-card"><span class="ti">💾</span><h4>本地資料庫</h4><p>IndexedDB（via Dexie.js）取代 localStorage，支援大量紀錄儲存與複雜查詢</p></div>
-    <div class="tech-card"><span class="ti">🔒</span><h4>輕量後端</h4><p>Supabase（PostgreSQL + Auth + Storage）作為 BaaS，大幅降低後端開發成本</p></div>
-    <div class="tech-card"><span class="ti">📊</span><h4>資料視覺化</h4><p>Chart.js 折線圖（進步曲線）、雷達圖（能力評分）、長條圖（班級比較）</p></div>
-    <div class="tech-card"><span class="ti">🎤</span><h4>語音分析升級</h4><p>Web Audio API AnalyserNode 即時音量/音高分析；Gemini 音訊模態直接評析</p></div>
-    <div class="tech-card"><span class="ti">📱</span><h4>PWA 化</h4><p>Workbox + manifest.json + Service Worker，可安裝到手機/平板桌面離線使用</p></div>
+    <div class="tech-card"><span class="ti">☁️</span><h4>Supabase 已就緒</h4><p>已整合 ✓ 認證、DB、RLS；未來擴充 Storage（影片）、Edge Functions、Realtime</p></div>
+    <div class="tech-card"><span class="ti">💾</span><h4>離線資料層</h4><p>IndexedDB（via Dexie.js）+ Background Sync，支援無網路環境下完整使用</p></div>
+    <div class="tech-card"><span class="ti">📊</span><h4>資料視覺化</h4><p>Chart.js 折線圖、雷達圖、長條圖；或 D3.js 做進階互動視覺化</p></div>
+    <div class="tech-card"><span class="ti">🎤</span><h4>語音分析升級</h4><p>Web Audio API 即時音量/音高；Gemini 音訊模態；Whisper 備援</p></div>
+    <div class="tech-card"><span class="ti">📱</span><h4>PWA 完整化</h4><p>Workbox + Service Worker + Web Push，近似原生 App 體驗</p></div>
+    <div class="tech-card"><span class="ti">🧠</span><h4>AI 技術多元</h4><p>Gemini（主）+ Whisper（語音）+ ElevenLabs（TTS）+ MediaPipe（姿態）</p></div>
+    <div class="tech-card"><span class="ti">🔒</span><h4>安全性強化</h4><p>CSP、XSS 防護、API 金鑰加密、RLS（已完成✓）、審計日誌</p></div>
+    <div class="tech-card"><span class="ti">🚀</span><h4>CI/CD 升級</h4><p>GitHub Actions + Playwright E2E + Vercel Preview；PR 自動預覽</p></div>
   </div>
 
   <!-- 時間軸 -->
@@ -543,108 +750,106 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
       <div class="tl-dot d-done"></div>
       <div class="tl-body">
         <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
-        <h4>v2.1｜Quick Win 優化包（累計 24 項功能）</h4>
-        <p>✅ 題庫刪除、localStorage 儲存、自訂準備時間、字數統計、收藏標記、計時音效——6 項全數完成！</p>
+        <h4>v2.1 → v2.5｜Quick Win ＋ UI/UX 美化 ＋ AI 強化（累計 40 項功能）</h4>
+        <p>✅ 本地儲存、字數統計、收藏標記、音效、鍵盤快速鍵、評分量表、PWA Banner、CSV 匯出入、換版本按鈕、串聯生成、題庫 107 題、部署 GitHub Pages</p>
       </div>
     </div>
     <div class="tl-item d-done">
       <div class="tl-dot d-done"></div>
       <div class="tl-body">
         <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
-        <h4>v2.2｜UI/UX 美化 ＋ GitHub Pages 部署（累計 28 項功能）</h4>
-        <p>✅ Markdown 渲染升級、AI 生成進度條 UI、動作/語氣標籤美化、GitHub Pages 自動部署、四種模式 PDF 個性化列印——5 項全數完成！🎉 平台正式上線！</p>
+        <h4>v2.6｜3 分鐘計時模式 ＋ 指定題目（累計 43 項功能）</h4>
+        <p>✅ 3 分鐘演說計時模式（2 分提示、2:30 綠燈、3:00 紅燈）、AI 生成修正串流截斷、直接指定題目關鍵字搜尋（含鍵盤導航）</p>
       </div>
     </div>
     <div class="tl-item d-done">
       <div class="tl-dot d-done"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
-        <h4>v2.3｜PDF 列印全面優化（累計 29 項功能）</h4>
-        <p>✅ 修正 PDF 右上角絲帶標籤 position: fixed → absolute，確保標籤只出現在第一頁，正文閱讀不再被遮擋</p>
-      </div>
-    </div>
-    <div class="tl-item d-done">
-      <div class="tl-dot d-done"></div>
-      <div class="tl-body">
-        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
-        <h4>v2.4｜Quick Win 新功能包（累計 35 項功能）</h4>
-        <p>✅ 鍵盤快速鍵、演說評分量表工具（五維滑桿＋列印）、PWA 安裝提示 Banner、AI 內容一鍵複製、題庫 CSV 匯出入、最後 1 分鐘三音階提示音——6 項全數完成！</p>
-      </div>
-    </div>
-    <div class="tl-item d-done">
-      <div class="tl-dot d-done"></div>
-      <div class="tl-body">
-        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成</span>
-        <h4>v2.5｜AI 輸出強化 ＋ 題庫大擴充（累計 40 項功能）</h4>
-        <p>✅ 字數＋時長即時統計、換一個版本按鈕（帶版本計數）、方向→大綱／金句→逐字稿一鍵串聯、題庫從 55 題擴充到 107 題、題庫資料來源區塊——5 項全數完成！</p>
+        <span class="tl-date" style="background:#d1fae5;color:#065f46">✅ 已完成 ⭐ 重大里程碑</span>
+        <h4>v2.7｜Supabase ＋ Google OAuth 雲端同步 ＋ 老師評語（累計 56 項功能）</h4>
+        <p>✅ Supabase 後端整合（practice_records + user_settings 表、RLS、trigger）、Google OAuth 一鍵登入、我的歷史分頁（5 張統計卡片＋完整表格）、抽籤 vs. 完整練習雙類型紀錄、4 層雲端同步保險網、老師評語系統強化（3 段 textarea + 簽名列 + 列印橫線）、race-safe 載入、學生姓名跨裝置同步</p>
       </div>
     </div>
     <div class="tl-item d-current">
       <div class="tl-dot d-current"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#fef3c7;color:#92400e">🔄 當前版本</span>
-        <h4>v2.6｜3 分鐘計時模式 ＋ 指定題目（累計 43 項功能）</h4>
-        <p>✅ 3 分鐘演說計時模式（2 分鐘提示音、2:30 綠燈、3:00 紅燈）、AI 生成改回標準模式修正串流截斷問題、直接指定題目關鍵字搜尋功能（鍵盤導航＋即時篩選）</p>
+        <span class="tl-date" style="background:#fef3c7;color:#92400e">🔄 當前規劃 v2.8（建議 2-3 週）</span>
+        <h4>Phase 1：資料視覺化 ＋ 語速診斷 ＋ 口頭禪偵測</h4>
+        <p>⭐ 個人進步折線圖（Chart.js）、語速自動計算與趨勢、口頭禪 20 種偵測、題目難易度標籤、成就徽章系統、練習連勝日曆、深色模式</p>
       </div>
     </div>
     <div class="tl-item d-next">
       <div class="tl-dot d-next"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">🔜 建議下一步（1–2 週）</span>
-        <h4>v2.7｜Quick Win 新功能包</h4>
-        <p>⭐ AI 多版本歷史標籤、口頭禪偵測、最近練習題目紀錄、題目難易度標籤、自訂演說時間、全文朗讀功能——每項 1–3 天獨立完成</p>
+        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">📅 短期 v2.9（1 個月內）</span>
+        <h4>Phase 2：AI 功能深化與語音精析</h4>
+        <p>AI 自動改稿 Diff 對比、演說結構比例圖、能力雷達圖、名言金句智慧推薦、情感色彩分析、AI 模擬評審追問、即時語音波形</p>
       </div>
     </div>
     <div class="tl-item d-next">
       <div class="tl-dot d-next"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">📅 短期（1 個月內）</span>
-        <h4>v2.8｜練習紀錄 ＋ 個人進步曲線 ＋ AI 深化</h4>
-        <p>localStorage 歷次紀錄、Chart.js 折線圖、語速計算、AI 雷達圖五維評分、口頭禪偵測趨勢</p>
+        <span class="tl-date" style="background:#dbeafe;color:#1a56a0">📅 中期 v3.0（2-3 個月）</span>
+        <h4>Phase 3：教師班級管理系統</h4>
+        <p>老師/學生角色、班級儀表板、線上批注系統、個人成績單批次列印、備賽倒數日曆、家長通知信、班內模擬賽、同儕互評</p>
       </div>
     </div>
     <div class="tl-item d-future">
       <div class="tl-dot d-future"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期（2–3 個月）</span>
-        <h4>v3.0｜教師班級管理系統</h4>
-        <p>學生名單管理、班級表現儀表板、個人成績單列印、備賽倒數日曆、班內模擬賽排程</p>
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期 v3.5（3-4 個月）</span>
+        <h4>Phase 4：AI 教練模式 ＋ 影片分析</h4>
+        <p>AI 範讀（TTS）、練習影片上傳、MediaPipe 姿態分析、多元評審團模擬、個人化弱項訓練、A/B 對比版本</p>
       </div>
     </div>
     <div class="tl-item d-future">
       <div class="tl-dot d-future"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期（3–4 個月）</span>
-        <h4>v3.5｜PWA 化 ＋ QR Code 分享 ＋ AI 自動改稿</h4>
-        <p>Service Worker 離線支援、練習結果 QR Code 分享、AI 自動改稿對比、演說結構比例圖</p>
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 中期 v4.0（4-6 個月）</span>
+        <h4>Phase 5：多語言競賽全方位平台</h4>
+        <p>閩南語/客語演說、朗讀訓練、作文輔助、字音字形訓練、英語演說延伸、歷屆範例庫</p>
       </div>
     </div>
     <div class="tl-item d-future">
       <div class="tl-dot d-future"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期（4–6 個月）</span>
-        <h4>v4.0｜多語言競賽全方位平台</h4>
-        <p>閩南語演說模式、朗讀訓練、作文輔助、歷屆範例庫、英語演說延伸</p>
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期 v4.5（6-8 個月）</span>
+        <h4>Phase 6：PWA 化 ＋ 完整離線支援</h4>
+        <p>Service Worker + Workbox、IndexedDB 離線佇列、Web Push 通知、App Shortcuts、現場錄影</p>
       </div>
     </div>
     <div class="tl-item d-future">
       <div class="tl-dot d-future"></div>
       <div class="tl-body">
-        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期願景（6–12 個月）</span>
-        <h4>v5.0｜雲端正式平台上線</h4>
-        <p>Google OAuth 帳號系統、Supabase 雲端同步、公開網址、全台灣老師免費使用、開源社群</p>
+        <span class="tl-date" style="background:#f3f4f6;color:#6b7280">📅 長期願景 v5.0（8-12 個月）</span>
+        <h4>Phase 7：正式雲端平台上線</h4>
+        <p>正式網域、多學校多班級架構、Freemium 商業模式、教師研習教材、YouTube 經營、年度演說大賽、API 開放平台</p>
       </div>
+    </div>
+  </div>
+
+  <!-- 📌 快速行動清單 -->
+  <div class="callout" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac">
+    <div class="callout-icon">📌</div>
+    <div>
+      <h4 style="color:#065f46">本週建議行動清單（Actionable Next Steps）</h4>
+      <p style="color:#064e3b">
+        <strong>1. 立即可做（1 小時內）</strong>：測試雲端同步是否穩定，多開幾個裝置驗證資料一致性；檢查歷史紀錄顯示無誤。<br>
+        <strong>2. 本週目標（1-2 天）</strong>：實作個人進步折線圖（<code>Chart.js</code> + <code>sb.from('practice_records').select('duration_sec, created_at')</code>），這是雲端資料的第一個視覺化應用。<br>
+        <strong>3. 本週進階（3-5 天）</strong>：加入語速計算功能（需與錄音辨識字數整合），這是最能體現「AI 教練」價值的功能之一。<br>
+        <strong>4. 本月里程碑</strong>：完成 v2.8 全部 12 項 Quick Win，讓平台從「工具」升級為「個人化訓練系統」。
+      </p>
     </div>
   </div>
 
 </div>
 
 <div class="footer">
-  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.6</p>
-  <p>已完成 43 項功能 ｜ 6 大未來開發階段 ｜ 52+ 待開發功能點子 ｜ 14 大深度技術優化方向</p>
+  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.8</p>
+  <p>已完成 56 項功能 ｜ 7 大未來開發階段 ｜ 68+ 待開發功能點子 ｜ 18 大深度技術優化方向</p>
   <p>🌐 線上版：<a href="https://cagoooo.github.io/speech/" style="color:#93c5fd">cagoooo.github.io/speech</a></p>
-  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 15 日</p>
+  <p>☁️ 後端：Supabase + Google OAuth（已整合完成）｜ 🤖 AI：Google Gemini API</p>
+  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 16 日</p>
 </div>
-
 </body>
 </html>
