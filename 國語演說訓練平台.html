@@ -364,7 +364,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .res-info p{font-size:.78rem;color:var(--text-light)}
 
 /* Notification */
-.notif{position:fixed;top:72px;right:18px;background:#fff;border-left:4px solid var(--success);border-radius:10px;padding:13px 18px;box-shadow:0 4px 20px rgba(0,0,0,.14);z-index:1000;transform:translateX(120%);transition:transform .28s;max-width:290px;pointer-events:none}
+.notif{position:fixed;top:72px;right:18px;background:#fff;border-left:4px solid var(--success);border-radius:10px;padding:13px 18px;box-shadow:0 4px 20px rgba(0,0,0,.14);z-index:1000;transform:translateX(calc(100% + 40px));transition:transform .28s;max-width:290px;pointer-events:none}
 .notif.show{transform:translateX(0)}
 .notif.nw{border-left-color:var(--warning)}
 .notif.nd{border-left-color:var(--danger)}
