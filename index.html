@@ -1843,7 +1843,22 @@ async function renderHistoryPanel(){
     const avgM         = Math.floor(avgSec/60), avgS = avgSec%60;
     const avgScore     = total ? (practiceRecs.reduce((s,r)=>s+(r.score||0),0)/total).toFixed(1) : '—';
 
+    // 💡 若只有抽籤紀錄、沒有完整練習紀錄，顯示引導提示
+    const hintBanner = (total===0 && drawTotal>0) ? `
+      <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start">
+        <span style="font-size:1.3rem;flex-shrink:0">💡</span>
+        <div>
+          <div style="font-weight:700;color:#92400e;font-size:.88rem;margin-bottom:4px">目前只有「抽籤」紀錄，尚無完整練習資料</div>
+          <div style="font-size:.8rem;color:#78350f;line-height:1.6">
+            🎲 <strong>抽籤</strong>＝只記錄「抽到哪一題」，不含時長和分數<br>
+            🎯 <strong>完整練習</strong>＝抽題後，點擊「🎤 開始演說計時」→ 演說結束按「⏹ 停止演說」<br>
+            完成一次完整流程後，時長、計時分數就會自動寫入紀錄！
+          </div>
+        </div>
+      </div>` : '';
+
     let html = `
+      ${hintBanner}
       <div class="hist-stats">
         <div class="hist-stat"><span class="hist-stat-val">${total}</span><span class="hist-stat-lbl">✅ 完整練習</span></div>
         <div class="hist-stat"><span class="hist-stat-val">${drawTotal}</span><span class="hist-stat-lbl">🎲 抽籤次數</span></div>
