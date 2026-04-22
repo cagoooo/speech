@@ -1733,11 +1733,12 @@ async function saveCloudPracticeRecord(rec){
     if(rtype==='practice'){
       showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
     }
-    // 🔄 若「我的歷史」分頁目前正可見，延遲 500ms 後刷新（避免與 in-flight 請求衝突）
+    // 🔄 若「我的歷史」分頁正可見，延遲 1 秒後刷新（讓所有 in-flight 寫入完成）
+    //    renderHistoryPanel 內部已有 300ms 防抖，所以多次觸發也只會執行一次
     const histPanel = document.getElementById('panel-history');
-    if(histPanel && histPanel.classList.contains('active') && typeof renderHistoryPanel==='function'){
-      console.log('[cloud] 歷史分頁可見，500ms 後自動刷新');
-      setTimeout(()=>renderHistoryPanel(), 500);
+    if(histPanel && histPanel.classList.contains('active')){
+      console.log('[cloud] 歷史分頁可見，1s 後自動刷新');
+      setTimeout(()=>renderHistoryPanel(), 1000);
     }
     // ⚠️ 不再呼叫 loadCloudData()，避免同時發送太多 HEAD 請求堵塞 Supabase 連線池
   }catch(e){
@@ -1777,9 +1778,18 @@ async function syncCustomTopicsToCloud(){
   await saveCloudSettings({custom_topics: customs});
 }
 
-// 🛡️ 全域旗標：避免多重呼叫重疊
+// 🛡️ 防抖 + 互斥鎖：避免多次點擊 / 自動刷新造成 SDK 競爭卡死
 let _historyFetchToken = 0;
-async function renderHistoryPanel(){
+let _histDebounce = null;
+let _histBusy = false;
+
+function renderHistoryPanel(){
+  // 防抖：300ms 內多次呼叫只執行最後一次
+  clearTimeout(_histDebounce);
+  _histDebounce = setTimeout(()=>_doRenderHistory(), 300);
+}
+
+async function _doRenderHistory(){
   const box = document.getElementById('historyContent');
   if(!box) return;
   if(!currentUser){
@@ -1795,21 +1805,29 @@ async function renderHistoryPanel(){
       </div>`;
     return;
   }
+  // 互斥鎖：前一次還在跑就跳過（防抖已確保最後一次會被執行）
+  if(_histBusy){ console.log('[history] 上一次查詢尚未完成，略過'); return; }
+  _histBusy = true;
   const myToken = ++_historyFetchToken;
   box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">⏳</div><p>載入中…</p><p style="font-size:.75rem;color:#9ca3af;margin-top:6px">正在向雲端抓取紀錄…</p></div>';
   console.log('[history] 開始載入歷史紀錄', {userId: currentUser.id, token: myToken});
   try{
-    // 🛠️ 繞過 Supabase SDK（避免 SDK 內部佇列/session 競爭造成 TIMEOUT）
-    //    直接用 fetch() + 12 秒 AbortController 超時
+    // 🛠️ 完全不經過 Supabase SDK — 直接從 localStorage 讀 access_token + 原生 fetch
+    //    避免 sb.auth.getSession() 與其他 SDK 呼叫互相鎖住
     let accessToken = '';
     try{
-      const {data:{session}} = await sb.auth.getSession();
-      accessToken = session?.access_token || '';
-    }catch(_){ console.warn('[history] 取得 session 失敗，改用 anon key'); }
+      const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
+      const raw = localStorage.getItem(storageKey);
+      if(raw){
+        const obj = JSON.parse(raw);
+        accessToken = obj?.access_token || obj?.currentSession?.access_token || '';
+      }
+    }catch(_){}
+    if(!accessToken) console.warn('[history] localStorage 無 token，改用 anon key');
     const ctrl = new AbortController();
-    const abortTimer = setTimeout(()=>ctrl.abort(), 12000);
+    const abortTimer = setTimeout(()=>ctrl.abort(), 15000);
     const url = `${SUPABASE_URL}/rest/v1/practice_records?select=*&user_id=eq.${currentUser.id}&order=created_at.desc&limit=200`;
-    console.log('[history] 直接 fetch', url.replace(currentUser.id, 'UID'));
+    console.log('[history] fetch 開始', new Date().toLocaleTimeString());
     const resp = await fetch(url, {
       signal: ctrl.signal,
       headers: {
@@ -1823,7 +1841,7 @@ async function renderHistoryPanel(){
     if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
     const records = await resp.json();
     const error = null;
-    console.log('[history] 載入結果', {error, count: records?.length});
+    console.log('[history] 載入成功', {count: records?.length, ms: new Date().toLocaleTimeString()});
     if(error){
       box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${escapeHTML(error.message||'未知錯誤')}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
       return;
@@ -1911,9 +1929,11 @@ async function renderHistoryPanel(){
     console.error('[history] 載入失敗', e);
     const isTimeout = e.name === 'AbortError' || (e.message && e.message.includes('TIMEOUT'));
     const hint = isTimeout
-      ? '連線逾時（12 秒），可能是學校網路較慢或 Supabase 端忙碌。請點「重試」。'
+      ? '連線逾時（15 秒），可能是學校網路較慢或 Supabase 端忙碌。請點「重試」。'
       : (e.message || '未知錯誤');
     box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">${isTimeout?'⌛':'⚠️'}</div><p>${escapeHTML(hint)}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
+  } finally {
+    _histBusy = false;  // 釋放互斥鎖
   }
 }
 
