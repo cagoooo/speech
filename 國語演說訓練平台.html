@@ -2953,8 +2953,9 @@ async function detectModels(){
 
     if(!genModels.length){ throw new Error('未找到支援 generateContent 的模型'); }
 
-    // Score each model to sort best first
+    // Score each model to sort best first（2.5-flash-lite 最優先：速度快、品質好）
     function score(name){
+      if(name.includes('2.5-flash-lite')) return 105;
       if(name.includes('2.5-pro'))  return 100;
       if(name.includes('2.5-flash'))return 90;
       if(name.includes('2.5'))      return 85;
