@@ -2125,6 +2125,22 @@ function smoothScrollTo(el, offset=90){
 }
 
 function showPanel(name, btn) {
+  // 🛡️ 離開練習分頁時：若演說還在進行中，自動停止並存檔
+  if(name!=='practice' && (speechOn || (!speechScored && speechSec > 0))){
+    console.log('[panel] 離開練習分頁，自動結束演說並存檔', {speechOn, speechSec, speechScored});
+    if(speechOn){
+      stopSpeech(); // 觸發 showScoreResult → saveCloudPracticeRecord
+    } else if(!speechScored && speechSec > 0 && currentUser && curTopic){
+      // 已停止但未計分（例如計時自然結束但 stopSpeech 沒被呼叫）
+      const {pts, isPerfect} = computePracticeScore(speechSec);
+      saveCloudPracticeRecord({
+        topic: curTopic.t, category: curTopic.c, mode: speechMode,
+        duration_sec: speechSec, score: pts, is_perfect: isPerfect,
+        note: '切換分頁時自動補存'
+      });
+      speechScored = true;
+    }
+  }
   if(name==='parent'){
     document.getElementById('ps-count').textContent=practiceCount||0;
     document.getElementById('ps-perfect').textContent=perfectCount||0;
