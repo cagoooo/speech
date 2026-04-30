@@ -1170,7 +1170,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
       </div><!-- /ai-area -->
 
       <!-- Recording Section -->
-      <div class="rec-section">
+      <div class="rec-section" id="recSection">
         <h3>🎙️ 錄音辨識 × 自動評分</h3>
         <p>開始錄音後，系統會即時辨識學生說出的內容，產生語音逐字稿，並在停止後自動依內容給予評分建議，可結合 Gemini AI 進行深度回饋。</p>
 
@@ -1299,7 +1299,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     </div><!-- /station -->
 
     <!-- Scoring Sheet Tool -->
-    <div class="card">
+    <div class="card" id="scoreCard">
       <div class="card-title">🎯 評分量表工具 <span style="font-size:.72rem;font-weight:400;color:var(--text-light);margin-left:6px">老師評分專用</span></div>
       <p style="font-size:.82rem;color:var(--text-light);margin-bottom:14px">依正式比賽五大評分面向逐項打分，系統自動加總，一鍵列印精美評分單</p>
       <div class="scoring-student-row">
@@ -4766,6 +4766,12 @@ function printTranscript(){
 </div>
 <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
+  // v2.8.1.2: 列印後自動捲回錄音區，方便重錄或繼續評分
+  setTimeout(()=>{
+    const t = document.getElementById('recSection');
+    if(t && typeof smoothScrollTo === 'function') smoothScrollTo(t, 90);
+    else if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 300);
 }
 
 function printRecAI(){
@@ -4787,6 +4793,12 @@ function printRecAI(){
 </div>
 <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
+  // v2.8.1.2: 列印後自動捲回錄音/評析區，方便重新評分或回看逐字稿
+  setTimeout(()=>{
+    const t = document.getElementById('recSection');
+    if(t && typeof smoothScrollTo === 'function') smoothScrollTo(t, 90);
+    else if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 300);
 }
 
 // ==================== RADAR CHART ====================
@@ -5513,6 +5525,12 @@ thead th{padding:11px 12px;text-align:left;color:#fff;font-size:.82rem;font-weig
 <div class="ft">🎤 國小國語演說比賽訓練平台｜評分記錄單｜${date}</div>
 <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
+  // v2.8.1.2: 列印後自動捲回評分量表，方便繼續調整分數或評語
+  setTimeout(()=>{
+    const t = document.getElementById('scoreCard');
+    if(t && typeof smoothScrollTo === 'function') smoothScrollTo(t, 90);
+    else if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 300);
 }
 
 // ==================== PWA INSTALL BANNER ====================
