@@ -1091,7 +1091,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
           </div>
         </div>
 
-        <div style="margin-bottom:14px">
+        <div id="aiOptsSection" style="margin-bottom:14px">
           <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:9px">選擇生成內容：</div>
           <div class="ai-opts">
             <button class="ai-opt on" id="aopt-outline" onclick="setAiOpt('outline')">📋 演說大綱</button>
@@ -4479,6 +4479,12 @@ function doPrint(){
 </div>
 <script>window.onload=function(){window.print()}<\/script></body></html>`);
   w.document.close();
+  // v2.8.1: 列印視窗開啟後，主視窗自動捲動回「選擇生成內容」區塊，方便繼續生成下一個模式
+  setTimeout(()=>{
+    const target = document.getElementById('aiOptsSection');
+    if(target && typeof smoothScrollTo === 'function') smoothScrollTo(target, 90);
+    else if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 300);
 }
 
 // ==================== TOPIC LIST ====================
