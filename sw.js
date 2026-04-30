@@ -1,7 +1,7 @@
 // 🎤 國語演說訓練平台 Service Worker
 // 策略：HTML network-first / 靜態資源 cache-first / API 完全跳過
 // 更新流程：不自動 skipWaiting，等主頁送 SKIP_WAITING 訊息才接管
-const VERSION = 'v2.8.0-2026-04-30';
+const VERSION = 'v2.8.1-2026-04-30';
 const CACHE_NAME = `speech-${VERSION}`;
 const PRECACHE = [
   './',

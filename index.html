@@ -115,6 +115,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .cat-btn{padding:5px 13px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;font-size:.78rem;cursor:pointer;transition:all .18s;font-family:inherit;color:var(--text)}
 .cat-btn:hover{border-color:var(--primary);color:var(--primary)}
 .cat-btn.on{background:var(--primary);border-color:var(--primary);color:#fff}
+/* v2.8.1 學生年級分級按鈕 */
+.grade-btn:hover{background:#fef3c7 !important;transform:translateY(-1px);box-shadow:0 2px 8px rgba(245,158,11,.2)}
+.grade-btn.on{background:linear-gradient(135deg,#f59e0b,#f97316) !important;color:#fff !important;border-color:#d97706 !important;box-shadow:0 3px 10px rgba(245,158,11,.35)}
+.grade-btn.on > div{color:#fff !important}
 
 /* ===== 跳過已抽題目 toggle ===== */
 .draw-options{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding:10px 14px;background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:12px;border:1px dashed #cbd5e1}
@@ -1382,6 +1386,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 
   <!-- =========== TOPICS =========== -->
   <div class="panel" id="panel-topics">
+    <!-- 🎓 v2.8.1 學生年級分級設定 -->
+    <div class="card" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border-left:4px solid #f59e0b">
+      <div class="card-title">🎓 學生年級設定<span style="font-size:.78rem;font-weight:500;color:#92400e;margin-left:8px">影響 AI 生成內容的語言複雜度</span></div>
+      <p style="color:#78350f;font-size:.85rem;margin-bottom:12px;line-height:1.6">
+        切換年級後，AI 會調整<strong>用詞、句子長度、例子取材、論述深度</strong>。<br>
+        例如 3-4 年級會避開艱深成語、改用親切的家庭/校園例子；5-6 年級可加入名言成語與社會議題。
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="grade-btn" data-grade="34" onclick="setStudentGrade('34')" style="flex:1;min-width:140px;padding:12px 16px;border:2px solid #f59e0b;border-radius:10px;background:#fff;color:#92400e;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s">
+          <div style="font-size:1.1rem">3-4 年級</div>
+          <div style="font-size:.72rem;font-weight:500;color:#a16207;margin-top:2px">中年級・親切口吻</div>
+        </button>
+        <button class="grade-btn on" data-grade="56" onclick="setStudentGrade('56')" style="flex:1;min-width:140px;padding:12px 16px;border:2px solid #f59e0b;border-radius:10px;background:#fff;color:#92400e;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s">
+          <div style="font-size:1.1rem">5-6 年級</div>
+          <div style="font-size:.72rem;font-weight:500;color:#a16207;margin-top:2px">高年級・成語名言</div>
+        </button>
+        <button class="grade-btn" data-grade="mix" onclick="setStudentGrade('mix')" style="flex:1;min-width:140px;padding:12px 16px;border:2px solid #f59e0b;border-radius:10px;background:#fff;color:#92400e;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s">
+          <div style="font-size:1.1rem">混合通用</div>
+          <div style="font-size:.72rem;font-weight:500;color:#a16207;margin-top:2px">3-6 年級皆可</div>
+        </button>
+      </div>
+    </div>
     <div class="card">
       <div class="card-title">📋 題庫管理</div>
       <p style="color:var(--text-light);font-size:.85rem;margin-bottom:16px">
@@ -2128,6 +2154,12 @@ async function loadCloudData(){
           renderList(cat==='全部'?'all':cat);
         }
       }
+      // v2.8.1: 載入學生年級設定
+      if(s.student_grade && ['34','56','mix'].includes(s.student_grade)){
+        studentGrade = s.student_grade;
+        try{ localStorage.setItem('studentGrade', s.student_grade); }catch(_){}
+        document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('on', b.dataset.grade === s.student_grade));
+      }
     }
     // 載入練習統計
     const {count:total} = await sb.from('practice_records').select('*',{count:'exact', head:true}).eq('user_id', currentUser.id);
@@ -2576,6 +2608,24 @@ let drawCat = 'all';
 // curTopic 已在頂部 TDZ-safe 提前宣告區宣告
 let aiOpt = 'outline';
 let regenVersion = 1;
+// v2.8.1: 學生年級分級設定（'34' / '56' / 'mix'，預設 5-6 高年級）
+let studentGrade = (typeof localStorage !== 'undefined' && localStorage.getItem('studentGrade')) || '56';
+
+function setStudentGrade(grade){
+  if(!['34','56','mix'].includes(grade)) return;
+  studentGrade = grade;
+  try{ localStorage.setItem('studentGrade', grade); }catch(_){}
+  // 更新 UI 按鈕狀態
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('on', b.dataset.grade === grade));
+  // 同步到雲端 user_settings
+  if(typeof saveCloudSettings === 'function' && typeof currentUser !== 'undefined' && currentUser){
+    saveCloudSettings({ student_grade: grade });
+  }
+  if(typeof showNotif === 'function'){
+    const labels = {'34':'3-4 年級（中年級）', '56':'5-6 年級（高年級）', 'mix':'中高混合'};
+    showNotif('🎓 年級已切換', `AI 將以「${labels[grade]}」程度生成內容`, '');
+  }
+}
 
 // ── Topic difficulty ──
 const CAT_DEFAULT_DIFF={'品格道德':'入門','生活體驗':'入門','自然環境':'中階','夢想未來':'中階','社會關懷':'挑戰','科技創新':'挑戰','文化傳承':'中階'};
@@ -2605,6 +2655,11 @@ loadDrawnFromLocal();
   const cb = document.getElementById('skipDrawnTopics');
   if(cb){ cb.checked = getSkipDrawnPref(); }
   updateDrawnCounter();
+})();
+
+// 🎓 v2.8.1 學生年級按鈕初始狀態（從 localStorage / 預設 56）
+(function initGradeUI(){
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('on', b.dataset.grade === studentGrade));
 })();
 
 // ==================== PANEL ====================
@@ -3940,22 +3995,108 @@ async function genAI(opts={}) {
   let title='',content='';
   if(key){
     try{
-      const sys='你是一位專業的國語演說比賽指導老師，專門輔導國小學生（約9-12歲）。你的演說建議語言生動活潑、符合國小高年級程度，適合口語表達，演說目標時長4-5分鐘（約600-800字）。';
+      // ════════════════════════════════════════════════════════════
+      // v2.8.1 Prompt 工程升級：
+      //   #1 題目類別感知（catGuide）
+      //   #3 演說技巧標記（停頓/語氣/手勢/重音）
+      //   #5 大綱加時間配置條
+      //   #6 名言金句優先順序（⭐/✓/💡）
+      //   #8 年級分級（3-4 / 5-6 / mix）
+      // ════════════════════════════════════════════════════════════
+      const grade = (typeof studentGrade !== 'undefined' && studentGrade) ? studentGrade : (localStorage.getItem('studentGrade') || '56');
+      const gradeName = { '34':'國小中年級（3-4 年級，約 9-10 歲）', '56':'國小高年級（5-6 年級，約 11-12 歲）', 'mix':'國小中高年級（3-6 年級皆可使用）' }[grade];
+      const gradeRule = {
+        '34': '用詞簡單白話、避免艱深成語與抽象名詞、句子短（每句不超過 20 字）、例子取材日常生活（家人、學校、寵物、玩具）、情感親切',
+        '56': '可用常見成語與名言、句子可長可短、例子可含社會議題或科學知識、論述邏輯較強',
+        'mix': '混用：簡單例子為主，配合 1-2 句成語或名言點綴，避開太深的議題'
+      }[grade];
+      const cat = (curTopic && curTopic.c) || '';
+      const catGuide = {
+        '品格道德': '重情感、重故事；以「親身體驗 / 身邊人故事」為核心；結尾要有具體行動呼籲',
+        '生活體驗': '從學生熟悉的生活場景切入；具體描寫感官細節（看到、聽到、聞到、感受到）；昇華到「我學到什麼」',
+        '自然環境': '可加入觀察細節、季節變化；結合科學知識增加說服力；連結到「我能做什麼」',
+        '夢想未來': '從「現在的我」推進到「未來的我」；具體列出「為了這個夢想我正在做什麼」；避免空泛口號',
+        '社會關懷': '重共感與行動呼籲；先描述問題場景再提解方；以「如果我們每個人都……」收尾',
+        '科技創新': '重邏輯、重例子；用對比手法（過去 vs 現在 vs 未來）；結尾思考雙面影響',
+        '文化傳承': '重歷史感、重感性；可結合家中長輩故事或在地文化；強調「為什麼要傳下去」'
+      }[cat] || '依題目核心精神發揮，重視具體例子與真實情感';
+
+      const sys = `你是一位專業的國語演說比賽指導老師，專門輔導${gradeName}的學生。
+語言風格要求：${gradeRule}
+演說目標時長：4-5 分鐘（約 600-800 字）
+必須適合口語表達（讓學生唸得順、聽眾聽得懂）`;
+
+      // 演說技巧標記說明（共用於 outline / script）
+      const tagInstructions = `
+【演說技巧標記要求】請在文中至少使用 5 處下列標籤（自然分散）：
+- 停頓：(停頓 0.5 秒) (停頓 1 秒)
+- 語氣：(語氣放慢) (語氣激昂) (語氣堅定) (語氣溫柔)
+- 表情：(微笑) (眼神堅定) (目光環視)
+- 手勢：(手勢上揚) (手指向前) (雙手張開)
+- 重音：在要重音的詞前後加 「(重音：xx)」 或在句中以「**xx**」標明`;
+
       let userMsg='';
       if(customMsg){
         userMsg=customMsg;
         title=customTitle||`📝 AI 生成內容：「${curTopic.t}」`;
       }else if(aiOpt==='outline'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說大綱，包含：\n1. 吸引人的開場方式（2-3句示範）\n2. 主題一（重點說明＋可用例子方向）\n3. 主題二（重點說明＋可用例子方向）\n4. 結尾昇華方式（呼應開場）\n5. 建議使用的修辭技巧或名言佳句${isRegen?`\n\n（請提供與之前完全不同的切入角度與開場，這是第${regenVersion}個版本）`:''}`;
+        userMsg = `請針對國語演說題目「${curTopic.t}」（類別：${cat||'未分類'}），為${gradeName}學生生成完整演說大綱。
+
+【題目核心方向】${catGuide}
+
+【請輸出結構】
+1. **開場白**（30 秒，建議 60-100 字）：吸引人的開場 2-3 句示範
+2. **主題一**（90 秒，建議 200-260 字）：重點說明 + 具體例子方向
+3. **主題二**（90 秒，建議 200-260 字）：重點說明 + 具體例子方向
+4. **結尾昇華**（30 秒，建議 60-100 字）：呼應開場 + 行動呼籲
+5. **建議修辭技巧**：列出 3 個技巧並各舉 1 例（排比 / 設問 / 比喻 / 對偶 / 引用）
+6. **時間配置條**（在最後輸出）：用視覺方式表示，例如：
+   \`開場 30s ━━━━ 主題一 90s ━━━━━━━━━━━━ 主題二 90s ━━━━━━━━━━━━ 結尾 30s ━━━━\`
+${tagInstructions}
+${isRegen?`\n（請提供與之前完全不同的切入角度與開場，這是第${regenVersion}個版本）`:''}`;
         title=`📋 演說大綱${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else if(aiOpt==='script'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，為國小學生生成完整演說逐字稿：\n要求：語言符合國小高年級、適合口語表達、時長約4-5分鐘（600-800字）、結構完整（有吸引人的開場、豐富的中段論述含至少2個具體例子或故事、有力的昇華結尾）、適當運用排比、設問、比喻等修辭手法。${isRegen?`\n\n（請提供與之前完全不同的故事情節與開場方式，這是第${regenVersion}個版本）`:''}`;
+        userMsg = `請針對國語演說題目「${curTopic.t}」（類別：${cat||'未分類'}），為${gradeName}學生生成完整演說逐字稿。
+
+【題目核心方向】${catGuide}
+
+【寫作要求】
+- 時長 4-5 分鐘（600-800 字）
+- 結構：吸引人的開場 → 主題一（含 1 個具體例子或故事）→ 主題二（含 1 個具體例子或故事）→ 有力的昇華結尾
+- 段落清楚分隔（每段 1-2 個重點句，方便學生分段背誦）
+- 適當運用排比、設問、比喻
+${tagInstructions}
+${isRegen?`\n（請提供與之前完全不同的故事情節與開場方式，這是第${regenVersion}個版本）`:''}`;
         title=`📝 演說逐字稿${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else if(aiOpt==='tips'){
-        userMsg=`請針對國語演說題目「${curTopic.t}」，提供5個具體的演說創意方向建議，每個包含：切入角度、可用具體例子或故事、適合的開場白方式。以條列式呈現。${isRegen?`\n\n（請提供與之前完全不同的5個新方向，這是第${regenVersion}個版本）`:''}`;
+        userMsg = `請針對國語演說題目「${curTopic.t}」（類別：${cat||'未分類'}），為${gradeName}學生提供 5 個具體的演說創意方向建議。
+
+【題目核心方向】${catGuide}
+
+【每個方向格式】
+方向 N：[簡短標題]
+- 切入角度：用 1-2 句說明
+- 可用具體例子或故事：1-2 個（要符合${gradeName}學生的生活經驗）
+- 適合的開場白：1 句示範
+
+請以條列式呈現，5 個方向角度盡量發散。
+${isRegen?`\n（請提供與之前完全不同的 5 個新方向，這是第${regenVersion}個版本）`:''}`;
         title=`💡 主題建議${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }else{
-        userMsg=`請針對國語演說題目「${curTopic.t}」，推薦5句最適合此主題的名言金句或成語，請依照以下格式逐一列出：\n\n每句格式：\n① 名言內容（附出處或作者）\n② 使用時機：開場 ／ 中段論述 ／ 結尾昇華\n③ 融入演說示範說法（1-2句，適合國小高年級口語）\n\n要求：文雅生動、易懂易記，適合9-12歲學生使用。${isRegen?`\n\n（請推薦與之前完全不同的5句名言，這是第${regenVersion}個版本）`:''}`;
+        userMsg = `請針對國語演說題目「${curTopic.t}」（類別：${cat||'未分類'}），推薦 5 句最適合此主題的名言金句或成語，給${gradeName}學生使用。
+
+【優先順序標記】
+- 第 1 句：⭐ **最推薦**（最切題、最易記、最適合背誦的那句）
+- 第 2-3 句：✓ **建議**（氛圍合適、可選用）
+- 第 4-5 句：💡 **進階**（老師喜歡可加分用，較有挑戰）
+
+【每句格式】
+**[⭐/✓/💡] [名言內容]**（出處或作者）
+- 使用時機：開場 / 中段論述 / 結尾昇華
+- 融入演說示範：1-2 句（適合${gradeName}口語表達）
+
+要求：文雅生動、易懂易記，避免太冷僻的引文。
+${isRegen?`\n（請推薦與之前完全不同的 5 句名言，這是第${regenVersion}個版本）`:''}`;
         title=`✨ 名言金句推薦${isRegen?` v${regenVersion}`:''}：「${curTopic.t}」`;
       }
       pc.sending('正在發送至 Gemini AI');
