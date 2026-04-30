@@ -1897,78 +1897,97 @@ async function _doRenderHistory(){
   }
   console.log('[history] 開始載入歷史紀錄', {userId: currentUser.id, token: myToken});
   try{
-    // 🛠️ 取得 access_token 的策略：
-    //    1) 先嘗試 sb.auth.getSession()（會 auto-refresh，但加 3s timeout 避免卡死）
-    //    2) timeout/失敗就 fallback 讀 localStorage
-    //    3) fetch 收到 401 → 強制 refreshSession 重試一次
-    async function _getFreshToken(){
-      try{
-        const sess = await Promise.race([
-          sb.auth.getSession(),
-          new Promise((_,rej)=>setTimeout(()=>rej(new Error('getSession timeout')), 3000))
-        ]);
-        const t = sess?.data?.session?.access_token;
-        if(t) return t;
-      }catch(e){ console.warn('[history] getSession 失敗，改讀 localStorage', e.message); }
-      try{
-        const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
-        const raw = localStorage.getItem(storageKey);
-        if(raw){
-          const obj = JSON.parse(raw);
-          return obj?.access_token || obj?.currentSession?.access_token || '';
-        }
-      }catch(_){}
-      return '';
-    }
-    async function _forceRefresh(){
-      try{
-        const r = await Promise.race([
-          sb.auth.refreshSession(),
-          new Promise((_,rej)=>setTimeout(()=>rej(new Error('refreshSession timeout')), 5000))
-        ]);
-        return r?.data?.session?.access_token || '';
-      }catch(e){ console.warn('[history] refreshSession 失敗', e.message); return ''; }
+    // 🛠️ 雙路策略：優先 SDK（寫入既然能成 = SDK auth OK），SDK 卡死才退回手動 fetch
+    //   為什麼不只用手動 fetch？因為 localStorage 的 token 可能已過期，會拿到 401，
+    //   而 getSession()/refreshSession() 在某些情況會 timeout（SDK lock 卡住）。
+    //   SDK 的 .from().select() 內部會處理 token 刷新且不依賴 lock，最穩定。
+    console.log('[history] fetch 開始', new Date().toLocaleTimeString());
+    let records = null;
+    let _sdkErr = null;
+
+    // ---- 路線 1：SDK select（12s timeout 防卡死） ----
+    try{
+      const sdkResult = await Promise.race([
+        sb.from('practice_records')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false })
+          .limit(200),
+        new Promise((_, rej)=>setTimeout(()=>rej(new Error('SDK select timeout 12s')), 12000))
+      ]);
+      if(sdkResult?.error) throw new Error(sdkResult.error.message || 'SDK error');
+      records = sdkResult?.data || [];
+      console.log('[history] SDK 載入成功', {count: records.length});
+    }catch(e){
+      console.warn('[history] SDK 失敗，改用手動 fetch fallback', e.message);
+      _sdkErr = e;
     }
 
-    let accessToken = await _getFreshToken();
-    if(!accessToken){
-      // 完全沒 token 就直接報錯（用 publishable key 當 Bearer 也會 401）
-      throw new Error('找不到登入憑證，請重新登入');
-    }
-    const url = `${SUPABASE_URL}/rest/v1/practice_records?select=*&user_id=eq.${currentUser.id}&order=created_at.desc&limit=200`;
-    console.log('[history] fetch 開始', new Date().toLocaleTimeString());
-    async function _doFetch(token){
-      const ctrl = new AbortController();
-      const abortTimer = setTimeout(()=>ctrl.abort(), 15000);
-      try{
-        return await fetch(url, {
-          signal: ctrl.signal,
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + token,
-            'Accept': 'application/json'
+    // ---- 路線 2：手動 fetch fallback（SDK 卡死才用） ----
+    if(records === null){
+      async function _getFreshToken(){
+        try{
+          const sess = await Promise.race([
+            sb.auth.getSession(),
+            new Promise((_,rej)=>setTimeout(()=>rej(new Error('getSession timeout')), 3000))
+          ]);
+          const t = sess?.data?.session?.access_token;
+          if(t) return t;
+        }catch(e){ console.warn('[history] getSession 失敗，改讀 localStorage', e.message); }
+        try{
+          const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
+          const raw = localStorage.getItem(storageKey);
+          if(raw){
+            const obj = JSON.parse(raw);
+            return obj?.access_token || obj?.currentSession?.access_token || '';
           }
-        });
-      } finally { clearTimeout(abortTimer); }
-    }
-    let resp = await _doFetch(accessToken);
-    if(resp.status === 401){
-      console.warn('[history] 401，token 可能過期，強制 refresh 後重試');
-      const fresh = await _forceRefresh();
-      if(fresh){
-        accessToken = fresh;
-        resp = await _doFetch(accessToken);
+        }catch(_){}
+        return '';
       }
+      async function _forceRefresh(){
+        try{
+          const r = await Promise.race([
+            sb.auth.refreshSession(),
+            new Promise((_,rej)=>setTimeout(()=>rej(new Error('refreshSession timeout')), 5000))
+          ]);
+          return r?.data?.session?.access_token || '';
+        }catch(e){ console.warn('[history] refreshSession 失敗', e.message); return ''; }
+      }
+      let accessToken = await _getFreshToken();
+      if(!accessToken){
+        throw _sdkErr || new Error('找不到登入憑證，請重新登入');
+      }
+      const url = `${SUPABASE_URL}/rest/v1/practice_records?select=*&user_id=eq.${currentUser.id}&order=created_at.desc&limit=200`;
+      async function _doFetch(token){
+        const ctrl = new AbortController();
+        const abortTimer = setTimeout(()=>ctrl.abort(), 15000);
+        try{
+          return await fetch(url, {
+            signal: ctrl.signal,
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + token,
+              'Accept': 'application/json'
+            }
+          });
+        } finally { clearTimeout(abortTimer); }
+      }
+      let resp = await _doFetch(accessToken);
+      if(resp.status === 401){
+        console.warn('[history] 401，token 可能過期，強制 refresh 後重試');
+        const fresh = await _forceRefresh();
+        if(fresh){
+          accessToken = fresh;
+          resp = await _doFetch(accessToken);
+        }
+      }
+      if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+      records = await resp.json();
+      console.log('[history] 手動 fetch 載入成功', {count: records?.length});
     }
+
     if(myToken !== _historyFetchToken){ console.log('[history] 已被後續請求覆蓋，略過'); return; }
-    if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-    const records = await resp.json();
-    const error = null;
     console.log('[history] 載入成功', {count: records?.length, ms: new Date().toLocaleTimeString()});
-    if(error){
-      box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">⚠️</div><p>載入失敗：${escapeHTML(error.message||'未知錯誤')}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
-      return;
-    }
     if(!records || !records.length){
       box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">📝</div><p>尚無練習紀錄，開始你的第一次演說練習吧！</p></div>';
       return;
