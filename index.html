@@ -1601,6 +1601,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 </div>
 
 <script>
+// ==================== 🛡️ TDZ-safe 提前宣告 ====================
+// 這些變數會被「立即執行的初始化程式」或「DOM onclick/onchange 處理器」用到，
+// 必須在它們可能被觸發之前就完成 let/const 宣告，否則會踩 TDZ：
+//   "Cannot access 'X' before initialization"
+// 宣告順序不影響功能，只影響 TDZ。後面真正使用時是「賦值」而非「重新宣告」。
+let curTopic = null;
+const drawnSet = new Set();
+const DRAWN_LS_KEY = 'drawnTopicTitles';
+const SKIP_DRAWN_LS_KEY = 'skipDrawnTopics';
+let prepTotalSec = 600;
+let prepSec = 600, speechSec = 0;
+let prepTmr = null, speechTmr = null;
+let prepOn = false, speechOn = false;
+let w4 = false, w430 = false, w5 = false;
+let speechMode = '45'; // '45' = 4~5分鐘, '3' = 3分鐘
+let speechScored = false;
+let practiceCount = 0, perfectCount = 0;
+
 // ==================== SUPABASE 雲端同步 ====================
 const SUPABASE_URL = 'https://ybxfsmrawdcisylwjger.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_G9uDeZVEZHWBx3zJmUWc3g_78vSGlJB';
@@ -2214,7 +2232,7 @@ const TOPICS = [
 const DEFAULT_TOPIC_COUNT = TOPICS.length; // 記錄預設題目數量，之後新增的視為自訂題目
 
 let drawCat = 'all';
-let curTopic = null;
+// curTopic 已在頂部 TDZ-safe 提前宣告區宣告
 let aiOpt = 'outline';
 let regenVersion = 1;
 
@@ -2296,10 +2314,7 @@ function showPanel(name, btn) {
 }
 
 // ==================== DRAW ====================
-// 已抽過的題目集合（topic title）
-const drawnSet = new Set();
-const DRAWN_LS_KEY = 'drawnTopicTitles';
-const SKIP_DRAWN_LS_KEY = 'skipDrawnTopics';
+// drawnSet / DRAWN_LS_KEY / SKIP_DRAWN_LS_KEY 在頂部 TDZ-safe 提前宣告區宣告
 
 function loadDrawnFromLocal(){
   try{
@@ -2613,14 +2628,10 @@ function toggleSound(btn){
 }
 
 // ==================== TIMERS ====================
-let prepTotalSec=600;  // 可由選鈕調整
-let prepSec=600, speechSec=0;
-let prepTmr=null, speechTmr=null;
-let prepOn=false, speechOn=false;
-let w4=false, w430=false, w5=false;
+// 以下變數已在頂部 TDZ-safe 提前宣告區宣告：
+//   prepTotalSec / prepSec / speechSec / prepTmr / speechTmr
+//   prepOn / speechOn / w4 / w430 / w5 / speechMode / speechScored
 let w2=false, w230=false, w3=false;
-let speechMode='45'; // '45' = 4~5分鐘, '3' = 3分鐘
-let speechScored=false; // 本次演說是否已計分＋存檔，避免重複寫入（也作為 resetAll 保險網）
 
 // 🏆 依演說模式統一計算分數（讓 showScoreResult 與 resetAll 安全網共用）
 function computePracticeScore(sec){
@@ -4329,7 +4340,7 @@ function launchConfetti(){
 }
 
 // ==================== PRACTICE STATS ====================
-let practiceCount=0, perfectCount=0;
+// practiceCount / perfectCount 已在頂部 TDZ-safe 提前宣告區宣告
 function updatePracticeStats(isPerfect){
   practiceCount++;
   if(isPerfect) perfectCount++;
