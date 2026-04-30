@@ -1763,29 +1763,100 @@ async function saveCloudPracticeRecord(rec){
       record_type: rtype
     };
     console.log('[cloud] 準備寫入練習紀錄', payload);
+
+    // 🛡️ 雙路寫入：SDK 10s timeout，超時改用手動 fetch + REST API
+    //   為什麼要 fallback？SDK v2 用 navigator.locks 做跨分頁同步，
+    //   有時候 lock deadlock 會把 insert 整個卡死、永遠不返回，導致 finally
+    //   永遠不執行、_pendingWrites tracker 卡死、整套同步機制崩潰。
+    let writeOk = false;
+    let writeData = null;
+    let writeErrMsg = '';
+
+    // ---- 路線 1：SDK insert（10s timeout） ----
     try{
-      const {data, error} = await sb.from('practice_records').insert(payload).select();
-      if(error){
-        console.error('[cloud] 寫入失敗', error);
-        showNotif('⚠️ 雲端同步失敗', error.message || '請稍後再試', 'nd');
+      const result = await Promise.race([
+        sb.from('practice_records').insert(payload).select(),
+        new Promise((_, rej)=>setTimeout(()=>rej(new Error('SDK insert timeout 10s')), 10000))
+      ]);
+      if(result?.error) throw new Error(result.error.message || 'SDK insert error');
+      writeData = result?.data;
+      writeOk = true;
+      console.log('[cloud] SDK 寫入成功', writeData);
+    }catch(sdkErr){
+      writeErrMsg = sdkErr.message || 'SDK error';
+      console.warn('[cloud] SDK insert 失敗，改用手動 fetch fallback', writeErrMsg);
+    }
+
+    // ---- 路線 2：手動 fetch + REST API（SDK 卡死才用） ----
+    //   注意：若 SDK 已實際送達 server（只是 response 卡住），fallback 會造成
+    //   重複寫入。但相比「資料完全沒存」這個風險較小，使用者可手動刪除多餘紀錄。
+    if(!writeOk){
+      try{
+        // 直接讀 localStorage 的 token，不打 sb.auth.getSession（同樣會卡死）
+        let token = '';
+        try{
+          const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
+          const raw = localStorage.getItem(storageKey);
+          if(raw){
+            const obj = JSON.parse(raw);
+            token = obj?.access_token || obj?.currentSession?.access_token || '';
+          }
+        }catch(_){}
+        if(!token) throw new Error('找不到登入憑證（localStorage 沒 token）');
+
+        async function _doInsert(t){
+          const ctrl = new AbortController();
+          const abortTimer = setTimeout(()=>ctrl.abort(), 12000);
+          try{
+            return await fetch(`${SUPABASE_URL}/rest/v1/practice_records`, {
+              method: 'POST',
+              signal: ctrl.signal,
+              headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + t,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify(payload)
+            });
+          } finally { clearTimeout(abortTimer); }
+        }
+
+        let resp = await _doInsert(token);
+        if(resp.status === 401){
+          console.warn('[cloud] 手動 fetch 401，token 可能過期，refresh 後重試');
+          try{
+            const r = await Promise.race([
+              sb.auth.refreshSession(),
+              new Promise((_, rej)=>setTimeout(()=>rej(new Error('refresh timeout')), 5000))
+            ]);
+            const fresh = r?.data?.session?.access_token;
+            if(fresh){ resp = await _doInsert(fresh); }
+          }catch(refreshErr){
+            console.warn('[cloud] refreshSession 失敗', refreshErr.message);
+          }
+        }
+        if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        writeData = await resp.json();
+        writeOk = true;
+        console.log('[cloud] 手動 fetch 寫入成功', writeData);
+      }catch(manualErr){
+        console.error('[cloud] 手動 fetch 寫入也失敗', manualErr);
+        showNotif('⚠️ 雲端同步失敗', `${writeErrMsg} / ${manualErr.message}`, 'nd');
         return;
       }
-      console.log('[cloud] 寫入成功', data);
-      if(rtype==='practice'){
-        showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
-      }
-      // 🔄 若「我的歷史」分頁正可見，立即觸發刷新
-      //    renderHistoryPanel 內部有 300ms 防抖 + 排隊機制（busy 時不再被丟掉），
-      //    保證寫入完成後一定會重新拉到含本筆的最新資料
-      const histPanel = document.getElementById('panel-history');
-      if(histPanel && histPanel.classList.contains('active')){
-        console.log('[cloud] 歷史分頁可見，立即觸發刷新（排隊機制會處理 busy）');
-        renderHistoryPanel();
-      }
-      // ⚠️ 不再呼叫 loadCloudData()，避免同時發送太多 HEAD 請求堵塞 Supabase 連線池
-    }catch(e){
-      console.error('[cloud] saveCloudPracticeRecord 例外', e);
-      showNotif('⚠️ 雲端同步發生例外', e.message || '請重新整理頁面再試', 'nd');
+    }
+
+    // 寫入成功後續處理
+    console.log('[cloud] 寫入成功', writeData);
+    if(rtype==='practice'){
+      showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
+    }
+    // 🔄 若「我的歷史」分頁正可見，立即觸發刷新
+    const histPanel = document.getElementById('panel-history');
+    if(histPanel && histPanel.classList.contains('active')){
+      console.log('[cloud] 歷史分頁可見，立即觸發刷新（排隊機制會處理 busy）');
+      renderHistoryPanel();
     }
   } finally {
     _markDone();
