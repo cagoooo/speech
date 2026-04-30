@@ -1618,6 +1618,12 @@ let w4 = false, w430 = false, w5 = false;
 let speechMode = '45'; // '45' = 4~5分鐘, '3' = 3分鐘
 let speechScored = false;
 let practiceCount = 0, perfectCount = 0;
+// ⏱️ 防閒置與背景計時（v2.7.9）：以 wall-clock 為基準，避免分頁切到背景被瀏覽器節流
+let prepStartTs = 0, speechStartTs = 0;
+let prepWarn1Min = false; // prep 倒數 1 分鐘警告守衛
+let w3Red = false;        // 3 分鐘模式：超過 3 分鐘紅燈警告守衛
+let _wakeLockObj = null;
+let _currentPrepTickFn = null, _currentSpeechTickFn = null;
 
 // ==================== SUPABASE 雲端同步 ====================
 const SUPABASE_URL = 'https://ybxfsmrawdcisylwjger.supabase.co';
@@ -2788,11 +2794,47 @@ function updateCustomMode(){
 function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60)}
 function pad(n){return n<10?'0'+n:''+n}
 
+// ⏱️ Wake Lock：防止裝置螢幕在演說時休眠（避免螢幕變黑導致使用者錯過 UI）
+async function _acquireWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      _wakeLockObj = await navigator.wakeLock.request('screen');
+      console.log('[wakeLock] 已啟用螢幕防閒置');
+      _wakeLockObj.addEventListener('release', ()=>{
+        console.log('[wakeLock] 已釋放');
+        _wakeLockObj = null;
+      });
+    } else {
+      console.log('[wakeLock] 此瀏覽器不支援 Wake Lock API');
+    }
+  }catch(e){
+    console.warn('[wakeLock] 啟用失敗（可能需使用者手勢）', e.message);
+  }
+}
+function _releaseWakeLock(){
+  if(_wakeLockObj){
+    try{ _wakeLockObj.release(); }catch(_){}
+    _wakeLockObj = null;
+  }
+}
+// 🔄 切回前景時：立刻補正計時器顯示 + 重新請求 wake lock（瀏覽器在背景會自動釋放）
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState !== 'visible') return;
+  if((prepOn || speechOn) && !_wakeLockObj){
+    _acquireWakeLock();
+  }
+  if(prepOn && _currentPrepTickFn) _currentPrepTickFn();
+  if(speechOn && _currentSpeechTickFn) _currentSpeechTickFn();
+});
+
 function startPrep() {
   if (prepOn) return;
   if (!curTopic) { showNotif('⚠️ 請先抽題','先抽取一道題目後再開始計時！','nw'); return; }
   prepOn=true;
   prepSec=prepTotalSec; // 以目前選定的時間開始
+  prepStartTs = Date.now();   // ⏱️ 記錄開始時刻，用 wall-clock 計時避免背景節流
+  prepWarn1Min = false;       // 重置 1 分鐘警告守衛
+  _acquireWakeLock();         // 防螢幕休眠
   // UX：開始準備時自動捲動至計時器區塊
   setTimeout(()=>smoothScrollTo('tc-prep', 80), 50);
   document.getElementById('btnPrep').disabled=true;
@@ -2803,15 +2845,21 @@ function startPrep() {
   setPhase(0);
   setStatus('s-run','準備中…');
   playBeep(660,0.15,0.3); // 開始音
-  prepTmr=setInterval(()=>{
+  const _doPrepTick = ()=>{
+    if(!prepOn) return;
+    // 用 wall-clock 計算剩餘秒數：分頁在背景被節流也能在切回時瞬間補正
+    const elapsed = Math.floor((Date.now() - prepStartTs) / 1000);
+    prepSec = Math.max(0, prepTotalSec - elapsed);
     if (prepSec<=0){
       clearInterval(prepTmr);prepOn=false;
+      _releaseWakeLock();
+      document.getElementById('prepDig').textContent=fmt(0);
+      document.getElementById('prepFill').style.width='0%';
       playPrepEnd();
       alarm('📢','準備時間結束！',`${prepTotalSec/60} 分鐘準備時間已到，請點擊「開始演說計時」進入演說階段！`,'#1a56a0');
       setStatus('s-warn','準備結束，等待演說');
       return;
     }
-    prepSec--;
     document.getElementById('prepDig').textContent=fmt(prepSec);
     const pct=(prepSec/prepTotalSec)*100;
     document.getElementById('prepFill').style.width=pct+'%';
@@ -2819,17 +2867,27 @@ function startPrep() {
     if(pct<20){tc.className='timer-card tc-danger';document.getElementById('prepFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)'}
     else if(pct<40){tc.className='timer-card tc-warn';document.getElementById('prepFill').style.background='linear-gradient(90deg,#f59e0b,#f97316)'}
     else{tc.className='timer-card tc-on'}
-    if(prepSec===60){ showNotif('⏰ 倒數 1 分鐘','準備時間剩最後 1 分鐘，請確認大綱！','nw'); playOneMinWarning(); }
+    // 改為 <=60 + 守衛：避免 wall-clock 跳秒時錯過 60 這個瞬間
+    if(prepSec<=60 && !prepWarn1Min){
+      prepWarn1Min = true;
+      showNotif('⏰ 倒數 1 分鐘','準備時間剩最後 1 分鐘，請確認大綱！','nw');
+      playOneMinWarning();
+    }
     if(prepSec<=10 && prepSec>0) playPrepCountdown(); // 最後10秒滴答聲
-  },1000);
+  };
+  _currentPrepTickFn = _doPrepTick;
+  prepTmr = setInterval(_doPrepTick, 1000);
 }
 function startSpeech() {
   if (speechOn) return;
   if(prepOn){clearInterval(prepTmr);prepOn=false;}
   speechOn=true;
   speechScored=false; // 新一輪演說開始，重置計分旗標
+  speechStartTs = Date.now(); // ⏱️ wall-clock 起點
   w4=false;w430=false;w5=false;
   w2=false;w230=false;w3=false;
+  w3Red=false;
+  _acquireWakeLock();         // 防螢幕休眠
   // UX：開始演說時自動捲動至計時器卡片，方便學生專注看時間
   setTimeout(()=>smoothScrollTo('tc-speech', 80), 50);
   document.getElementById('btnSpeech').disabled=true;
@@ -2839,10 +2897,12 @@ function startSpeech() {
   document.querySelectorAll('.speech-mode-btn').forEach(b=>b.disabled=true);
   setPhase(1);setStatus('s-run','演說進行中');
 
+  // ⚠️ 所有警示守衛改用 >= 而非 ===，避免 wall-clock 跳秒時錯過警示
   if(speechMode==='3'){
     // ── 3 分鐘模式 ──
-    speechTmr=setInterval(()=>{
-      speechSec++;
+    const tick = ()=>{
+      if(!speechOn) return;
+      speechSec = Math.floor((Date.now() - speechStartTs) / 1000);
       document.getElementById('speechDig').textContent=fmt(speechSec);
       const pct=Math.min((speechSec/180)*100,100);
       document.getElementById('speechFill').style.width=pct+'%';
@@ -2857,17 +2917,20 @@ function startSpeech() {
         tc.className='timer-card tc-danger';
         document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';
       }
-      if(speechSec===120&&!w2){w2=true;playOneMinWarning();alarm('🔔','2 分鐘！','進入最後 1 分鐘！請注意節奏，準備進入結尾。','#d97706');}
-      if(speechSec===150&&!w230){w230=true;playGreenLight();alarm('🟢','2:30！','已進入綠燈區間，再 30 秒即達目標，把握結尾！','#059669');}
-      if(speechSec===165&&!w3){w3=true;playWarningBeep();showNotif('⚠️ 還剩 15 秒','距離 3 分鐘上限還有 15 秒，請準備做結尾！','nw');}
-      if(speechSec===180){playRedAlarm();alarm('🔴','超過 3 分鐘！','已超過演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
+      if(speechSec>=120&&!w2){w2=true;playOneMinWarning();alarm('🔔','2 分鐘！','進入最後 1 分鐘！請注意節奏，準備進入結尾。','#d97706');}
+      if(speechSec>=150&&!w230){w230=true;playGreenLight();alarm('🟢','2:30！','已進入綠燈區間，再 30 秒即達目標，把握結尾！','#059669');}
+      if(speechSec>=165&&!w3){w3=true;playWarningBeep();showNotif('⚠️ 還剩 15 秒','距離 3 分鐘上限還有 15 秒，請準備做結尾！','nw');}
+      if(speechSec>=180&&!w3Red){w3Red=true;playRedAlarm();alarm('🔴','超過 3 分鐘！','已超過演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
       // 🛟 硬上限：超過 5 分鐘仍未手動停止，自動結束並觸發雲端存檔（避免紀錄遺失）
       if(speechSec>=300){showNotif('⏹ 自動停止','已達硬上限（5 分鐘），自動結束並儲存本次紀錄。','nw');stopSpeech();}
-    },1000);
+    };
+    _currentSpeechTickFn = tick;
+    speechTmr = setInterval(tick, 1000);
   } else if(speechMode==='45'){
-    // ── 4~5 分鐘模式（原有邏輯）──
-    speechTmr=setInterval(()=>{
-      speechSec++;
+    // ── 4~5 分鐘模式 ──
+    const tick = ()=>{
+      if(!speechOn) return;
+      speechSec = Math.floor((Date.now() - speechStartTs) / 1000);
       document.getElementById('speechDig').textContent=fmt(speechSec);
       const pct=Math.min((speechSec/300)*100,100);
       document.getElementById('speechFill').style.width=pct+'%';
@@ -2882,20 +2945,23 @@ function startSpeech() {
         tc.className='timer-card tc-danger';
         document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';
       }
-      if(speechSec===240&&!w4){w4=true;playGreenLight();alarm('🟢','4 分鐘！','已達最低演說時間！請注意節奏，目標在 5 分鐘前完成。','#059669');}
-      if(speechSec===270&&!w430){w430=true;playWarningBeep();showNotif('⚠️ 還剩 30 秒','距離 5 分鐘上限還有 30 秒，請準備做結尾！','nw');}
-      if(speechSec===300&&!w5){w5=true;playRedAlarm();alarm('🔴','超過 5 分鐘！','已超過建議演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
+      if(speechSec>=240&&!w4){w4=true;playGreenLight();alarm('🟢','4 分鐘！','已達最低演說時間！請注意節奏，目標在 5 分鐘前完成。','#059669');}
+      if(speechSec>=270&&!w430){w430=true;playWarningBeep();showNotif('⚠️ 還剩 30 秒','距離 5 分鐘上限還有 30 秒，請準備做結尾！','nw');}
+      if(speechSec>=300&&!w5){w5=true;playRedAlarm();alarm('🔴','超過 5 分鐘！','已超過建議演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！','#ef4444');setStatus('s-danger','超時警告！');}
       // 🛟 硬上限：超過 7 分鐘仍未手動停止，自動結束並觸發雲端存檔（避免紀錄遺失）
       if(speechSec>=420){showNotif('⏹ 自動停止','已達硬上限（7 分鐘），自動結束並儲存本次紀錄。','nw');stopSpeech();}
-    },1000);
+    };
+    _currentSpeechTickFn = tick;
+    speechTmr = setInterval(tick, 1000);
   } else {
     // ── 自訂時間模式 ──
     const limS=Math.round((parseFloat(document.getElementById('customMinutes').value)||4)*60);
     const gsS=Math.max(limS-30,0);
     const warnS=Math.max(limS-60,0);
     let cwWarn=false,cwGreen=false,cwDanger=false;
-    speechTmr=setInterval(()=>{
-      speechSec++;
+    const tick = ()=>{
+      if(!speechOn) return;
+      speechSec = Math.floor((Date.now() - speechStartTs) / 1000);
       document.getElementById('speechDig').textContent=fmt(speechSec);
       const pct=Math.min((speechSec/limS)*100,100);
       document.getElementById('speechFill').style.width=pct+'%';
@@ -2903,12 +2969,14 @@ function startSpeech() {
       if(speechSec<gsS){tc.className='timer-card tc-on';document.getElementById('speechFill').style.background='linear-gradient(90deg,#1a56a0,#3b82f6)';}
       else if(speechSec<limS){tc.className='timer-card tc-good';document.getElementById('speechFill').style.background='linear-gradient(90deg,#10b981,#34d399)';}
       else{tc.className='timer-card tc-danger';document.getElementById('speechFill').style.background='linear-gradient(90deg,#ef4444,#dc2626)';}
-      if(warnS>0&&speechSec===warnS&&!cwWarn){cwWarn=true;playOneMinWarning();alarm('🔔','剩 1 分鐘！',`距離設定時間還有 1 分鐘，請準備進入結尾。`,'#d97706');}
-      if(speechSec===gsS&&!cwGreen){cwGreen=true;playGreenLight();showNotif('🟢 進入綠燈區間','進入最後 30 秒，把握結尾！','');}
-      if(speechSec===limS&&!cwDanger){cwDanger=true;playRedAlarm();alarm('🔴','超過設定時間！',`已超過設定演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！`,'#ef4444');setStatus('s-danger','超時警告！');}
+      if(warnS>0&&speechSec>=warnS&&!cwWarn){cwWarn=true;playOneMinWarning();alarm('🔔','剩 1 分鐘！',`距離設定時間還有 1 分鐘，請準備進入結尾。`,'#d97706');}
+      if(speechSec>=gsS&&!cwGreen){cwGreen=true;playGreenLight();showNotif('🟢 進入綠燈區間','進入最後 30 秒，把握結尾！','');}
+      if(speechSec>=limS&&!cwDanger){cwDanger=true;playRedAlarm();alarm('🔴','超過設定時間！',`已超過設定演說時間！每超過 30 秒將扣 1 分，請盡速完成結尾！`,'#ef4444');setStatus('s-danger','超時警告！');}
       // 🛟 硬上限：超過設定時間 + 2 分鐘仍未手動停止，自動結束並觸發雲端存檔
       if(speechSec>=limS+120){showNotif('⏹ 自動停止',`已超過設定時間 2 分鐘，自動結束並儲存本次紀錄。`,'nw');stopSpeech();}
-    },1000);
+    };
+    _currentSpeechTickFn = tick;
+    speechTmr = setInterval(tick, 1000);
   }
 }
 
@@ -2916,6 +2984,8 @@ function stopSpeech() {
   if(!speechOn) return;
   clearInterval(speechTmr);
   speechOn=false;
+  _releaseWakeLock();
+  _currentSpeechTickFn = null;
   document.getElementById('btnStop').disabled=true;
   document.getElementById('btnStop').style.display='none';
   setPhase(2);
@@ -3046,6 +3116,11 @@ function resetAll() {
   clearInterval(prepTmr);clearInterval(speechTmr);
   prepOn=false;speechOn=false;prepSec=prepTotalSec;speechSec=0;w4=false;w430=false;w5=false;
   speechScored=false; // 重置後允許新一輪計分
+  // ⏱️ 重置 wall-clock + wake lock 狀態
+  prepStartTs=0; speechStartTs=0;
+  prepWarn1Min=false; w3Red=false;
+  _currentPrepTickFn=null; _currentSpeechTickFn=null;
+  _releaseWakeLock();
   document.getElementById('prepDig').textContent=fmt(prepTotalSec);
   // 解鎖時間選鈕
   document.querySelectorAll('.time-btn').forEach(b=>b.disabled=false);
