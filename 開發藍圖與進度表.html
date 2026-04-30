@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.7.2</title>
+<title>🎤 國語演說訓練平台｜開發藍圖與進度表 v2.7.10</title>
 <style>
 :root{
   --primary:#1a56a0;--primary-light:#3b82f6;--primary-dark:#0d3a6e;
@@ -202,9 +202,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   <h1>🎤 國語演說訓練平台｜開發藍圖與進度表</h1>
   <p>完整功能回顧 × 未來開發路線圖 × 深度優化建議參考</p>
   <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1">
-    <div class="header-badge">📅 最後更新：2026 年 4 月 28 日</div>
+    <div class="header-badge">📅 最後更新：2026 年 4 月 30 日</div>
     <div class="header-badge header-badge-cloud">☁️ v2.7 Supabase + Google OAuth 雲端同步 已上線！</div>
-    <div class="header-badge header-badge-new">🆕 v2.7.2 Service Worker ＋ 版本更新確認機制（離線可用 ＋ 自動偵測新版）</div>
+    <div class="header-badge header-badge-new">🆕 v2.7.10 雲端同步雙路防禦 ＋ Wake Lock 防閒置 ＋ Supabase 7 天 Keepalive（4/30 一日 8 連發 hotfix 完成）</div>
   </div>
 </div>
 
@@ -223,7 +223,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <span class="v-badge v-done">✅ v2.6 計時模式 ＋ 指定題目</span>
     <span class="v-badge v-done">✅ v2.7 雲端同步 ＋ Google 登入 ＋ 老師評語</span>
     <span class="v-badge v-done">✅ v2.7.1 雲端同步穩定性修復</span>
-    <span class="v-badge v-current">🆕 v2.7.2 Service Worker ＋ 版本更新確認</span>
+    <span class="v-badge v-done">✅ v2.7.2 Service Worker ＋ 版本更新確認</span>
+    <span class="v-badge v-done">✅ v2.7.3 歷史分頁 race condition 修復</span>
+    <span class="v-badge v-done">✅ v2.7.4 TDZ 死區致命錯誤修復</span>
+    <span class="v-badge v-done">✅ v2.7.5 雙路讀取 SDK + 手動 fetch fallback</span>
+    <span class="v-badge v-done">✅ v2.7.6 刪除按鈕 onclick 引號修復</span>
+    <span class="v-badge v-done">✅ v2.7.7 抽題回饋音效 ＋ 彩花特效</span>
+    <span class="v-badge v-done">✅ v2.7.8 雙路寫入防 SDK insert 卡死</span>
+    <span class="v-badge v-done">✅ v2.7.9 Wake Lock 防閒置 ＋ wall-clock 背景計時</span>
+    <span class="v-badge v-current">🆕 v2.7.10 raw HTTP refresh token + Supabase 7 天 Keepalive 基礎設施</span>
     <span class="v-badge v-next">🔜 v2.8 個人進步圖表 ＋ 語速診斷（規劃中）</span>
     <span class="v-badge v-next">🔜 v3.0 教師班級管理</span>
     <span class="v-badge v-future">📅 v4.0 多語言競賽</span>
@@ -232,9 +240,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 
   <!-- 統計數字 -->
   <div class="stats-row">
-    <div class="stat-card s-done"><div class="stat-num">56</div><div class="stat-lbl">✅ 已完成功能</div></div>
+    <div class="stat-card s-done"><div class="stat-num">68</div><div class="stat-lbl">✅ 已完成功能</div></div>
     <div class="stat-card s-phase"><div class="stat-num">7</div><div class="stat-lbl">🚀 未來開發階段</div></div>
-    <div class="stat-card s-idea"><div class="stat-num">68</div><div class="stat-lbl">💡 待開發功能點子</div></div>
+    <div class="stat-card s-idea"><div class="stat-num">75</div><div class="stat-lbl">💡 待開發功能點子</div></div>
     <div class="stat-card s-ai"><div class="stat-num">18</div><div class="stat-lbl">🤖 AI 深化方向</div></div>
   </div>
 
@@ -248,7 +256,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
   </div>
 
   <!-- 已完成功能 -->
-  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.7，共 56 項）</div>
+  <div class="sec-title"><span>✅</span> 已完成功能總覽（v1.0 → v2.7.10，共 68 項）</div>
   <div class="done-grid">
     <!-- v1.0 核心 -->
     <div class="done-item"><div class="done-check">✓</div><div class="done-body"><h4>比賽資訊頁面</h4><p>時間規定、評分配分視覺化、9 大訓練心法、5 週備賽流程步驟</p><span class="done-tag tag-core">核心功能</span></div></div>
@@ -317,6 +325,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
     <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>📝 老師評語系統強化</h4><p>評分量表下方新增三段式 textarea（優點 / 可加強 / 整體評語）＋ 評分老師姓名欄位；列印評分單老師評語區：有打字→印文字，沒打字→印 3~4 條橫線供手寫；新增簽名列 ＋ 評分日期；<code>page-break-inside:avoid</code> 保護不被截斷</p><span class="done-tag tag-print">列印</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
     <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>🔄 歷史分頁 race-safe 載入</h4><p><code>Promise.race</code> + 8 秒 timeout 防止無限轉圈；<code>_historyFetchToken</code> 旗標避免多重呼叫結果互相覆蓋；失敗時顯示明確錯誤訊息與重試按鈕；存檔後若分頁可見自動刷新</p><span class="done-tag tag-bug">修正</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
     <div class="done-item cloud-item"><div class="new-label">v2.7 🆕</div><div class="done-check">✓</div><div class="done-body"><h4>♻️ 學生姓名／自訂題目跨裝置同步</h4><p><code>user_settings</code> 表儲存學生姓名、自訂題目陣列；登入時自動拉回，換電腦不用重新設定；打字時 debounce 700ms 批次寫入，減少 API 呼叫</p><span class="done-tag tag-cloud">雲端</span></div></div>
+
+    <!-- 🆘 v2.7.3 ~ v2.7.10 雲端同步穩定化大規模 hotfix（2026-04-30 一日 8 連發） -->
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.3 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>🔄 切到歷史分頁看不到剛存入的紀錄（race condition 修復）</h4><p>新增 <code>_pendingWrites</code> Set 追蹤所有進行中的雲端寫入；<code>_doRenderHistory</code> fetch 前先 await 所有 in-flight writes（最多 5 秒）；互斥鎖被佔用時改設 <code>_histPendingRefresh</code> 旗標排隊（不再丟掉刷新請求），鎖釋放後 50ms 自動再跑一次。寫入成功改為立即觸發 renderHistoryPanel</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.4 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>💀 全頁 ReferenceError 紅字（TDZ 死區致命錯誤修復）</h4><p>v2.7.3 帶上去的 <code>initSkipDrawnUI</code> IIFE 立即執行，但用到的 <code>SKIP_DRAWN_LS_KEY</code> 在後面才宣告 → TDZ 拋錯 → 整個 script 後續執行被中斷 → 所有 onclick 連環炸。修法：在 <code>&lt;script&gt;</code> 開頭加「TDZ-safe 提前宣告區」，把 <code>curTopic / drawnSet / SKIP_DRAWN_LS_KEY / prepOn / speechOn / practiceCount</code> 等全提前到此處宣告</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.5 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>🚨 歷史載入 HTTP 401 修復（讀取雙路防禦）</h4><p>原本「手動 fetch + Bearer token」拿到的 localStorage token 過期就 401；<code>sb.auth.refreshSession()</code> 又卡 SDK lock 死透。改為「優先 SDK <code>.from().select()</code> with 12s timeout，SDK 卡死才退回手動 fetch」雙路策略 — 寫入既然 SDK 能成，讀取也必能成</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.6 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>🗑️ 刪除歷史紀錄按鈕 SyntaxError 修復</h4><p>題目字串透過 <code>JSON.stringify</code> 內嵌進 <code>onclick="..."</code> 屬性 → JSON 雙引號與屬性雙引號互打架 → HTML parser 在中文逗號之前就視為屬性結束。修法：把 JSON 內 <code>"</code> 全改成 <code>&amp;quot;</code>，HTML parser 讀屬性時自動解碼回 <code>"</code>，JS 引擎拿到合法 JSON</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #f59e0b"><div class="new-label" style="background:#f59e0b">v2.7.7 ✨</div><div class="done-check">✓</div><div class="done-body"><h4>🎉 隨機抽題加入回饋音效 ＋ 彩花特效</h4><p>點下「🎲 隨機抽題」立即播放 C5→E5→G5→B5 上行 4 連音營造滾動感；題目鎖定瞬間播放 G5→C6 「叮咚」鐘聲 + 全螢幕 55 顆粒子彩花飛舞。受 soundEnabled 控制，靜音狀態不會發聲</p><span class="done-tag tag-ux">UI/UX</span> <span class="done-tag tag-audio">音頻</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.8 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>🔥 SDK insert 永久卡死導致練習紀錄沒同步（寫入雙路防禦）</h4><p>第二次練習完 <code>sb.from().insert()</code> 永遠不返回，<code>finally</code> 沒執行，<code>_pendingWrites</code> tracker 永遠卡在 set 裡。修法：寫入也加雙路 — SDK 10 秒 timeout，超時改用手動 <code>fetch POST /rest/v1/practice_records</code>，token 直接從 localStorage 拿（避開 <code>sb.auth.getSession</code> 也會卡死的雷）</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #10b981"><div class="new-label" style="background:#10b981">v2.7.9 ✨</div><div class="done-check">✓</div><div class="done-body"><h4>⏱️ Wake Lock 防螢幕閒置 ＋ wall-clock 背景計時</h4><p>計時器改用 <code>Date.now() - startTs</code> 計算經過秒數而非 ++/--，瀏覽器在背景節流也不會停。<code>navigator.wakeLock.request('screen')</code> 演說期間防螢幕休眠。<code>visibilitychange</code> listener：分頁切回前景立刻補一次 tick + 重拿 wake lock。所有 === 精確秒警示改成 &gt;= 加守衛，避免 wall-clock 跳秒漏警</p><span class="done-tag tag-core">核心功能</span> <span class="done-tag tag-ux">UI/UX</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #dc2626"><div class="new-label" style="background:#dc2626">v2.7.10 🆘</div><div class="done-check">✓</div><div class="done-body"><h4>🔑 完全繞過 SDK auth — raw HTTP refresh token 救命</h4><p>SDK navigator.locks deadlock 連 <code>refreshSession()</code> 都卡死，token 一過期就永久 401，重整也救不回來。新增 <code>_manualRefreshToken()</code>：直接 POST 到 <code>/auth/v1/token?grant_type=refresh_token</code>，跟 SDK 鎖完全無關。寫入 / 讀取 401 時都改用此 helper 換新 token，新 token 寫回 localStorage 讓後續 SDK 呼叫也能拿到</p><span class="done-tag tag-bug">救火</span> <span class="done-tag tag-cloud">雲端</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #8b5cf6"><div class="new-label" style="background:#8b5cf6">v2.7.10 ☁️</div><div class="done-check">✓</div><div class="done-body"><h4>🔄 Supabase 7 天 Keepalive 基礎設施</h4><p>新建 <a href="https://github.com/cagoooo/supabase-keepalive" target="_blank">cagoooo/supabase-keepalive</a> repo，GitHub Actions cron 每 5 天 UTC 03:00 自動 ping <code>/auth/v1/health</code>，避免免費版 7 天無活動自動暫停。Matrix strategy 同時 keepalive speech-training + smes-inventory，<code>fail-fast: false</code> 不互相影響。集中管理，未來新增專案改一個 matrix 條目即可</p><span class="done-tag tag-cloud">雲端</span> <span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #8b5cf6"><div class="new-label" style="background:#8b5cf6">v2.7.10 📋</div><div class="done-check">✓</div><div class="done-body"><h4>📋 Skill 文件化（3 個新／更新 skill）</h4><p>(1) <code>supabase-secrets-for-browser-apis</code> 加入「雷 #7 SDK navigator.locks deadlock」完整章節含 <code>_manualRefreshToken()</code> 程式碼；(2) 新建 <code>supabase-free-tier-keepalive</code> skill 完整工作流；(3) 觸發條件涵蓋 <code>getSession timeout</code> / <code>refreshSession timeout</code> / 永久 401 救不回來等場景。未來其他 Supabase 專案會自動套用</p><span class="done-tag tag-core">基礎架構</span></div></div>
+    <div class="done-item cloud-item" style="border-left:4px solid #8b5cf6"><div class="new-label" style="background:#8b5cf6">v2.7.10 🤖</div><div class="done-check">✓</div><div class="done-body"><h4>🤖 7 天後 Keepalive 自動驗證 routine</h4><p>建立一次性 remote agent routine（trig_01UwuVneaCTtBCCtf3ATSWUH），於 2026-05-07 02:00 UTC 自動執行：<code>gh run list</code> 檢查 cron 是否成功 + curl 兩個專案 <code>/auth/v1/health</code> 不帶 apikey 觀察 ACTIVE(401) vs INACTIVE(503)，雙路驗證後固定格式回報</p><span class="done-tag tag-core">基礎架構</span></div></div>
   </div>
 
   <!-- 🏗️ 雲端架構示意圖 -->
@@ -352,11 +373,144 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 🛡️ 保險網：resetAll 補存 + beforeunload keepalive + 硬上限自動停止</div>
 
   <!-- 🚀 下一輪 Quick Win -->
+  <!-- 🆘 v2.7.3 ~ v2.7.10 救火戰役總結 -->
+  <div class="sec-title"><span>🆘</span> v2.7.3 ~ v2.7.10 雲端同步穩定化救火戰役（2026-04-30 一日 8 連發）</div>
+  <div class="callout" style="background:linear-gradient(135deg,#fef2f2,#fff7ed);border-color:#dc2626">
+    <div class="callout-icon">🔥</div>
+    <div>
+      <h4 style="color:#991b1b">為什麼一天會出 8 個版本？— Supabase SDK navigator.locks deadlock 全紀錄</h4>
+      <p>使用者實際使用 v2.7.2 時遭遇 6 個串聯 bug，每次修一個就暴露下一個更深的問題。最終發現是 Supabase JS SDK v2 用 <code>navigator.locks</code> 做跨分頁 session 同步，某些 session 會 deadlock 把所有 <code>sb.auth.*</code> 永久卡死，連 token refresh 都死透。最終解法：完全繞過 SDK auth，直接打 raw HTTP <code>/auth/v1/token?grant_type=refresh_token</code> endpoint。本次救火經驗已寫入 <code>~/.claude/skills/supabase-secrets-for-browser-apis</code> 的「雷 #7」章節，未來所有 Supabase 專案受惠。</p>
+    </div>
+  </div>
+
+  <table class="qw-table">
+    <thead><tr><th>版本</th><th>症狀</th><th>根因</th><th>修法</th></tr></thead>
+    <tbody>
+      <tr><td><strong>v2.7.3</strong></td><td>練習完切到歷史看不到新紀錄</td><td>fetch 在 INSERT 完成前就出去 + 互斥鎖把後續刷新「直接丟掉」</td><td>新增 <code>_pendingWrites</code> Set + 排隊機制取代丟棄</td></tr>
+      <tr><td><strong>v2.7.4</strong></td><td>全頁紅字 ReferenceError，所有按鈕失效</td><td>v2.7.3 帶上去的 IIFE 用了還沒宣告的 <code>let</code>/<code>const</code>，TDZ 拋錯中斷整個 script</td><td>所有共用變數移到 script 開頭「TDZ-safe 提前宣告區」</td></tr>
+      <tr><td><strong>v2.7.5</strong></td><td>歷史分頁 HTTP 401 載入失敗</td><td>localStorage token 過期 + getSession/refreshSession 卡 SDK lock</td><td>讀取改雙路：SDK 12s timeout，超時退回手動 fetch</td></tr>
+      <tr><td><strong>v2.7.6</strong></td><td>點刪除按鈕 Uncaught SyntaxError</td><td><code>onclick="..."</code> 雙引號與 JSON 雙引號互打架，HTML parser 提早結束屬性</td><td>JSON 內 <code>"</code> 全改成 <code>&amp;quot;</code>，HTML 解碼後 JS 拿到合法字串</td></tr>
+      <tr><td><strong>v2.7.7</strong></td><td>—（功能加分）</td><td>使用者要求加抽題回饋音效</td><td>4 連音上行 + 鎖定鐘聲 + 既有 <code>launchConfetti()</code></td></tr>
+      <tr><td><strong>v2.7.8</strong></td><td>練習紀錄沒同步，第二次寫入卡死 12 分鐘</td><td><code>sb.from().insert()</code> 永久 hang，<code>finally</code> 沒執行</td><td>寫入也加雙路：SDK 10s timeout 超時改手動 fetch POST</td></tr>
+      <tr><td><strong>v2.7.9</strong></td><td>—（功能加分）</td><td>使用者要求防螢幕熄滅 + 背景分頁繼續計時</td><td>Wake Lock API + wall-clock 計時 + visibilitychange 補正</td></tr>
+      <tr><td><strong>v2.7.10</strong></td><td>所有讀寫 401，refresh 也卡，使用者只能登出再登入</td><td>SDK navigator.locks 全面 deadlock，token 永遠刷不了</td><td>新增 <code>_manualRefreshToken()</code> 完全繞過 SDK，raw HTTP 換 token 寫回 localStorage</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 🛠️ 從這次踩雷學到的優化建議 -->
+  <div class="sec-title"><span>🛠️</span> 從本次救火戰役延伸的優化建議（高優先）</div>
+  <div class="callout" style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-color:#0284c7">
+    <div class="callout-icon">💎</div>
+    <div>
+      <h4 style="color:#075985">為什麼這些建議很重要？</h4>
+      <p>v2.7.10 雖然已經穩了，但治標多於治本。下面 8 項是<strong>從本次踩雷直接衍生</strong>的「下次不要再痛」清單，建議在 v2.8 開新功能之前先做完。每一項都是預防性投資，可以避免未來 1–2 倍的救火時間。</p>
+    </div>
+  </div>
+
+  <div class="deep-grid" style="grid-template-columns:repeat(auto-fit,minmax(380px,1fr))">
+    <div class="deep-card" style="border-top-color:#dc2626">
+      <div class="deep-title" style="color:#dc2626">🔴 P0 必做｜防止重複寫入（雙路 fallback 副作用）</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.8/v2.7.10 fallback 機制有副作用 — 若 SDK insert 已實際送達 server 但 response 卡住，手動 fetch fallback 會再寫一筆 → 重複紀錄</span></li>
+        <li><span><strong>解法：</strong>payload 加 <code>client_request_id</code>（前端產生 UUID）+ DB 加 <code>UNIQUE</code> constraint，做 idempotent insert。重試也只會成功一次</span></li>
+        <li><span><strong>難度：</strong>低（一條 migration + 前端 <code>crypto.randomUUID()</code>）</span></li>
+        <li><span><strong>預估：</strong>2 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#dc2626">
+      <div class="deep-title" style="color:#dc2626">🔴 P0 必做｜雙路防禦抽成共用 helper</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.5 / v2.7.8 / v2.7.10 把同樣的「SDK + raw HTTP fallback」邏輯分散在三個地方寫了三遍，未來新增表都要重寫</span></li>
+        <li><span><strong>解法：</strong>抽成 <code>safeSupabaseQuery(table, op, payload)</code> helper，封裝雙路策略 + auto refresh + abort timeout，一行呼叫處理全部</span></li>
+        <li><span><strong>附帶好處：</strong>單元測試容易，未來 Skill 模板可以直接 copy</span></li>
+        <li><span><strong>預估：</strong>3 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#f59e0b">
+      <div class="deep-title" style="color:#f59e0b">🟡 P1 強烈建議｜雲端同步成功率自我監控</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.8 練習紀錄連續好幾筆沒進雲端，使用者完全不知道 — 直到查歷史才發現</span></li>
+        <li><span><strong>解法：</strong>App 內建「雲端同步狀態小燈號」(右下角浮動)：綠燈=最近寫入成功 / 黃燈=正在寫入 / 紅燈=最近失敗。點擊展開最近 5 筆同步紀錄與失敗原因</span></li>
+        <li><span><strong>進階：</strong>累積 3 次連續失敗自動跳大型彈窗「請檢查網路 / 重新登入」</span></li>
+        <li><span><strong>預估：</strong>4 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#f59e0b">
+      <div class="deep-title" style="color:#f59e0b">🟡 P1 強烈建議｜失敗自動重試佇列</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.8 寫入失敗只跳一次通知，學生網路斷線那筆就永久遺失（即使 beforeunload 也救不回）</span></li>
+        <li><span><strong>解法：</strong>失敗的寫入 push 進 <code>localStorage</code> 重試佇列；下次開啟 App + 登入後自動補送，每筆 retry 最多 3 次間隔指數退避（5s/30s/2min）</span></li>
+        <li><span><strong>難度：</strong>中（要處理重複問題，搭配上面 P0 的 client_request_id）</span></li>
+        <li><span><strong>預估：</strong>1 天</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#f59e0b">
+      <div class="deep-title" style="color:#f59e0b">🟡 P1 強烈建議｜iOS Safari Wake Lock 兼容測試</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.9 Wake Lock 只在 Chrome / Edge 桌面測過，iOS Safari 16.4+ 才支援，舊版會 silent fail</span></li>
+        <li><span><strong>解法：</strong>偵測 <code>'wakeLock' in navigator</code> 不支援時，UI 顯示提示「您的瀏覽器不支援防熄屏，建議升級 iOS 16.4+ 或改用 Chrome / Edge」；學生才知道為什麼會熄屏</span></li>
+        <li><span><strong>替代方案：</strong>不支援時改用「靜音影片無限循環」hack 也能防熄屏（NoSleep.js 套路）</span></li>
+        <li><span><strong>預估：</strong>3 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#3b82f6">
+      <div class="deep-title" style="color:#3b82f6">🔵 P2 推薦｜Keepalive workflow 失敗 LINE 通知</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>目前 keepalive 失敗只發 GitHub email，使用者可能忽略</span></li>
+        <li><span><strong>解法：</strong>workflow 失敗時透過 LINE Messaging API 推播給管理員（已有 <code>line-messaging-firebase</code> skill 可參考）。可即時知道哪個 Supabase 專案要救</span></li>
+        <li><span><strong>預估：</strong>2 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#3b82f6">
+      <div class="deep-title" style="color:#3b82f6">🔵 P2 推薦｜Service Worker 與雙路 fallback 整合</div>
+      <ul class="deep-list">
+        <li><span><strong>機會：</strong>已經有 SW（v2.7.2），可以攔截所有 Supabase 寫入，在離線時自動 queue 到 IndexedDB，網路恢復時 background sync 一次性 push 上雲</span></li>
+        <li><span><strong>好處：</strong>學生在學校 wifi 不穩時練習也不會丟資料；體驗接近原生 App</span></li>
+        <li><span><strong>預估：</strong>2 天（背景同步 API 略複雜）</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#3b82f6">
+      <div class="deep-title" style="color:#3b82f6">🔵 P2 推薦｜練習紀錄完整性自動稽核</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>v2.7.x 救火後不確定先前是否有資料遺失</span></li>
+        <li><span><strong>解法：</strong>歷史分頁加「資料健檢」按鈕：比對本機 <code>localStorage</code> 統計次數 vs 雲端 <code>practice_records</code> 數量，差距明顯時提示。可選擇是否從本機補送差異</span></li>
+        <li><span><strong>預估：</strong>4 小時</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#10b981">
+      <div class="deep-title" style="color:#10b981">🟢 P3 加分｜Supabase 用量儀表板</div>
+      <ul class="deep-list">
+        <li><span><strong>背景：</strong>免費版 500 MB DB / 5 GB egress / 50 MAU；目前 5 個專案 + 兩個 ACTIVE，若學生人數成長要提前規劃</span></li>
+        <li><span><strong>解法：</strong>單獨頁面顯示最近 30 天的 row count、儲存用量、API 呼叫數、估計 MAU；快接近上限時 LINE 通知</span></li>
+        <li><span><strong>預估：</strong>4 小時（可走 MCP <code>get_logs</code> + 自製查詢）</span></li>
+      </ul>
+    </div>
+
+    <div class="deep-card" style="border-top-color:#10b981">
+      <div class="deep-title" style="color:#10b981">🟢 P3 加分｜練習紀錄匯出 / 備份</div>
+      <ul class="deep-list">
+        <li><span><strong>問題：</strong>學生資料只在 Supabase，若服務中斷就全沒</span></li>
+        <li><span><strong>解法：</strong>「我的歷史」加「📤 匯出 CSV/JSON」按鈕；老師端可一鍵打包整班學生紀錄為 ZIP（含 PDF 評分單）</span></li>
+        <li><span><strong>進階：</strong>每週自動 dump 到 Google Drive（用 <code>plugin_productivity_ms365</code> 或 Drive MCP）</span></li>
+        <li><span><strong>預估：</strong>1 天</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 🚀 v2.8 Quick Win 連接 -->
   <div class="callout">
     <div class="callout-icon">💡</div>
     <div>
       <h4>v2.8 Quick Win（建議下一輪衝刺）</h4>
-      <p>v2.7 完成了雲端同步與帳號系統基礎，下一步的重點應放在「讓雲端資料發揮價值」——視覺化、趨勢分析、AI 深化。以下為推薦優先實作項目，每項 1–5 天可獨立完成。</p>
+      <p>v2.7 完成了雲端同步與帳號系統基礎，下一步的重點應放在「讓雲端資料發揮價值」——視覺化、趨勢分析、AI 深化。以下為推薦優先實作項目，每項 1–5 天可獨立完成。<strong>建議：先做完上一段「P0 / P1」優化（共約 2.5 天）再開始 v2.8 新功能</strong>，避免帶著未爆彈往前衝。</p>
     </div>
   </div>
 
@@ -847,11 +1001,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 </div>
 
 <div class="footer">
-  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.8</p>
-  <p>已完成 56 項功能 ｜ 7 大未來開發階段 ｜ 68+ 待開發功能點子 ｜ 18 大深度技術優化方向</p>
+  <p>🎤 國小國語演說比賽訓練平台｜開發藍圖文件 v2.7.10</p>
+  <p>已完成 68 項功能 ｜ 7 大未來開發階段 ｜ 75+ 待開發功能點子 ｜ 18 大深度技術優化方向</p>
   <p>🌐 線上版：<a href="https://cagoooo.github.io/speech/" style="color:#93c5fd">cagoooo.github.io/speech</a></p>
-  <p>☁️ 後端：Supabase + Google OAuth（已整合完成）｜ 🤖 AI：Google Gemini API</p>
-  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 16 日</p>
+  <p>☁️ 後端：Supabase + Google OAuth（已整合）｜ 🤖 AI：Google Gemini API｜ 🔄 Keepalive：<a href="https://github.com/cagoooo/supabase-keepalive" style="color:#93c5fd">cagoooo/supabase-keepalive</a> cron 每 5 天自動 ping</p>
+  <p>📋 工作流 Skill：<code>~/.claude/skills/supabase-secrets-for-browser-apis</code> + <code>supabase-free-tier-keepalive</code>（雷 #7 navigator.locks deadlock 完整對策已寫入）</p>
+  <p>由指導老師與 Claude AI 共同規劃｜最後更新：2026 年 4 月 30 日（v2.7.10 一日 8 連發 hotfix 完成）</p>
 </div>
 </body>
 </html>
