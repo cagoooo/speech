@@ -116,6 +116,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 .cat-btn:hover{border-color:var(--primary);color:var(--primary)}
 .cat-btn.on{background:var(--primary);border-color:var(--primary);color:#fff}
 
+/* ===== 跳過已抽題目 toggle ===== */
+.draw-options{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding:10px 14px;background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:12px;border:1px dashed #cbd5e1}
+.skip-drawn-toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;color:#475569;font-weight:600;user-select:none}
+.skip-drawn-toggle input[type=checkbox]{width:16px;height:16px;accent-color:var(--primary);cursor:pointer;margin:0}
+.skip-drawn-toggle .sd-text{white-space:nowrap}
+.skip-drawn-toggle .sd-counter{font-size:.78rem;color:#64748b;font-weight:500}
+.skip-drawn-toggle .sd-counter.exhausted{color:#dc2626;font-weight:700}
+.btn-reset-drawn{padding:6px 12px;background:#fff;color:#7c3aed;border:1.5px solid #c4b5fd;border-radius:18px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn-reset-drawn:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.btn-reset-drawn:disabled{opacity:.4;cursor:not-allowed;background:#f3f4f6;color:#9ca3af;border-color:#e5e7eb}
+@media(max-width:480px){.draw-options{padding:8px 10px;gap:10px}.skip-drawn-toggle{font-size:.78rem}.btn-reset-drawn{padding:5px 10px;font-size:.72rem}}
+
 .topic-box{background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:18px;padding:28px 36px;min-height:100px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:22px}
 .topic-box::before{content:'"';position:absolute;top:-30px;left:5px;font-size:130px;color:rgba(255,255,255,.08);font-family:Georgia,serif;line-height:1}
 .topic-cat{position:absolute;top:11px;right:14px;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-size:.75rem;color:#fff}
@@ -890,6 +902,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
           <button class="cat-btn" onclick="setDrawCat('社會關懷',this)">社會關懷</button>
           <button class="cat-btn" onclick="setDrawCat('科技創新',this)">科技創新</button>
           <button class="cat-btn" onclick="setDrawCat('文化傳承',this)">文化傳承</button>
+        </div>
+
+        <div class="draw-options" id="drawOptions">
+          <label class="skip-drawn-toggle">
+            <input type="checkbox" id="skipDrawnTopics" onchange="onSkipDrawnChange()">
+            <span class="sd-text">🚫 跳過已抽過的題目</span>
+            <span class="sd-counter" id="drawnCounter">（已抽 0 題）</span>
+          </label>
+          <button class="btn-reset-drawn" id="btnResetDrawn" onclick="resetDrawnTopics()" title="清除已抽紀錄，所有題目重新可抽">🔄 重置已抽</button>
         </div>
 
         <div class="topic-box" id="topicBox">
@@ -1714,49 +1735,61 @@ async function loadCloudData(){
       const ep = document.getElementById('statPerfect'); if(ep) ep.textContent = perfectN;
       const psp = document.getElementById('ps-perfect'); if(psp) psp.textContent = perfectN;
     }
+    // 🚫 把雲端的歷史「抽籤」紀錄合併進已抽過集合
+    syncDrawnFromCloud();
   }catch(e){console.error('loadCloudData error', e);}
 }
 
 async function saveCloudPracticeRecord(rec){
-  if(!cloudReady || !currentUser){
-    console.log('[cloud] 未登入，略過寫入', {cloudReady, currentUser:!!currentUser});
-    return;
-  }
-  const rtype = rec.record_type || 'practice';
-  const payload = {
-    user_id: currentUser.id,
-    topic: rec.topic,
-    topic_category: rec.category || null,
-    speech_mode: rec.mode || null,
-    duration_sec: (rec.duration_sec ?? null),
-    score: (rec.score ?? null),
-    is_perfect: !!rec.is_perfect,
-    note: rec.note || null,
-    record_type: rtype
-  };
-  console.log('[cloud] 準備寫入練習紀錄', payload);
+  // 🆕 註冊 in-flight 寫入：讓「我的歷史」載入前能等候完成，避免新紀錄拉不到
+  let _markDone;
+  const _tracker = new Promise(r=>{ _markDone = r; });
+  _pendingWrites.add(_tracker);
   try{
-    const {data, error} = await sb.from('practice_records').insert(payload).select();
-    if(error){
-      console.error('[cloud] 寫入失敗', error);
-      showNotif('⚠️ 雲端同步失敗', error.message || '請稍後再試', 'nd');
+    if(!cloudReady || !currentUser){
+      console.log('[cloud] 未登入，略過寫入', {cloudReady, currentUser:!!currentUser});
       return;
     }
-    console.log('[cloud] 寫入成功', data);
-    if(rtype==='practice'){
-      showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
+    const rtype = rec.record_type || 'practice';
+    const payload = {
+      user_id: currentUser.id,
+      topic: rec.topic,
+      topic_category: rec.category || null,
+      speech_mode: rec.mode || null,
+      duration_sec: (rec.duration_sec ?? null),
+      score: (rec.score ?? null),
+      is_perfect: !!rec.is_perfect,
+      note: rec.note || null,
+      record_type: rtype
+    };
+    console.log('[cloud] 準備寫入練習紀錄', payload);
+    try{
+      const {data, error} = await sb.from('practice_records').insert(payload).select();
+      if(error){
+        console.error('[cloud] 寫入失敗', error);
+        showNotif('⚠️ 雲端同步失敗', error.message || '請稍後再試', 'nd');
+        return;
+      }
+      console.log('[cloud] 寫入成功', data);
+      if(rtype==='practice'){
+        showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
+      }
+      // 🔄 若「我的歷史」分頁正可見，立即觸發刷新
+      //    renderHistoryPanel 內部有 300ms 防抖 + 排隊機制（busy 時不再被丟掉），
+      //    保證寫入完成後一定會重新拉到含本筆的最新資料
+      const histPanel = document.getElementById('panel-history');
+      if(histPanel && histPanel.classList.contains('active')){
+        console.log('[cloud] 歷史分頁可見，立即觸發刷新（排隊機制會處理 busy）');
+        renderHistoryPanel();
+      }
+      // ⚠️ 不再呼叫 loadCloudData()，避免同時發送太多 HEAD 請求堵塞 Supabase 連線池
+    }catch(e){
+      console.error('[cloud] saveCloudPracticeRecord 例外', e);
+      showNotif('⚠️ 雲端同步發生例外', e.message || '請重新整理頁面再試', 'nd');
     }
-    // 🔄 若「我的歷史」分頁正可見，延遲 1 秒後刷新（讓所有 in-flight 寫入完成）
-    //    renderHistoryPanel 內部已有 300ms 防抖，所以多次觸發也只會執行一次
-    const histPanel = document.getElementById('panel-history');
-    if(histPanel && histPanel.classList.contains('active')){
-      console.log('[cloud] 歷史分頁可見，1s 後自動刷新');
-      setTimeout(()=>renderHistoryPanel(), 1000);
-    }
-    // ⚠️ 不再呼叫 loadCloudData()，避免同時發送太多 HEAD 請求堵塞 Supabase 連線池
-  }catch(e){
-    console.error('[cloud] saveCloudPracticeRecord 例外', e);
-    showNotif('⚠️ 雲端同步發生例外', e.message || '請重新整理頁面再試', 'nd');
+  } finally {
+    _markDone();
+    _pendingWrites.delete(_tracker);
   }
 }
 
@@ -1795,6 +1828,11 @@ async function syncCustomTopicsToCloud(){
 let _historyFetchToken = 0;
 let _histDebounce = null;
 let _histBusy = false;
+// 🆕 排隊旗標：忙碌時若有新刷新請求進來，跑完當前 fetch 後自動再跑一次
+//    （取代原本「直接略過」造成新紀錄看不到的 bug）
+let _histPendingRefresh = false;
+// 🆕 追蹤進行中的雲端寫入，讓 history 載入前可以等候完成（避免 race condition）
+const _pendingWrites = new Set();
 
 function renderHistoryPanel(){
   // 防抖：300ms 內多次呼叫只執行最後一次
@@ -1818,11 +1856,27 @@ async function _doRenderHistory(){
       </div>`;
     return;
   }
-  // 互斥鎖：前一次還在跑就跳過（防抖已確保最後一次會被執行）
-  if(_histBusy){ console.log('[history] 上一次查詢尚未完成，略過'); return; }
+  // 互斥鎖：前一次還在跑就「排隊」（取代原本「直接略過」造成新紀錄看不到的 bug）
+  //   忙碌時設旗標，當前 fetch 跑完後 finally 會自動再跑一次最新狀態
+  if(_histBusy){
+    console.log('[history] 上一次查詢尚未完成，標記排隊');
+    _histPendingRefresh = true;
+    return;
+  }
   _histBusy = true;
   const myToken = ++_historyFetchToken;
   box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">⏳</div><p>載入中…</p><p style="font-size:.75rem;color:#9ca3af;margin-top:6px">正在向雲端抓取紀錄…</p></div>';
+  // 🆕 等待所有進行中的雲端寫入完成（避免 race condition：寫入未完成就讀，新紀錄看不到）
+  if(_pendingWrites.size > 0){
+    console.log(`[history] 等待 ${_pendingWrites.size} 筆寫入完成後再 fetch`);
+    try{
+      await Promise.race([
+        Promise.allSettled([..._pendingWrites]),
+        new Promise(r=>setTimeout(r, 5000)) // 最多等 5 秒，避免異常情況卡死
+      ]);
+    }catch(_){}
+    console.log('[history] 寫入等待完成，開始拉取最新資料');
+  }
   console.log('[history] 開始載入歷史紀錄', {userId: currentUser.id, token: myToken});
   try{
     // 🛠️ 取得 access_token 的策略：
@@ -1971,7 +2025,7 @@ async function _doRenderHistory(){
         <td style="white-space:nowrap">${modeText}</td>
         <td style="white-space:nowrap;font-variant-numeric:tabular-nums">${durationCell}</td>
         <td>${scoreCell}</td>
-        <td><button class="hist-del-btn" onclick="deleteHistRecord('${r.id}')" title="刪除此紀錄">🗑️</button></td>
+        <td><button class="hist-del-btn" onclick="deleteHistRecord('${r.id}', ${JSON.stringify(r.topic)}, ${isDraw})" title="刪除此紀錄">🗑️</button></td>
       </tr>`;
     });
     html += '</tbody></table></div>';
@@ -1985,16 +2039,37 @@ async function _doRenderHistory(){
     box.innerHTML = `<div class="hist-empty"><div class="hist-empty-big">${isTimeout?'⌛':'⚠️'}</div><p>${escapeHTML(hint)}</p><button class="btn btn-primary" onclick="renderHistoryPanel()" style="margin-top:12px;padding:8px 18px">🔄 重試</button></div>`;
   } finally {
     _histBusy = false;  // 釋放互斥鎖
+    // 🆕 期間有人嘗試刷新但被擋下 → 現在重跑一次，確保拿到最新狀態
+    //    （搭配 _pendingWrites 等待機制，這次重跑會看到剛寫入的新紀錄）
+    if(_histPendingRefresh){
+      _histPendingRefresh = false;
+      console.log('[history] 處理排隊中的刷新請求');
+      setTimeout(()=>_doRenderHistory(), 50);
+    }
   }
 }
 
-async function deleteHistRecord(id){
+async function deleteHistRecord(id, topic, isDraw){
   if(!cloudReady || !currentUser) return;
   if(!confirm('確定要刪除這筆練習紀錄嗎？')) return;
   try{
     const {error} = await sb.from('practice_records').delete().eq('id', id).eq('user_id', currentUser.id);
     if(error){showNotif('❌ 刪除失敗', error.message, 'nd');return;}
     showNotif('✅ 已刪除','練習紀錄已從雲端移除。','');
+    // 🚫 若刪除的是 draw 紀錄，且此題目沒有其他殘留紀錄 → 從已抽集合移除
+    if(isDraw && topic && drawnSet.has(topic)){
+      try{
+        const {count} = await sb.from('practice_records')
+          .select('*', {count:'exact', head:true})
+          .eq('user_id', currentUser.id)
+          .eq('topic', topic);
+        if(!count){
+          drawnSet.delete(topic);
+          saveDrawnToLocal();
+          updateDrawnCounter();
+        }
+      }catch(_){}
+    }
     await loadCloudData();
     renderHistoryPanel();
   }catch(e){console.error(e);}
@@ -2143,6 +2218,11 @@ let curTopic = null;
 let aiOpt = 'outline';
 let regenVersion = 1;
 
+// 🚫 已抽過題目集合（提前宣告以避免 INIT 區塊提前存取造成 TDZ）
+const drawnSet = new Set();
+const DRAWN_LS_KEY = 'drawnTopicTitles';
+const SKIP_DRAWN_LS_KEY = 'skipDrawnTopics';
+
 // ── Topic difficulty ──
 const CAT_DEFAULT_DIFF={'品格道德':'入門','生活體驗':'入門','自然環境':'中階','夢想未來':'中階','社會關懷':'挑戰','科技創新':'挑戰','文化傳承':'中階'};
 const DIFF_OVERRIDE={'網路霸凌，停止傷害':'挑戰','平等，不是口號':'挑戰','弱勢，需要你的關懷':'挑戰','AI 時代的我們':'挑戰','未來的學校是什麼樣子':'挑戰','氣候變遷，我能做什麼':'挑戰','人工智慧的機會與挑戰':'挑戰','當社群媒體佔據我們的生活':'挑戰','太空探索的夢想':'挑戰','科技讓世界變得更好了嗎':'挑戰','偏鄉孩子的教育機會':'挑戰','身心障礙者的勇敢故事':'挑戰','公平正義，從小做起':'挑戰','如果我是校長':'中階','十年後的我':'中階','手機，是朋友還是敵人':'中階','多元文化，讓台灣更美麗':'中階','食物浪費的問題':'中階','老人需要我們的陪伴':'中階','再生能源與我們的未來':'中階','閱讀，讓我看見世界':'入門','我最喜歡的傳統節日':'入門','說故事的力量':'入門'};
@@ -2164,6 +2244,14 @@ if(savedSN) document.getElementById('scoreStudentName').value=savedSN;
 });
 // set today's date in score sheet
 const _sd=new Date(); document.getElementById('scoreDateInput').value=_sd.toISOString().slice(0,10);
+
+// 🚫 已抽過題目過濾：初始化
+loadDrawnFromLocal();
+(function initSkipDrawnUI(){
+  const cb = document.getElementById('skipDrawnTopics');
+  if(cb){ cb.checked = getSkipDrawnPref(); }
+  updateDrawnCounter();
+})();
 
 // ==================== PANEL ====================
 // 平滑捲動至指定元素（考慮上方固定導覽列留白）
@@ -2213,17 +2301,116 @@ function showPanel(name, btn) {
 }
 
 // ==================== DRAW ====================
+// drawnSet / DRAWN_LS_KEY / SKIP_DRAWN_LS_KEY 在 DATA 區塊已宣告（提前避免 TDZ）
+
+function loadDrawnFromLocal(){
+  try{
+    const raw = localStorage.getItem(DRAWN_LS_KEY);
+    if(raw){
+      const arr = JSON.parse(raw);
+      if(Array.isArray(arr)) arr.forEach(t=>drawnSet.add(t));
+    }
+  }catch(_){}
+}
+function saveDrawnToLocal(){
+  try{ localStorage.setItem(DRAWN_LS_KEY, JSON.stringify([...drawnSet])); }catch(_){}
+}
+function getSkipDrawnPref(){
+  // 預設開啟（true），使用者主動關過才顯示 false
+  const v = localStorage.getItem(SKIP_DRAWN_LS_KEY);
+  return v === null ? true : v === '1';
+}
+function setSkipDrawnPref(on){
+  localStorage.setItem(SKIP_DRAWN_LS_KEY, on ? '1' : '0');
+}
+
+// 從雲端 practice_records (record_type='draw') 補齊已抽紀錄
+async function syncDrawnFromCloud(){
+  if(!cloudReady || !currentUser || !sb) return;
+  try{
+    const {data, error} = await sb.from('practice_records')
+      .select('topic')
+      .eq('user_id', currentUser.id)
+      .eq('record_type', 'draw');
+    if(error){ console.warn('[drawn] 雲端讀取失敗', error.message); return; }
+    if(Array.isArray(data)){
+      let added = 0;
+      data.forEach(r=>{ if(r.topic && !drawnSet.has(r.topic)){ drawnSet.add(r.topic); added++; } });
+      if(added>0){
+        saveDrawnToLocal();
+        updateDrawnCounter();
+        console.log(`[drawn] 從雲端補上 ${added} 筆已抽紀錄，目前共 ${drawnSet.size} 題`);
+      }
+    }
+  }catch(e){ console.warn('[drawn] syncDrawnFromCloud 例外', e); }
+}
+
 function setDrawCat(cat, btn) {
   drawCat = cat;
   document.querySelectorAll('#drawCatBar .cat-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+  updateDrawnCounter();
 }
-function filteredTopics() {
+
+// 類別內題目（不含過濾）— 給計數器與「指定題目」用
+function categoryTopics(){
   return drawCat==='all' ? TOPICS : TOPICS.filter(t=>t.c===drawCat);
 }
+
+function filteredTopics() {
+  const base = categoryTopics();
+  const skipDrawn = document.getElementById('skipDrawnTopics')?.checked;
+  if(!skipDrawn) return base;
+  return base.filter(t=>!drawnSet.has(t.t));
+}
+
+function updateDrawnCounter(){
+  const counter = document.getElementById('drawnCounter');
+  const resetBtn = document.getElementById('btnResetDrawn');
+  if(!counter) return;
+  const total = categoryTopics().length;
+  const drawnInCat = categoryTopics().filter(t=>drawnSet.has(t.t)).length;
+  const remain = total - drawnInCat;
+  const skipDrawn = document.getElementById('skipDrawnTopics')?.checked;
+  counter.classList.toggle('exhausted', skipDrawn && remain===0);
+  if(skipDrawn && remain===0){
+    counter.textContent = `（全部 ${total} 題都抽過了！）`;
+  } else {
+    counter.textContent = `（已抽 ${drawnInCat} / ${total} 題，剩 ${remain} 題）`;
+  }
+  if(resetBtn) resetBtn.disabled = drawnSet.size===0;
+}
+
+function onSkipDrawnChange(){
+  const cb = document.getElementById('skipDrawnTopics');
+  if(!cb) return;
+  setSkipDrawnPref(cb.checked);
+  updateDrawnCounter();
+}
+
+function resetDrawnTopics(){
+  if(drawnSet.size===0) return;
+  if(!confirm(`確定要清除目前已抽過的 ${drawnSet.size} 題紀錄？\n\n（雲端的歷史紀錄不會被刪除，只是讓這些題目重新可被抽到）`)) return;
+  drawnSet.clear();
+  saveDrawnToLocal();
+  updateDrawnCounter();
+  showNotif('🔄 已重置','所有題目都重新可抽！','');
+}
+
 function drawTopic() {
   const pool = filteredTopics();
-  if (!pool.length) return;
+  if (!pool.length) {
+    // 過濾後空池：通常是「跳過已抽」打開且全抽過了
+    const skipDrawn = document.getElementById('skipDrawnTopics')?.checked;
+    const total = categoryTopics().length;
+    if(skipDrawn && total>0){
+      const catName = drawCat==='all' ? '全部類別' : drawCat;
+      showNotif('🎉 太厲害了！',
+        `「${catName}」共 ${total} 題都抽過了！可以點「🔄 重置已抽」重新練習，或關掉「跳過已抽過」繼續。`, '');
+      return;
+    }
+    return;
+  }
   const txt = document.getElementById('topicTxt');
   const cat = document.getElementById('topicCat');
   txt.classList.remove('landed');
@@ -2248,6 +2435,10 @@ function drawTopic() {
       showNotif('🎲 抽題成功！', `「${curTopic.t}」，請開始準備計時。`, '');
       // UX：抽題完成後平滑捲動至題目卡片，讓使用者立刻看到結果
       setTimeout(()=>smoothScrollTo('topicBox', 80), 200);
+      // 🚫 加入已抽集合 + 更新計數器
+      drawnSet.add(curTopic.t);
+      saveDrawnToLocal();
+      updateDrawnCounter();
       // ☁️ 雲端同步：記錄抽籤事件
       saveCloudDrawRecord(curTopic.t, curTopic.c, '隨機抽題');
     }
@@ -2327,6 +2518,10 @@ function pickTopic(idx) {
   showNotif('✅ 已指定題目！', `「${t.t}」，可開始計時練習。`, '');
   // UX：指定題目後自動捲動至題目卡片
   setTimeout(()=>smoothScrollTo('topicBox', 80), 150);
+  // 🚫 加入已抽集合（即使是直接指定也算抽過）
+  drawnSet.add(t.t);
+  saveDrawnToLocal();
+  updateDrawnCounter();
   // ☁️ 雲端同步：記錄抽籤事件（指定題目也算一次）
   saveCloudDrawRecord(t.t, t.c, '指定題目');
 }
