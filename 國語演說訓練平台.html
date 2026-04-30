@@ -2025,7 +2025,7 @@ async function _doRenderHistory(){
         <td style="white-space:nowrap">${modeText}</td>
         <td style="white-space:nowrap;font-variant-numeric:tabular-nums">${durationCell}</td>
         <td>${scoreCell}</td>
-        <td><button class="hist-del-btn" onclick="deleteHistRecord('${r.id}', ${JSON.stringify(r.topic)}, ${isDraw})" title="刪除此紀錄">🗑️</button></td>
+        <td><button class="hist-del-btn" onclick="deleteHistRecord('${r.id}', ${JSON.stringify(r.topic).replace(/"/g,'&quot;')}, ${isDraw})" title="刪除此紀錄">🗑️</button></td>
       </tr>`;
     });
     html += '</tbody></table></div>';
