@@ -1642,6 +1642,63 @@ function initSupabase(){
   }catch(e){console.error('Supabase init error', e);}
 }
 
+// 🔑 完全繞過 SDK 的 token refresh：直接打 Supabase Auth REST API
+//   為什麼需要？SDK v2 的 sb.auth.refreshSession() / getSession() 用 navigator.locks
+//   做跨分頁同步，某些 session 會 deadlock 永久卡住 → 走這條 raw HTTP 路徑救命。
+async function _manualRefreshToken(){
+  try{
+    const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
+    const raw = localStorage.getItem(storageKey);
+    if(!raw){ console.warn('[auth] 手動 refresh：localStorage 沒有 session'); return ''; }
+    const obj = JSON.parse(raw);
+    const refreshToken = obj?.refresh_token || obj?.currentSession?.refresh_token;
+    if(!refreshToken){ console.warn('[auth] 手動 refresh：沒有 refresh_token'); return ''; }
+
+    const ctrl = new AbortController();
+    const abortTimer = setTimeout(()=>ctrl.abort(), 8000);
+    let resp;
+    try{
+      resp = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        signal: ctrl.signal,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+    } finally { clearTimeout(abortTimer); }
+
+    if(!resp.ok){
+      console.warn('[auth] 手動 refresh HTTP', resp.status, '— refresh_token 可能也過期，需要重新登入');
+      return '';
+    }
+    const data = await resp.json();
+    const newAccess = data?.access_token;
+    if(!newAccess) return '';
+
+    // 把新 token 寫回 localStorage，讓 SDK 後續呼叫（如果 lock 解開了）也能拿到新 token
+    try{
+      const newObj = {
+        ...obj,
+        access_token: newAccess,
+        refresh_token: data.refresh_token || refreshToken,
+        expires_in: data.expires_in,
+        expires_at: Math.floor(Date.now()/1000) + (data.expires_in || 3600),
+        token_type: data.token_type || 'bearer',
+        user: data.user || obj.user
+      };
+      localStorage.setItem(storageKey, JSON.stringify(newObj));
+      console.log('[auth] 手動 refresh 成功，已寫回 localStorage');
+    }catch(e){ console.warn('[auth] localStorage 寫入失敗', e.message); }
+
+    return newAccess;
+  }catch(e){
+    console.warn('[auth] 手動 refresh 例外', e.message);
+    return '';
+  }
+}
+
 async function signInWithGoogle(){
   if(!cloudReady){showNotif('⚠️ 雲端服務未就緒','請稍後再試或重新整理頁面。','nw');return;}
   const {error} = await sb.auth.signInWithOAuth({
@@ -1848,17 +1905,9 @@ async function saveCloudPracticeRecord(rec){
 
         let resp = await _doInsert(token);
         if(resp.status === 401){
-          console.warn('[cloud] 手動 fetch 401，token 可能過期，refresh 後重試');
-          try{
-            const r = await Promise.race([
-              sb.auth.refreshSession(),
-              new Promise((_, rej)=>setTimeout(()=>rej(new Error('refresh timeout')), 5000))
-            ]);
-            const fresh = r?.data?.session?.access_token;
-            if(fresh){ resp = await _doInsert(fresh); }
-          }catch(refreshErr){
-            console.warn('[cloud] refreshSession 失敗', refreshErr.message);
-          }
+          console.warn('[cloud] 手動 fetch 401，繞過 SDK 用 raw HTTP refresh token');
+          const fresh = await _manualRefreshToken();
+          if(fresh){ resp = await _doInsert(fresh); }
         }
         if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
         writeData = await resp.json();
@@ -2002,15 +2051,8 @@ async function _doRenderHistory(){
 
     // ---- 路線 2：手動 fetch fallback（SDK 卡死才用） ----
     if(records === null){
-      async function _getFreshToken(){
-        try{
-          const sess = await Promise.race([
-            sb.auth.getSession(),
-            new Promise((_,rej)=>setTimeout(()=>rej(new Error('getSession timeout')), 3000))
-          ]);
-          const t = sess?.data?.session?.access_token;
-          if(t) return t;
-        }catch(e){ console.warn('[history] getSession 失敗，改讀 localStorage', e.message); }
+      // 直接讀 localStorage 拿 token（不打 sb.auth.getSession，會卡死）
+      function _getCachedToken(){
         try{
           const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
           const raw = localStorage.getItem(storageKey);
@@ -2021,16 +2063,11 @@ async function _doRenderHistory(){
         }catch(_){}
         return '';
       }
-      async function _forceRefresh(){
-        try{
-          const r = await Promise.race([
-            sb.auth.refreshSession(),
-            new Promise((_,rej)=>setTimeout(()=>rej(new Error('refreshSession timeout')), 5000))
-          ]);
-          return r?.data?.session?.access_token || '';
-        }catch(e){ console.warn('[history] refreshSession 失敗', e.message); return ''; }
+      let accessToken = _getCachedToken();
+      if(!accessToken){
+        // localStorage 也沒 token，最後手段：直接 raw HTTP refresh（若有 refresh_token）
+        accessToken = await _manualRefreshToken();
       }
-      let accessToken = await _getFreshToken();
       if(!accessToken){
         throw _sdkErr || new Error('找不到登入憑證，請重新登入');
       }
@@ -2051,8 +2088,8 @@ async function _doRenderHistory(){
       }
       let resp = await _doFetch(accessToken);
       if(resp.status === 401){
-        console.warn('[history] 401，token 可能過期，強制 refresh 後重試');
-        const fresh = await _forceRefresh();
+        console.warn('[history] 401，繞過 SDK 用 raw HTTP refresh token 後重試');
+        const fresh = await _manualRefreshToken();
         if(fresh){
           accessToken = fresh;
           resp = await _doFetch(accessToken);
