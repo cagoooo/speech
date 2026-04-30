@@ -2446,6 +2446,8 @@ function drawTopic() {
   const txt = document.getElementById('topicTxt');
   const cat = document.getElementById('topicCat');
   txt.classList.remove('landed');
+  // 🔊 開始抽題：上行 4 連音營造「滾動」感
+  [523, 659, 784, 988].forEach((f, i) => setTimeout(()=>playBeep(f, 0.05, 0.3, 'square'), i*60));
   let n = 0;
   const iv = setInterval(()=>{
     const r = pool[Math.floor(Math.random()*pool.length)];
@@ -2459,6 +2461,10 @@ function drawTopic() {
       txt.classList.add('landed');
       cat.textContent = curTopic.c;
       cat.style.display = 'block';
+      // 🎉 抽中題目：2 音符鐘聲 + 彩花特效
+      playBeep(784, 0.15, 0.6, 'sine');
+      setTimeout(()=>playBeep(1047, 0.32, 0.7, 'sine'), 130);
+      launchConfetti();
       // auto-fill score topic
       const stn=document.getElementById('scoreTopicName'); if(stn&&!stn.value) stn.value=curTopic.t;
       // Reset AI output
