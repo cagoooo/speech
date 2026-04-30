@@ -749,6 +749,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 </head>
 <body>
 
+<!-- ☁️ v2.8.0 雲端同步狀態小燈號（floating right-bottom） -->
+<div id="syncBadge" data-status="idle" onclick="_toggleSyncDetail()" style="position:fixed;right:12px;bottom:12px;z-index:998;display:none;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1.5px solid #9ca3af;background:#f9fafb;color:#9ca3af;cursor:pointer;font-size:.8rem;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.08);user-select:none;transition:all .2s">
+  <span class="sb-icon" style="font-size:1rem">⚪</span>
+  <span class="sb-label">未登入</span>
+</div>
+<div id="syncDetail" style="position:fixed;right:12px;bottom:54px;z-index:999;display:none;width:280px;max-width:calc(100vw - 24px);max-height:50vh;overflow-y:auto;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.12);font-size:.85rem;color:#1f2937"></div>
+
 <!-- Install Banner (PWA) -->
 <div class="install-banner" id="installBanner">
   <div class="install-banner-text">📱 加到主畫面，隨時練習不中斷
@@ -1699,6 +1706,315 @@ async function _manualRefreshToken(){
   }
 }
 
+// ════════════════════════════════════════════════════════════════════
+// ☁️ v2.8.0 統一雲端查詢 helper（safeSupabaseQuery 體系）
+// ────────────────────────────────────────────────────────────────────
+// 為什麼要 helper？v2.7.5/v2.7.8/v2.7.10 把「SDK + 手動 fetch fallback + 401
+// retry」邏輯散落在三處，未來新增表就要再寫一次。本套件把這套封裝成一行呼叫。
+// ════════════════════════════════════════════════════════════════════
+
+// 直接讀 localStorage 的 access_token（不打 sb.auth.getSession，會卡 lock）
+function _getCachedSupabaseToken(){
+  try{
+    const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
+    const raw = localStorage.getItem(storageKey);
+    if(raw){
+      const obj = JSON.parse(raw);
+      return obj?.access_token || obj?.currentSession?.access_token || '';
+    }
+  }catch(_){}
+  return '';
+}
+
+// 通用雙路執行器：先 SDK with timeout 後手動 fetch（401 自動 refresh 重試一次）
+//   sdkFn: () => Promise<{data,error}>      — Supabase SDK builder（會被 await）
+//   manualFn: (token) => Promise<Response>  — raw HTTP fetch，吃 token 參數
+//   opts: { sdkTimeout?, label? }
+async function _runWithFallback(sdkFn, manualFn, opts){
+  const o = opts || {};
+  const sdkTimeout = o.sdkTimeout || 10000;
+  const label = o.label || 'query';
+
+  // 路線 1：SDK with timeout
+  try{
+    const result = await Promise.race([
+      Promise.resolve(sdkFn()),
+      new Promise((_, rej)=>setTimeout(()=>rej(new Error('SDK '+label+' timeout '+(sdkTimeout/1000)+'s')), sdkTimeout))
+    ]);
+    if(result && result.error) throw new Error(result.error.message || 'SDK error');
+    return { data: (result && result.data) || [], via: 'sdk' };
+  }catch(sdkErr){
+    console.warn('[cloud] '+label+' SDK 失敗，改 raw HTTP fallback：', sdkErr.message);
+  }
+
+  // 路線 2：raw HTTP，401 自動 refresh 重試
+  let token = _getCachedSupabaseToken();
+  let resp = await manualFn(token);
+  if(resp.status === 401){
+    console.warn('[cloud] '+label+' 401，繞 SDK refresh token 後重試');
+    const fresh = await _manualRefreshToken();
+    if(fresh){ resp = await manualFn(fresh); }
+  }
+  if(!resp.ok) throw new Error('HTTP '+resp.status+': '+resp.statusText);
+
+  let data = [];
+  if(resp.status !== 204){
+    try{ data = await resp.json(); }catch(_){}
+  }
+  return { data: data, via: 'manual' };
+}
+
+// 高階 helper：safeSupabaseInsert（支援 idempotent upsert by client_request_id）
+async function safeSupabaseInsert(table, payload, opts){
+  const o = opts || {};
+  const idempotent = !!o.idempotent;
+  const sdkFn = ()=>{
+    if(idempotent){
+      // upsert with onConflict: client_request_id, ignoreDuplicates: true
+      return sb.from(table).upsert(payload, {
+        onConflict: o.onConflict || 'client_request_id',
+        ignoreDuplicates: true
+      }).select();
+    }
+    return sb.from(table).insert(payload).select();
+  };
+  const manualFn = async (token)=>{
+    const ctrl = new AbortController();
+    const tm = setTimeout(()=>ctrl.abort(), o.manualTimeout || 12000);
+    try{
+      const headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Prefer': idempotent
+          ? 'return=representation,resolution=ignore-duplicates'
+          : 'return=representation'
+      };
+      return await fetch(SUPABASE_URL+'/rest/v1/'+table, {
+        method: 'POST',
+        signal: ctrl.signal,
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+    } finally { clearTimeout(tm); }
+  };
+  return _runWithFallback(sdkFn, manualFn, { sdkTimeout: o.sdkTimeout || 10000, label: 'insert '+table });
+}
+
+// 高階 helper：safeSupabaseSelect
+//   queryString: 完整 query string（不含 ?），例如 'select=*&user_id=eq.xxx&order=created_at.desc&limit=200'
+//   opts.sdkBuilder: (builder) => 進一步串 .select().eq()... 的 callback；不傳就 select('*')
+async function safeSupabaseSelect(table, queryString, opts){
+  const o = opts || {};
+  const sdkFn = ()=>{
+    if(o.sdkBuilder) return o.sdkBuilder(sb.from(table));
+    return sb.from(table).select('*');
+  };
+  const manualFn = async (token)=>{
+    const ctrl = new AbortController();
+    const tm = setTimeout(()=>ctrl.abort(), o.manualTimeout || 15000);
+    try{
+      return await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+queryString, {
+        signal: ctrl.signal,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json'
+        }
+      });
+    } finally { clearTimeout(tm); }
+  };
+  return _runWithFallback(sdkFn, manualFn, { sdkTimeout: o.sdkTimeout || 12000, label: 'select '+table });
+}
+
+// 高階 helper：safeSupabaseDelete
+//   filter: { id: 'xxx', user_id: 'yyy' } — 全部用 eq.<value>，自動編碼成 eq.xxx
+async function safeSupabaseDelete(table, filter){
+  const queryString = Object.keys(filter).map(function(k){
+    return k+'=eq.'+encodeURIComponent(filter[k]);
+  }).join('&');
+  const sdkFn = ()=>{
+    let q = sb.from(table).delete();
+    Object.keys(filter).forEach(function(k){ q = q.eq(k, filter[k]); });
+    return q;
+  };
+  const manualFn = async (token)=>{
+    const ctrl = new AbortController();
+    const tm = setTimeout(()=>ctrl.abort(), 10000);
+    try{
+      return await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+queryString, {
+        method: 'DELETE',
+        signal: ctrl.signal,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + token,
+          'Prefer': 'return=minimal'
+        }
+      });
+    } finally { clearTimeout(tm); }
+  };
+  return _runWithFallback(sdkFn, manualFn, { sdkTimeout: 10000, label: 'delete '+table });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 🔄 v2.8.0 失敗自動重試佇列（P1-4）
+// ────────────────────────────────────────────────────────────────────
+// 寫入失敗 → push 進 localStorage queue；App 啟動 / 網路恢復 / 5 分鐘間隔自動 drain
+// 搭配 client_request_id idempotency，重試不會造成重複
+// ════════════════════════════════════════════════════════════════════
+const RETRY_QUEUE_KEY = 'pendingPracticeWrites';
+const RETRY_MAX_ATTEMPTS = 5;
+const RETRY_BACKOFF_MS = [5000, 30000, 120000, 600000, 3600000]; // 5s/30s/2m/10m/1h
+
+function _loadRetryQueue(){
+  try{
+    const raw = localStorage.getItem(RETRY_QUEUE_KEY);
+    if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) return arr; }
+  }catch(_){}
+  return [];
+}
+function _saveRetryQueue(arr){
+  try{ localStorage.setItem(RETRY_QUEUE_KEY, JSON.stringify(arr)); }catch(_){}
+}
+function _enqueueRetry(payload){
+  const q = _loadRetryQueue();
+  q.push({
+    payload: payload,
+    attempts: 0,
+    nextRetryAt: Date.now() + RETRY_BACKOFF_MS[0],
+    enqueuedAt: Date.now()
+  });
+  _saveRetryQueue(q);
+  console.log('[retry] 入佇列，目前佇列長度', q.length);
+  _setSyncStatus('queued', '已暫存', '網路恢復後自動補送（佇列：'+q.length+' 筆）');
+}
+
+let _drainRetryRunning = false;
+async function _drainRetryQueue(){
+  if(_drainRetryRunning) return;
+  if(!cloudReady || !currentUser) return;
+  const q = _loadRetryQueue();
+  if(!q.length) return;
+  _drainRetryRunning = true;
+  console.log('[retry] 開始 drain 佇列，'+q.length+' 筆');
+  const remaining = [];
+  const now = Date.now();
+  for(const item of q){
+    if(item.nextRetryAt > now){ remaining.push(item); continue; }
+    try{
+      _setSyncStatus('syncing', '補送中', '正在重送暫存的紀錄…');
+      const r = await safeSupabaseInsert('practice_records', item.payload, { idempotent: true });
+      console.log('[retry] 補送成功（via '+r.via+'）');
+      // 成功就丟掉
+    }catch(e){
+      item.attempts = (item.attempts || 0) + 1;
+      console.warn('[retry] 補送失敗（第 '+item.attempts+' 次）：', e.message);
+      if(item.attempts < RETRY_MAX_ATTEMPTS){
+        const delay = RETRY_BACKOFF_MS[Math.min(item.attempts, RETRY_BACKOFF_MS.length-1)];
+        item.nextRetryAt = Date.now() + delay;
+        remaining.push(item);
+      } else {
+        console.error('[retry] 已達最大重試次數，放棄', item.payload);
+        // 放棄但保留為錯誤紀錄供使用者查看
+      }
+    }
+  }
+  _saveRetryQueue(remaining);
+  _drainRetryRunning = false;
+  if(remaining.length){
+    _setSyncStatus('queued', '部分待補', '尚有 '+remaining.length+' 筆等候重送');
+  } else {
+    _setSyncStatus('ok', '同步完成', '所有暫存紀錄已成功補送');
+  }
+}
+
+// 啟動時 + 網路恢復 + 每 5 分鐘嘗試 drain
+window.addEventListener('online', ()=>{ console.log('[net] 網路恢復，drain queue'); _drainRetryQueue(); });
+setInterval(_drainRetryQueue, 5*60*1000);
+
+// ════════════════════════════════════════════════════════════════════
+// 🟢 v2.8.0 雲端同步狀態小燈號（P1-3）
+// ────────────────────────────────────────────────────────────────────
+// 右下角浮動 badge：✅ 同步成功 / 🟡 同步中 / 🔴 失敗 / 🔵 待補送
+// 點擊展開最近 5 筆同步紀錄
+// ════════════════════════════════════════════════════════════════════
+const _syncHistory = []; // { ts, status, label, detail }
+const SYNC_HISTORY_MAX = 10;
+
+function _setSyncStatus(status, label, detail){
+  // status: 'ok' | 'syncing' | 'error' | 'queued' | 'idle'
+  const el = document.getElementById('syncBadge');
+  if(!el) return;
+  const map = {
+    ok:      { color:'#10b981', bg:'#ecfdf5', icon:'✅' },
+    syncing: { color:'#f59e0b', bg:'#fffbeb', icon:'🔄' },
+    error:   { color:'#ef4444', bg:'#fef2f2', icon:'⚠️' },
+    queued:  { color:'#3b82f6', bg:'#eff6ff', icon:'📦' },
+    idle:    { color:'#9ca3af', bg:'#f9fafb', icon:'⚪' }
+  };
+  const m = map[status] || map.idle;
+  el.style.color = m.color;
+  el.style.background = m.bg;
+  el.style.borderColor = m.color;
+  const iconEl = el.querySelector('.sb-icon');
+  const labelEl = el.querySelector('.sb-label');
+  if(iconEl) iconEl.textContent = m.icon;
+  if(labelEl) labelEl.textContent = label || '';
+  el.dataset.status = status;
+  // 加入歷史
+  _syncHistory.unshift({ ts: new Date(), status, label, detail });
+  if(_syncHistory.length > SYNC_HISTORY_MAX) _syncHistory.length = SYNC_HISTORY_MAX;
+}
+function _toggleSyncDetail(){
+  const panel = document.getElementById('syncDetail');
+  if(!panel) return;
+  const isOpen = panel.style.display === 'block';
+  if(isOpen){ panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  // 渲染歷史
+  const list = _syncHistory.length
+    ? _syncHistory.map(h=>{
+        const t = h.ts.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        return '<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:.78rem"><span style="color:#9ca3af">['+t+']</span> <strong>'+(h.label||h.status)+'</strong><br><span style="color:#6b7280">'+(h.detail||'')+'</span></div>';
+      }).join('')
+    : '<div style="color:#9ca3af;text-align:center;padding:12px">尚無同步紀錄</div>';
+  const queueLen = _loadRetryQueue().length;
+  panel.innerHTML = '<div style="font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between"><span>📊 雲端同步狀態</span><span onclick="_toggleSyncDetail()" style="cursor:pointer;color:#9ca3af">✕</span></div>'
+    + (queueLen ? '<div style="background:#eff6ff;color:#1e40af;padding:6px 8px;border-radius:6px;font-size:.78rem;margin-bottom:8px">📦 待補送：'+queueLen+' 筆 <button onclick="_drainRetryQueue()" style="float:right;font-size:.72rem;padding:2px 8px;border:1px solid #3b82f6;background:#fff;color:#3b82f6;border-radius:4px;cursor:pointer">立即重試</button></div>' : '')
+    + list;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 💤 v2.8.0 Wake Lock 兼容 fallback（P1-5）
+// ────────────────────────────────────────────────────────────────────
+// iOS Safari < 16.4、舊版瀏覽器不支援 navigator.wakeLock
+// fallback 用「無聲影片無限循環」hack 防熄屏（NoSleep.js 同樣套路）
+// ════════════════════════════════════════════════════════════════════
+let _noSleepVideo = null;
+function _activateNoSleepFallback(){
+  if(_noSleepVideo) return;
+  // 用一個 1px×1px 隱形 video，loop 播放就能阻止 iOS 熄屏
+  _noSleepVideo = document.createElement('video');
+  _noSleepVideo.setAttribute('playsinline', '');
+  _noSleepVideo.setAttribute('webkit-playsinline', '');
+  _noSleepVideo.muted = true;
+  _noSleepVideo.loop = true;
+  _noSleepVideo.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:0;top:0;z-index:-1';
+  // 內嵌極小的 webm（base64，~200 bytes）— 黑色 1×1 像素 1 秒循環
+  _noSleepVideo.src = 'data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQRChYECGFOAZwH/////////FUmpZpkq17GDD0JATYCGQ2hyb21lV0GGQ2hyb21lFlSua7+uvdeBAXPFh4EE9DtnQOBAAAAAAAAVsIaW7AsSgT4M1mpZpkq17GDD0JATYCJSAAxAAAAAAAA////0WgL';
+  document.body.appendChild(_noSleepVideo);
+  _noSleepVideo.play().catch(e=>{ console.warn('[nosleep] 影片播放失敗，可能要使用者手勢觸發', e.message); });
+  console.log('[nosleep] 已啟用無聲影片 fallback（防熄屏）');
+}
+function _deactivateNoSleepFallback(){
+  if(_noSleepVideo){
+    try{ _noSleepVideo.pause(); }catch(_){}
+    try{ _noSleepVideo.remove(); }catch(_){}
+    _noSleepVideo = null;
+    console.log('[nosleep] 已停用無聲影片 fallback');
+  }
+}
+
 async function signInWithGoogle(){
   if(!cloudReady){showNotif('⚠️ 雲端服務未就緒','請稍後再試或重新整理頁面。','nw');return;}
   const {error} = await sb.auth.signInWithOAuth({
@@ -1759,7 +2075,17 @@ function updateAuthUI(){
       </div>
     `;
     if(navHist) navHist.style.display = 'inline-flex';
+    // v2.8.0: 登入後顯示同步狀態小燈號 + 啟動時嘗試 drain retry queue
+    const sb_ = document.getElementById('syncBadge');
+    if(sb_) sb_.style.display = 'inline-flex';
+    _setSyncStatus('idle', '已連線', '雲端同步就緒');
+    setTimeout(()=>_drainRetryQueue(), 2000);
   } else {
+    // v2.8.0: 登出後隱藏 badge
+    const sb_ = document.getElementById('syncBadge');
+    const sd_ = document.getElementById('syncDetail');
+    if(sb_) sb_.style.display = 'none';
+    if(sd_) sd_.style.display = 'none';
     wrap.innerHTML = `
       <button class="auth-login-btn" onclick="signInWithGoogle()">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1832,6 +2158,10 @@ async function saveCloudPracticeRecord(rec){
       return;
     }
     const rtype = rec.record_type || 'practice';
+    // v2.8.0: 加 client_request_id 做 idempotent insert，防 fallback retry 重複
+    const clientRequestId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Date.now() + '-' + Math.random().toString(36).slice(2);
     const payload = {
       user_id: currentUser.id,
       topic: rec.topic,
@@ -1841,87 +2171,28 @@ async function saveCloudPracticeRecord(rec){
       score: (rec.score ?? null),
       is_perfect: !!rec.is_perfect,
       note: rec.note || null,
-      record_type: rtype
+      record_type: rtype,
+      client_request_id: clientRequestId
     };
     console.log('[cloud] 準備寫入練習紀錄', payload);
+    _setSyncStatus('syncing', '同步中', rtype === 'practice' ? '正在儲存本次練習…' : '正在記錄抽籤…');
 
-    // 🛡️ 雙路寫入：SDK 10s timeout，超時改用手動 fetch + REST API
-    //   為什麼要 fallback？SDK v2 用 navigator.locks 做跨分頁同步，
-    //   有時候 lock deadlock 會把 insert 整個卡死、永遠不返回，導致 finally
-    //   永遠不執行、_pendingWrites tracker 卡死、整套同步機制崩潰。
-    let writeOk = false;
-    let writeData = null;
-    let writeErrMsg = '';
-
-    // ---- 路線 1：SDK insert（10s timeout） ----
+    // v2.8.0: 統一走 safeSupabaseInsert helper（雙路 + 401 自動 refresh + idempotent）
+    let writeData;
     try{
-      const result = await Promise.race([
-        sb.from('practice_records').insert(payload).select(),
-        new Promise((_, rej)=>setTimeout(()=>rej(new Error('SDK insert timeout 10s')), 10000))
-      ]);
-      if(result?.error) throw new Error(result.error.message || 'SDK insert error');
-      writeData = result?.data;
-      writeOk = true;
-      console.log('[cloud] SDK 寫入成功', writeData);
-    }catch(sdkErr){
-      writeErrMsg = sdkErr.message || 'SDK error';
-      console.warn('[cloud] SDK insert 失敗，改用手動 fetch fallback', writeErrMsg);
-    }
-
-    // ---- 路線 2：手動 fetch + REST API（SDK 卡死才用） ----
-    //   注意：若 SDK 已實際送達 server（只是 response 卡住），fallback 會造成
-    //   重複寫入。但相比「資料完全沒存」這個風險較小，使用者可手動刪除多餘紀錄。
-    if(!writeOk){
-      try{
-        // 直接讀 localStorage 的 token，不打 sb.auth.getSession（同樣會卡死）
-        let token = '';
-        try{
-          const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
-          const raw = localStorage.getItem(storageKey);
-          if(raw){
-            const obj = JSON.parse(raw);
-            token = obj?.access_token || obj?.currentSession?.access_token || '';
-          }
-        }catch(_){}
-        if(!token) throw new Error('找不到登入憑證（localStorage 沒 token）');
-
-        async function _doInsert(t){
-          const ctrl = new AbortController();
-          const abortTimer = setTimeout(()=>ctrl.abort(), 12000);
-          try{
-            return await fetch(`${SUPABASE_URL}/rest/v1/practice_records`, {
-              method: 'POST',
-              signal: ctrl.signal,
-              headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + t,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-              },
-              body: JSON.stringify(payload)
-            });
-          } finally { clearTimeout(abortTimer); }
-        }
-
-        let resp = await _doInsert(token);
-        if(resp.status === 401){
-          console.warn('[cloud] 手動 fetch 401，繞過 SDK 用 raw HTTP refresh token');
-          const fresh = await _manualRefreshToken();
-          if(fresh){ resp = await _doInsert(fresh); }
-        }
-        if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-        writeData = await resp.json();
-        writeOk = true;
-        console.log('[cloud] 手動 fetch 寫入成功', writeData);
-      }catch(manualErr){
-        console.error('[cloud] 手動 fetch 寫入也失敗', manualErr);
-        showNotif('⚠️ 雲端同步失敗', `${writeErrMsg} / ${manualErr.message}`, 'nd');
-        return;
-      }
+      const r = await safeSupabaseInsert('practice_records', payload, { idempotent: true });
+      writeData = r.data;
+      console.log('[cloud] 寫入成功（via '+r.via+'）', writeData);
+      _setSyncStatus('ok', '同步成功', '已儲存到雲端（'+r.via+' 路徑）');
+    }catch(writeErr){
+      console.error('[cloud] 雙路寫入都失敗，入重試佇列', writeErr);
+      _setSyncStatus('error', '同步失敗', writeErr.message + '；已暫存，網路恢復後自動補送');
+      _enqueueRetry(payload);
+      showNotif('⚠️ 暫時無法同步', '本次紀錄已暫存到本機，網路恢復後會自動補送', 'nw');
+      return;
     }
 
     // 寫入成功後續處理
-    console.log('[cloud] 寫入成功', writeData);
     if(rtype==='practice'){
       showNotif('☁️ 已同步至雲端', '本次練習紀錄已儲存，可在「我的歷史」查看。', '');
     }
@@ -2023,85 +2294,19 @@ async function _doRenderHistory(){
   }
   console.log('[history] 開始載入歷史紀錄', {userId: currentUser.id, token: myToken});
   try{
-    // 🛠️ 雙路策略：優先 SDK（寫入既然能成 = SDK auth OK），SDK 卡死才退回手動 fetch
-    //   為什麼不只用手動 fetch？因為 localStorage 的 token 可能已過期，會拿到 401，
-    //   而 getSession()/refreshSession() 在某些情況會 timeout（SDK lock 卡住）。
-    //   SDK 的 .from().select() 內部會處理 token 刷新且不依賴 lock，最穩定。
+    // v2.8.0: 統一走 safeSupabaseSelect helper（雙路 + 401 自動 refresh）
     console.log('[history] fetch 開始', new Date().toLocaleTimeString());
-    let records = null;
-    let _sdkErr = null;
-
-    // ---- 路線 1：SDK select（12s timeout 防卡死） ----
-    try{
-      const sdkResult = await Promise.race([
-        sb.from('practice_records')
-          .select('*')
-          .eq('user_id', currentUser.id)
-          .order('created_at', { ascending: false })
-          .limit(200),
-        new Promise((_, rej)=>setTimeout(()=>rej(new Error('SDK select timeout 12s')), 12000))
-      ]);
-      if(sdkResult?.error) throw new Error(sdkResult.error.message || 'SDK error');
-      records = sdkResult?.data || [];
-      console.log('[history] SDK 載入成功', {count: records.length});
-    }catch(e){
-      console.warn('[history] SDK 失敗，改用手動 fetch fallback', e.message);
-      _sdkErr = e;
-    }
-
-    // ---- 路線 2：手動 fetch fallback（SDK 卡死才用） ----
-    if(records === null){
-      // 直接讀 localStorage 拿 token（不打 sb.auth.getSession，會卡死）
-      function _getCachedToken(){
-        try{
-          const storageKey = `sb-${new URL(SUPABASE_URL).host.split('.')[0]}-auth-token`;
-          const raw = localStorage.getItem(storageKey);
-          if(raw){
-            const obj = JSON.parse(raw);
-            return obj?.access_token || obj?.currentSession?.access_token || '';
-          }
-        }catch(_){}
-        return '';
-      }
-      let accessToken = _getCachedToken();
-      if(!accessToken){
-        // localStorage 也沒 token，最後手段：直接 raw HTTP refresh（若有 refresh_token）
-        accessToken = await _manualRefreshToken();
-      }
-      if(!accessToken){
-        throw _sdkErr || new Error('找不到登入憑證，請重新登入');
-      }
-      const url = `${SUPABASE_URL}/rest/v1/practice_records?select=*&user_id=eq.${currentUser.id}&order=created_at.desc&limit=200`;
-      async function _doFetch(token){
-        const ctrl = new AbortController();
-        const abortTimer = setTimeout(()=>ctrl.abort(), 15000);
-        try{
-          return await fetch(url, {
-            signal: ctrl.signal,
-            headers: {
-              'apikey': SUPABASE_KEY,
-              'Authorization': 'Bearer ' + token,
-              'Accept': 'application/json'
-            }
-          });
-        } finally { clearTimeout(abortTimer); }
-      }
-      let resp = await _doFetch(accessToken);
-      if(resp.status === 401){
-        console.warn('[history] 401，繞過 SDK 用 raw HTTP refresh token 後重試');
-        const fresh = await _manualRefreshToken();
-        if(fresh){
-          accessToken = fresh;
-          resp = await _doFetch(accessToken);
-        }
-      }
-      if(!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-      records = await resp.json();
-      console.log('[history] 手動 fetch 載入成功', {count: records?.length});
-    }
+    const queryString = 'select=*&user_id=eq.'+currentUser.id+'&order=created_at.desc&limit=200';
+    const r = await safeSupabaseSelect('practice_records', queryString, {
+      sdkBuilder: builder => builder.select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(200)
+    });
+    const records = r.data;
+    console.log('[history] 載入成功（via '+r.via+'）', {count: records?.length, ms: new Date().toLocaleTimeString()});
 
     if(myToken !== _historyFetchToken){ console.log('[history] 已被後續請求覆蓋，略過'); return; }
-    console.log('[history] 載入成功', {count: records?.length, ms: new Date().toLocaleTimeString()});
     if(!records || !records.length){
       box.innerHTML = '<div class="hist-empty"><div class="hist-empty-big">📝</div><p>尚無練習紀錄，開始你的第一次演說練習吧！</p></div>';
       return;
@@ -2204,17 +2409,17 @@ async function deleteHistRecord(id, topic, isDraw){
   if(!cloudReady || !currentUser) return;
   if(!confirm('確定要刪除這筆練習紀錄嗎？')) return;
   try{
-    const {error} = await sb.from('practice_records').delete().eq('id', id).eq('user_id', currentUser.id);
-    if(error){showNotif('❌ 刪除失敗', error.message, 'nd');return;}
+    // v2.8.0: 統一走 safeSupabaseDelete helper
+    await safeSupabaseDelete('practice_records', { id: id, user_id: currentUser.id });
     showNotif('✅ 已刪除','練習紀錄已從雲端移除。','');
     // 🚫 若刪除的是 draw 紀錄，且此題目沒有其他殘留紀錄 → 從已抽集合移除
     if(isDraw && topic && drawnSet.has(topic)){
       try{
-        const {count} = await sb.from('practice_records')
-          .select('*', {count:'exact', head:true})
-          .eq('user_id', currentUser.id)
-          .eq('topic', topic);
-        if(!count){
+        const r = await safeSupabaseSelect('practice_records',
+          'select=id&user_id=eq.'+currentUser.id+'&topic=eq.'+encodeURIComponent(topic)+'&limit=1',
+          { sdkBuilder: b => b.select('id').eq('user_id', currentUser.id).eq('topic', topic).limit(1) }
+        );
+        if(!r.data || !r.data.length){
           drawnSet.delete(topic);
           saveDrawnToLocal();
           updateDrawnCounter();
@@ -2223,7 +2428,10 @@ async function deleteHistRecord(id, topic, isDraw){
     }
     await loadCloudData();
     renderHistoryPanel();
-  }catch(e){console.error(e);}
+  }catch(e){
+    console.error(e);
+    showNotif('❌ 刪除失敗', e.message || '請稍後再試', 'nd');
+  }
 }
 
 // 學生姓名 debounce 同步（避免每個字元都寫雲端）
@@ -2842,10 +3050,13 @@ async function _acquireWakeLock(){
         _wakeLockObj = null;
       });
     } else {
-      console.log('[wakeLock] 此瀏覽器不支援 Wake Lock API');
+      // v2.8.0: iOS Safari < 16.4 / 舊瀏覽器不支援 → 用無聲影片 hack 防熄屏
+      console.log('[wakeLock] 此瀏覽器不支援 Wake Lock API，啟用無聲影片 fallback');
+      _activateNoSleepFallback();
     }
   }catch(e){
-    console.warn('[wakeLock] 啟用失敗（可能需使用者手勢）', e.message);
+    console.warn('[wakeLock] 啟用失敗（可能需使用者手勢），改用無聲影片 fallback', e.message);
+    _activateNoSleepFallback();
   }
 }
 function _releaseWakeLock(){
@@ -2853,6 +3064,8 @@ function _releaseWakeLock(){
     try{ _wakeLockObj.release(); }catch(_){}
     _wakeLockObj = null;
   }
+  // v2.8.0: 同時關閉 fallback（如果有啟用的話）
+  _deactivateNoSleepFallback();
 }
 // 🔄 切回前景時：立刻補正計時器顯示 + 重新請求 wake lock（瀏覽器在背景會自動釋放）
 document.addEventListener('visibilitychange', ()=>{
