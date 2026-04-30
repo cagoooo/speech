@@ -1137,6 +1137,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
             <span class="ai-wc-chip">✍️ <span id="aiWcNum">0</span> 字</span>
             <span class="ai-wc-chip">⏱️ 約 <span id="aiWcTime">0:00</span></span>
             <span class="ai-wc-status" id="aiWcStatus"></span>
+            <!-- v2.8.2 自動校準按鈕，字數超出 600-800 範圍才顯示 -->
+            <button id="btnAiCalibrate" onclick="calibrateWordCount()" style="display:none;margin-left:8px;padding:5px 12px;font-size:.75rem;font-weight:700;border:1.5px solid #f59e0b;background:#fff;color:#92400e;border-radius:8px;cursor:pointer;font-family:inherit" title="重新生成，AI 會調整到 600-800 字目標範圍">🎯 自動校準</button>
           </div>
           <!-- 主題建議 → 大綱串聯 -->
           <div class="chain-panel" id="tipsChainPanel" style="display:none">
@@ -4193,16 +4195,51 @@ function updateAiWordCount(content, mode){
     const timeStr=`${m}:${s.toString().padStart(2,'0')}`;
     document.getElementById('aiWcNum').textContent=chars;
     document.getElementById('aiWcTime').textContent=timeStr;
-    let status='', cls='';
-    if(chars<500){status='⚠️ 偏短，建議增加內容';cls='short';}
-    else if(chars>900){status='⚠️ 偏長，注意時間控制';cls='long';}
-    else{status='✅ 長度適中';cls='ok';}
+    let status='', cls='', needCalibrate=false;
+    // v2.8.2: 收緊範圍到 600-800 字（標準演說稿目標）；偏離才顯示自動校準按鈕
+    if(chars<600){status='⚠️ 偏短，建議擴充至 600-800 字';cls='short';needCalibrate=true;}
+    else if(chars>800){status='⚠️ 偏長，建議精簡至 600-800 字';cls='long';needCalibrate=true;}
+    else{status='✅ 長度適中（600-800 字目標範圍）';cls='ok';}
     const statusEl=document.getElementById('aiWcStatus');
     statusEl.textContent=status; statusEl.className='ai-wc-status '+cls;
+    // 顯示/隱藏自動校準按鈕
+    const btn=document.getElementById('btnAiCalibrate');
+    if(btn){
+      btn.style.display = needCalibrate ? 'inline-flex' : 'none';
+      // 暫存當前內容字數，供 calibrateWordCount 使用
+      btn.dataset.currentChars = chars;
+      btn.dataset.action = chars < 600 ? 'expand' : 'compress';
+    }
     bar.style.display='flex';
   } else {
     bar.style.display='none';
+    // 切換到不需要字數統計的模式時，順便隱藏校準按鈕
+    const btn=document.getElementById('btnAiCalibrate');
+    if(btn) btn.style.display='none';
   }
+}
+
+// v2.8.2: 字數自動校準 — 帶現有內容做第二次 call，AI 自行精簡或擴充到目標範圍
+async function calibrateWordCount(){
+  if(!curTopic){ showNotif('⚠️ 找不到題目','無法校準字數，請先抽題。','nw'); return; }
+  const btn = document.getElementById('btnAiCalibrate');
+  const currentChars = parseInt(btn?.dataset.currentChars || '0');
+  const action = btn?.dataset.action || 'compress';
+  const currentContent = document.getElementById('aiContent')?.innerText || '';
+  if(!currentContent.trim()){ showNotif('⚠️ 沒有可校準的內容','請先生成 AI 內容。','nw'); return; }
+
+  const targetChars = 700; // 600-800 中位數
+  const modeLabel = aiOpt === 'outline' ? '演說大綱' : '演說逐字稿';
+  let calibrateInstruction = '';
+  if(action === 'compress'){
+    calibrateInstruction = `【字數校準任務】以下是先前生成的「${modeLabel}」內容，目前共 ${currentChars} 字，超出目標範圍（600-800 字）。請精簡到 ${targetChars} 字左右（±50 字內），保留核心結構與技巧標籤，刪除冗餘描述，但不要刪除任何段落結構。\n\n=== 原內容 ===\n${currentContent}\n=== 結束 ===\n\n請直接輸出精簡後的完整版本（含原本所有的標籤如 (停頓 0.5 秒) 等）。`;
+  } else {
+    calibrateInstruction = `【字數校準任務】以下是先前生成的「${modeLabel}」內容，目前共 ${currentChars} 字，未達目標範圍（600-800 字）。請擴充到 ${targetChars} 字左右（±50 字內），補充例子細節、加入更多技巧標籤、加深論述。但保留原有結構不要重寫。\n\n=== 原內容 ===\n${currentContent}\n=== 結束 ===\n\n請直接輸出擴充後的完整版本（含原本所有的標籤如 (停頓 0.5 秒) 等）。`;
+  }
+
+  showNotif('🎯 校準中', `AI 正在${action==='compress'?'精簡':'擴充'}至 600-800 字…`, '');
+  // 用 customMsg 走 genAI() 第二次 call
+  await genAI({ customMsg: calibrateInstruction, customTitle: `📋 ${modeLabel}（已校準至 600-800 字）：「${curTopic.t}」` });
 }
 
 function setupChainButtons(mode, raw){
