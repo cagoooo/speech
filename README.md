@@ -2,6 +2,8 @@
 
 > AI 智慧陪練 · 雲端同步歷史 · 即時語音分析 · 完整評分 — 專為國小學生設計的演說訓練神器
 
+> 📌 **目前版本：v2.8.2**（依據 程式內版本常數）
+
 🌐 **線上版**：[cagoooo.github.io/speech](https://cagoooo.github.io/speech/)
 
 ---
