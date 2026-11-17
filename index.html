@@ -398,6 +398,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 /* Footer */
 .footer{background:var(--primary-dark);color:rgba(255,255,255,.65);text-align:center;padding:22px;font-size:.8rem;margin-top:40px}
 .footer p+p{margin-top:5px}
+/* 頁尾（2026-11-17 改版：品牌區＋快速前往＋署名列） */
+.footer.site-footer{padding:0;text-align:left;font-size:.95rem;color:rgba(255,255,255,.78);background:linear-gradient(160deg,var(--primary-dark) 0%,#0b2f59 100%)}
+.site-footer .sf-topline{height:4px;background:linear-gradient(90deg,var(--accent),var(--primary-light))}
+.site-footer .sf-inner{max-width:980px;margin:0 auto;padding:32px 16px 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:start}
+.site-footer .sf-brand{display:flex;gap:14px;align-items:flex-start}
+.site-footer .sf-logo{width:48px;height:48px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,var(--accent),#fbbf24);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.site-footer .sf-brand strong{display:block;color:#fff;font-size:1.1rem;margin-bottom:4px}
+.site-footer .sf-brand p{font-size:.9rem;line-height:1.6}
+.site-footer .sf-src{margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.6)}
+.site-footer .sf-links-title{color:#fff;font-weight:700;margin-bottom:10px}
+.site-footer .sf-links{display:flex;flex-wrap:wrap;gap:8px}
+.site-footer .sf-link{min-height:44px;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-size:.88rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .2s,border-color .2s}
+.site-footer .sf-link:hover{background:var(--accent);border-color:var(--accent);color:#1f2937}
+.site-footer .sf-bottom{border-top:1px solid rgba(255,255,255,.12)}
+.site-footer .sf-bottom-inner{max-width:980px;margin:0 auto;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.site-footer .site-credit{color:rgba(255,255,255,.85);font-size:.92rem;margin:0}
+.site-footer .site-credit__author{color:#fcd34d;font-weight:700;text-decoration:none;border-bottom:1px dotted currentColor;padding-bottom:1px;transition:color .2s}
+.site-footer .site-credit__author:hover{color:#fff}
+.site-footer .sf-version{font-size:.8rem;padding:3px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);margin:0}
+@media(max-width:720px){
+  .site-footer .sf-inner{grid-template-columns:1fr;gap:22px;padding:28px 16px 20px}
+  .site-footer .sf-bottom-inner{flex-direction:column;text-align:center;padding-bottom:22px}
+  .site-footer .site-credit .footer-dot{display:none}
+  .site-footer .footer-school{display:block;margin-top:2px}
+}
+@media print{.footer.site-footer{display:none}}
 
 /* ===== RWD TABLET (≤768px) ===== */
 @media(max-width:768px){
@@ -1630,10 +1656,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei
 
 </div><!-- /main -->
 
-<div class="footer">
-  <p>🎤 國小國語演說比賽訓練平台｜專為指導老師設計</p>
-  <p>資料來源：教育部全國語文競賽官網・小貓老師口語表達教學日誌・翻轉教育・小大人表達學院・桃園市石門國小 阿凱老師</p>
-</div>
+<footer class="footer site-footer">
+  <div class="sf-topline" aria-hidden="true"></div>
+  <div class="sf-inner">
+    <div class="sf-brand">
+      <span class="sf-logo" aria-hidden="true">🎤</span>
+      <div>
+        <strong>國小國語演說比賽訓練平台</strong>
+        <p>專為指導老師設計｜模擬抽題・計時訓練・AI 逐字稿輔助</p>
+        <p class="sf-src">資料來源：教育部全國語文競賽官網・小貓老師口語表達教學日誌・翻轉教育・小大人表達學院・桃園市石門國小 阿凱老師</p>
+      </div>
+    </div>
+    <nav aria-label="頁尾快速前往">
+      <p class="sf-links-title">快速前往</p>
+      <div class="sf-links">
+        <button type="button" class="sf-link" onclick="footerGoPanel('info')">📚 比賽資訊</button>
+        <button type="button" class="sf-link" onclick="footerGoPanel('practice')">🎯 模擬抽題練習</button>
+        <button type="button" class="sf-link" onclick="footerGoPanel('topics')">📋 題庫管理</button>
+        <button type="button" class="sf-link" onclick="footerGoPanel('resources')">🔗 參考資源</button>
+        <button type="button" class="sf-link" onclick="footerGoPanel('parent')">📧 親師互動</button>
+      </div>
+    </nav>
+  </div>
+  <div class="sf-bottom">
+    <div class="sf-bottom-inner">
+      <p class="site-credit">Made with <span aria-label="愛心">❤️</span> by <a href="https://cagoooo.github.io/Akai/" target="_blank" rel="noopener noreferrer" title="阿凱老師教育科技創新專區" class="site-credit__author">阿凱老師</a><span class="footer-school"><span class="footer-dot" aria-hidden="true">・</span>桃園市龍潭區石門國民小學</span></p>
+      <p class="sf-version">v2.8.3</p>
+    </div>
+  </div>
+</footer>
+<script>
+function footerGoPanel(name){
+  var btn=document.querySelector('.nav .nav-btn[onclick*="\''+name+'\'"]');
+  if(btn){btn.click();window.scrollTo({top:0,behavior:'smooth'});}
+}
+</script>
 
 <script>
 // ==================== 🛡️ TDZ-safe 提前宣告 ====================
