@@ -2,7 +2,9 @@
 // 策略：HTML network-first / 靜態資源 cache-first / API 完全跳過
 // 更新流程：不自動 skipWaiting，等主頁送 SKIP_WAITING 訊息才接管
 const VERSION = 'v2.8.3-2026-11-17';
-const CACHE_NAME = `speech-${VERSION}`;
+// 同一網域（cagoooo.github.io）的所有工具共用快取空間，只能清除自己這個前綴的快取
+const CACHE_PREFIX = 'speech-';
+const CACHE_NAME = `${CACHE_PREFIX}${VERSION}`;
 const PRECACHE = [
   './',
   './index.html',
@@ -28,7 +30,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
